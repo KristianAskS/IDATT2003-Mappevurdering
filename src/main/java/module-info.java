@@ -10,6 +10,6 @@ module com.ntnu.idatt2003.idatt2003 {
   requires eu.hansolo.tilesfx;
   requires com.almasb.fxgl.all;
   
-  opens com.ntnu.idatt2003.idatt2003 to javafx.fxml;
-  exports com.ntnu.idatt2003.idatt2003;
+  opens com.ntnu.idatt2003 to javafx.fxml;
+  exports com.ntnu.idatt2003;
 }
