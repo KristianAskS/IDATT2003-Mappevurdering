@@ -7,34 +7,18 @@ import java.util.Map;
  * The type Board.
  */
 public class Board {
-  private final Map<Integer, Integer> laddersAndSnakes;
+  private Map<Integer, Tile> tiles = new HashMap<>();
   
-  /**
-   * Instantiates a new Board.
-   */
-  public Board() {
-    laddersAndSnakes = new HashMap<>();
-    laddersAndSnakes.put(4, 14);
-    laddersAndSnakes.put(9, 31);
-    laddersAndSnakes.put(17, 7);
-    laddersAndSnakes.put(28, 84);
-    laddersAndSnakes.put(54, 34);
+  public Board(){}
+  
+  public Board(Map<Integer, Tile> tiles){
+    this.tiles = tiles;
+  }
+  public void addTile(Tile tile){
+    tiles.put(tile.getTileId(), tile);
   }
   
-  /**
-   * Check position int.
-   *
-   * @param position the position
-   * @return the int
-   */
-  public int checkPosition(int position) {
-    return laddersAndSnakes.getOrDefault(position, position);
+  public Tile getTileId(int tileId){
+    return tiles.get(tileId);
   }
-  
-  /**
-   * Gets max position.
-   *
-   * @return the max position
-   */
-  public int getMaxPosition() { return 90; }
 }
