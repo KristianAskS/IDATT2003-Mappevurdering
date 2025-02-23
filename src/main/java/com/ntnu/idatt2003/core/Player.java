@@ -1,10 +1,12 @@
-package com.ntnu.idatt2003.model;
+package com.ntnu.idatt2003.core;
 
 /*
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
  */
 
+
+import com.ntnu.idatt2003.tile.Tile;
 
 /**
  * The type Player.

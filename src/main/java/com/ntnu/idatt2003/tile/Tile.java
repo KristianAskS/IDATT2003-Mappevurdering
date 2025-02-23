@@ -1,4 +1,7 @@
-package com.ntnu.idatt2003.model;
+package com.ntnu.idatt2003.tile;
+
+import com.ntnu.idatt2003.core.Player;
+import com.ntnu.idatt2003.tile.action.TileAction;
 
 public class Tile {
   private Tile nextTile;

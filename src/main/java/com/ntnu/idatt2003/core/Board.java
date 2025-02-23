@@ -1,5 +1,6 @@
-package com.ntnu.idatt2003.model;
+package com.ntnu.idatt2003.core;
 
+import com.ntnu.idatt2003.tile.Tile;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.ntnu.idatt2003.model;
+package com.ntnu.idatt2003.core;
 
 import java.util.ArrayList;
 import java.util.List;
