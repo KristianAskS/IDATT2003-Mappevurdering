@@ -2,9 +2,10 @@ package com.ntnu.idatt2003.tile.action;
 
 import com.ntnu.idatt2003.core.Player;
 
-public class SomeOtherAction implements TileAction{
-    @Override
-    public void perform(Player player) {
-    
-    }
+public class SomeOtherAction implements TileAction {
+
+  @Override
+  public void perform(Player player) {
+
+  }
 }
