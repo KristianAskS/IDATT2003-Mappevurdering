@@ -120,3 +120,7 @@ Vi følger en standard konvensjon for branch-navn insiprert av Angular. Alle nye
   ```
   feat(parser)/handle-null-values
   ```
+
+## 📄 Commit-meldinger
+Vi følger en standardkonvensjon for commit-meldinger.
+Du kan lese mer om det her: [https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/)
