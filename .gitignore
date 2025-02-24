@@ -24,3 +24,15 @@
 hs_err_pid*
 replay_pid*
 
+# Macbook
+.DS_Store
+
+#Editor
+.idea/
+
+# Intellij project files
+*.iml
+
+# Target dir
+target/
+
