@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Dice {
+<<<<<<< HEAD
 
   private List<Die> dice;
 
   public Dice(int numberOfDice) {
+=======
+  private final List<Die> dice;
+  
+  public Dice(int numberOfDice){
+>>>>>>> 0b26a96 (Uncommitted changes extern)
     dice = new ArrayList<>();
     for (int i = 0; i < numberOfDice; i++) {
       dice.add(new Die());

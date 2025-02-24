@@ -15,7 +15,7 @@ public class Player {
 
   private final String name;
   private Tile currentTile;
-  private BoardGame game;
+  private final BoardGame game;
   private int position;
 
   /**

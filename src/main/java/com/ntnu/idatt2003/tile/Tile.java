@@ -6,7 +6,7 @@ import com.ntnu.idatt2003.tile.action.TileAction;
 public class Tile {
 
   private Tile nextTile;
-  private int tileId;
+  private final int tileId;
   private TileAction landAction;
 
   public Tile(int tileId) {
