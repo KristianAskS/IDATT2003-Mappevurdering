@@ -12,12 +12,12 @@ import com.ntnu.idatt2003.tile.Tile;
  * The type Player.
  */
 public class Player {
-
+  
   private final String name;
-  private Tile currentTile;
   private final BoardGame game;
+  private Tile currentTile;
   private int position;
-
+  
   /**
    * Instantiates a new Player.
    *
@@ -29,7 +29,7 @@ public class Player {
     this.game = game;
     this.position = 0;
   }
-
+  
   /**
    * Gets name.
    *
@@ -38,7 +38,7 @@ public class Player {
   public String getName() {
     return name;
   }
-
+  
   /**
    * Gets position.
    *
@@ -47,7 +47,7 @@ public class Player {
   public int getPosition() {
     return position;
   }
-
+  
   /**
    * Sets position.
    *
@@ -56,7 +56,7 @@ public class Player {
   public void setPosition(int position) {
     this.position = position;
   }
-
+  
   /**
    * Set current tile.
    *
@@ -65,7 +65,7 @@ public class Player {
   public void setCurrentTile(Tile currentTile) {
     this.currentTile = currentTile;
   }
-
+  
   /**
    * Place on tile.
    *
@@ -78,7 +78,7 @@ public class Player {
     currentTile = tile;
     tile.landPlayer(this);
   }
-
+  
   /**
    * Move.
    *
@@ -91,13 +91,14 @@ public class Player {
       return;
     }
     Tile tile = currentTile;
-
+    
     for (int i = 0; i < steps; i++) {
       if (tile.getNextTile() != null) {
         currentTile = currentTile.getNextTile();
       } else {
         System.out.println("Player " + name
-            + " has reached the end of the board");//ikke bruk system.out.println, er placeholder for logger
+            +
+            " has reached the end of the board");//ikke bruk system.out.println, er placeholder for logger
         break;
       }
       placeOnTile(tile);

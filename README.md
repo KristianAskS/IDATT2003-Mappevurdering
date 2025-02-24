@@ -2,16 +2,14 @@
 
 ## 📌 Om prosjektet
 
-Dette prosjektet er en del av **IDATT2003 Programmering 2** ved NTNU. Målet er å utvikle et digitalt
-brettspill i Java med JavaFX, der spillere kan navigere gjennom et spillbrett med stiger og
-spesialfelt.
+Dette prosjektet er en del av **IDATT2003 Programmering 2** ved NTNU. Målet er å utvikle diverse digitale
+brettspill i Java med JavaFX. Det første spillet som inngår i MVP som skal utvikles er et enkelt stigespill. 
 
 ### 🎯 Funksjoner
 
 - 🎲 **Terningkast**: Spillere beveger seg ved å kaste terninger.
 - 🔼 **Stiger og spesialfelt**: Flytt opp eller ned på brettet basert på feltenes regler.
 - 🖥️ **Grafisk brukergrensesnitt**: JavaFX for et interaktivt og brukervennlig spill.
-- 📂 **Lagring og lasting**: Spilltilstand lagres og kan lastes inn igjen.
 - ✅ **Enhetstesting**: JUnit 5 for å sikre stabilitet.
 
 ---
