@@ -10,8 +10,8 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>21</source> <!-- fra 22 til 21 -->
-          <target>21</target> <!-- fra 22 til 21 -->
+          <source>21</source>
+          <target>21</target>
         </configuration>
         <groupId>org.apache.maven.plugins</groupId>
         <version>3.13.0</version>
@@ -46,39 +46,47 @@
     </plugins>
   </build>
   <dependencies>
-    <!-- JavaFX-dependencies oppdatert til 23.0.1 -->
+    <!-- JavaFX-core components -->
+    <!-- GUI-controls og standards UI-components -->
     <dependency>
       <artifactId>javafx-controls</artifactId>
       <groupId>org.openjfx</groupId>
       <version>23.0.1</version>
     </dependency>
+    <!-- FXML-support for declarative UI-design -->
+    <!-- Not used in this project-->
     <dependency>
       <artifactId>javafx-fxml</artifactId>
       <groupId>org.openjfx</groupId>
       <version>23.0.1</version>
     </dependency>
+    <!-- Web browser-integration -->
     <dependency>
       <artifactId>javafx-web</artifactId>
       <groupId>org.openjfx</groupId>
       <version>23.0.1</version>
     </dependency>
+    <!-- Swing-interoperability -->
     <dependency>
       <artifactId>javafx-swing</artifactId>
       <groupId>org.openjfx</groupId>
       <version>23.0.1</version>
     </dependency>
+    <!-- Mediaplayer-support for sound/video -->
     <dependency>
       <artifactId>javafx-media</artifactId>
       <groupId>org.openjfx</groupId>
       <version>23.0.1</version>
     </dependency>
 
-    <!-- Andre dependencies (uendret) -->
+    <!-- Extended UI-components and tools  -->
+    <!-- ControlsFX - Extended GUI-components -->
     <dependency>
       <artifactId>controlsfx</artifactId>
       <groupId>org.controlsfx</groupId>
       <version>11.2.1</version>
     </dependency>
+    <!-- Input field validation framework -->
     <dependency>
       <artifactId>validatorfx</artifactId>
       <exclusions>
@@ -90,16 +98,19 @@
       <groupId>net.synedra</groupId>
       <version>0.5.0</version>
     </dependency>
+    <!-- Icon library for JavaFX -->
     <dependency>
       <artifactId>ikonli-javafx</artifactId>
       <groupId>org.kordamp.ikonli</groupId>
       <version>12.3.1</version>
     </dependency>
+    <!-- Bootstrap-style for JavaFX -->
     <dependency>
       <artifactId>bootstrapfx-core</artifactId>
       <groupId>org.kordamp.bootstrapfx</groupId>
       <version>0.4.0</version>
     </dependency>
+    <!-- Dashboard-components and data visualizing -->
     <dependency>
       <artifactId>tilesfx</artifactId>
       <exclusions>
@@ -111,6 +122,7 @@
       <groupId>eu.hansolo</groupId>
       <version>21.0.3</version>
     </dependency>
+    <!-- Game-framework -->
     <dependency>
       <artifactId>fxgl</artifactId>
       <exclusions>
@@ -123,13 +135,15 @@
       <version>17.3</version>
     </dependency>
 
-    <!-- Oppdatert JUnit -->
+    <!-- Test frameworks -->
+    <!-- JUnit 5 for unittesting -->
     <dependency>
       <artifactId>junit-jupiter-api</artifactId>
       <groupId>org.junit.jupiter</groupId>
       <scope>test</scope>
       <version>${junit.version}</version>
     </dependency>
+    <!-- JUnit 5 test run -->
     <dependency>
       <artifactId>junit-jupiter-engine</artifactId>
       <groupId>org.junit.jupiter</groupId>
