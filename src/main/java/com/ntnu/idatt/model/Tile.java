@@ -1,7 +1,7 @@
-package com.ntnu.idatt2003.tile;
+package com.ntnu.idatt.model;
 
-import com.ntnu.idatt2003.core.Player;
-import com.ntnu.idatt2003.tile.action.TileAction;
+import com.ntnu.idatt.entity.Player;
+import com.ntnu.idatt.logic.action.TileAction;
 
 public class Tile {
   

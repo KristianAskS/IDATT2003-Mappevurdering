@@ -1,4 +1,4 @@
-package com.ntnu.idatt2003.core;
+package com.ntnu.idatt.entity;
 
 /*
 import org.slf4j.Logger;
@@ -6,7 +6,8 @@ import org.slf4j.LoggerFactory;
  */
 
 
-import com.ntnu.idatt2003.tile.Tile;
+import com.ntnu.idatt.logic.BoardGame;
+import com.ntnu.idatt.model.Tile;
 
 /**
  * The type Player.
