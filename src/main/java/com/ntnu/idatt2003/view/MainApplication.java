@@ -1,4 +1,4 @@
-package com.ntnu.idatt2003;
+package com.ntnu.idatt2003.view;
 
 import javafx.application.Application;
 import javafx.stage.Stage;

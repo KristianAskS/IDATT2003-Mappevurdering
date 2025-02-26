@@ -1,6 +1,6 @@
-package com.ntnu.idatt2003.tile.action;
+package com.ntnu.idatt2003.logic.action;
 
-import com.ntnu.idatt2003.core.Player;
+import com.ntnu.idatt2003.entity.Player;
 
 public class SomeOtherAction implements TileAction {
   

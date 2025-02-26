@@ -1,9 +1,15 @@
-package com.ntnu.idatt2003.core;
+package com.ntnu.idatt2003.logic;
 
-import com.ntnu.idatt2003.tile.Tile;
+import com.ntnu.idatt2003.model.Board;
+import com.ntnu.idatt2003.model.Dice;
+import com.ntnu.idatt2003.entity.Player;
+import com.ntnu.idatt2003.model.Tile;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Board game.
+ */
 public class BoardGame {
   
   private final List<Player> players = new ArrayList<>();
@@ -11,25 +17,43 @@ public class BoardGame {
   private Player currentPlayer;
   private Dice dice;
   
+  /**
+   * Add player.
+   *
+   * @param player the player
+   */
   public void addPlayer(Player player) {
     players.add(player);
   }
   
-  public void createBoard() {
-    board = new Board(); //antall tiles
+  /**
+   * Create board.
+   *
+   * @param numbOfTiles the number of tiles
+   */
+  public void createBoard(int numbOfTiles) {
+    board = new Board();
     
-    //Legger til 100 tiles
-    for (int i = 0; i < 100; i++) {
+    //Legger tiles
+    for (int i = 0; i < numbOfTiles; i++) {
       Tile tile = new Tile(i);
       board.addTile(tile);
     }
     
   }
   
-  public void createDice() {
-    dice = new Dice(1);
+  /**
+   * Create dice.
+   *
+   * @param numbOfDice the number of dice
+   */
+  public void createDice(int numbOfDice) {
+    dice = new Dice(numbOfDice);
   }
   
+  /**
+   * Play.
+   */
   public void play() {
     for (Player p : players) {
       currentPlayer = p;
@@ -43,20 +67,40 @@ public class BoardGame {
     }
   }
   
+  /**
+   * Gets winner.
+   *
+   * @return the winner
+   */
   public Player getWinner() {
     //Implementer ønsket logikk for å sjekke om en spiller har vunnet
     //F.eks. hvis tileID > siste tile eller lignende
     return null;
   }
   
+  /**
+   * Gets board.
+   *
+   * @return the board
+   */
   public Board getBoard() {
     return board;
   }
   
+  /**
+   * Gets dice.
+   *
+   * @return the dice
+   */
   public Dice getDice() {
     return dice;
   }
   
+  /**
+   * Gets current player.
+   *
+   * @return the current player
+   */
   public Player getCurrentPlayer() {
     return currentPlayer;
   }

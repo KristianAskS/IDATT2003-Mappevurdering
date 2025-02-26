@@ -12,4 +12,6 @@ module com.ntnu.idatt2003.idatt2003 {
   
   opens com.ntnu.idatt2003 to javafx.fxml;
   exports com.ntnu.idatt2003;
+  exports com.ntnu.idatt2003.view;
+  opens com.ntnu.idatt2003.view to javafx.fxml;
 }

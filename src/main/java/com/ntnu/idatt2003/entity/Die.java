@@ -1,4 +1,4 @@
-package com.ntnu.idatt2003.core;
+package com.ntnu.idatt2003.entity;
 
 import java.util.Random;
 
