@@ -1,6 +1,6 @@
-package com.ntnu.idatt2003.logic.action;
+package com.ntnu.idatt.logic.action;
 
-import com.ntnu.idatt2003.entity.Player;
+import com.ntnu.idatt.entity.Player;
 
 public class LadderAction implements TileAction {
   private int destinationTileld;

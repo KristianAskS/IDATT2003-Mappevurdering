@@ -32,7 +32,7 @@
               <jlinkImageName>app</jlinkImageName>
               <jlinkZipName>app</jlinkZipName>
               <launcher>app</launcher>
-              <mainClass>com.ntnu.idatt2003.idatt2003/com.ntnu.idatt2003.view.MainApplication</mainClass>
+              <mainClass>com.ntnu.idatt.idatt2003/com.ntnu.idatt.MainApplication</mainClass>
               <noHeaderFiles>true</noHeaderFiles>
               <noManPages>true</noManPages>
               <stripDebug>true</stripDebug>

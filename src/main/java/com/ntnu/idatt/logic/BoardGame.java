@@ -1,9 +1,9 @@
-package com.ntnu.idatt2003.logic;
+package com.ntnu.idatt.logic;
 
-import com.ntnu.idatt2003.model.Board;
-import com.ntnu.idatt2003.model.Dice;
-import com.ntnu.idatt2003.entity.Player;
-import com.ntnu.idatt2003.model.Tile;
+import com.ntnu.idatt.model.Board;
+import com.ntnu.idatt.model.Dice;
+import com.ntnu.idatt.entity.Player;
+import com.ntnu.idatt.model.Tile;
 import java.util.ArrayList;
 import java.util.List;
 

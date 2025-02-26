@@ -1,4 +1,4 @@
-module com.ntnu.idatt2003.idatt2003 {
+module com.ntnu.idatt {
   requires javafx.controls;
   requires javafx.fxml;
   requires javafx.web;
@@ -10,8 +10,6 @@ module com.ntnu.idatt2003.idatt2003 {
   requires eu.hansolo.tilesfx;
   requires com.almasb.fxgl.all;
   
-  opens com.ntnu.idatt2003 to javafx.fxml;
-  exports com.ntnu.idatt2003;
-  exports com.ntnu.idatt2003.view;
-  opens com.ntnu.idatt2003.view to javafx.fxml;
+  opens com.ntnu.idatt to javafx.fxml;
+  exports com.ntnu.idatt;
 }

@@ -1,4 +1,4 @@
-package com.ntnu.idatt2003.model;
+package com.ntnu.idatt.model;
 
 import java.util.HashMap;
 import java.util.Map;

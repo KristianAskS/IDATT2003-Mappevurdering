@@ -1,6 +1,6 @@
-package com.ntnu.idatt2003.model;
+package com.ntnu.idatt.model;
 
-import com.ntnu.idatt2003.entity.Die;
+import com.ntnu.idatt.entity.Die;
 import java.util.ArrayList;
 import java.util.List;
 
