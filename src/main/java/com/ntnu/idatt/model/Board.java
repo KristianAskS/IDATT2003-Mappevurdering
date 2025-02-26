@@ -1,5 +1,6 @@
 package com.ntnu.idatt.model;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,5 +24,9 @@ public class Board {
   
   public Tile getTileId(int tileId) {
     return tiles.get(tileId);
+  }
+  
+  public Collection<Tile> getTiles() {
+    return tiles.values();
   }
 }

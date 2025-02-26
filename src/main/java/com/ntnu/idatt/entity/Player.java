@@ -20,7 +20,7 @@ public class Player {
   private int position;
   
   /**
-   * Instantiates a new Player.
+   * Instantiates a new Player that always starts at tile 0.
    *
    * @param name the name
    * @param game the game
@@ -29,6 +29,7 @@ public class Player {
     this.name = name;
     this.game = game;
     this.position = 0;
+    this.currentTile = game.getBoard().getTileId(0);
   }
   
   /**
