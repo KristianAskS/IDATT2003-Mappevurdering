@@ -8,7 +8,7 @@ public class Die {
   private int lastRolledValue;
   
   public int roll() {
-    lastRolledValue = random.nextInt() * 6 + 1;
+    lastRolledValue = random.nextInt(6) + 1;
     return lastRolledValue;
   }
   

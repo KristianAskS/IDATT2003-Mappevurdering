@@ -4,9 +4,18 @@ import com.ntnu.idatt.entity.Die;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Stores the collection of dices
+ */
 public class Dice {
   private final List<Die> dice;
   
+  
+  /**
+   * Instantiates a new Dice.
+   *
+   * @param numberOfDice the number of dice
+   */
   public Dice(int numberOfDice) {
     
     dice = new ArrayList<>();
@@ -15,6 +24,11 @@ public class Dice {
     }
   }
   
+  /**
+   * Roll every die in dice.
+   *
+   * @return the sum of eyes rolled
+   */
   public int roll() {
     int sum = 0;
     for (Die die : dice) {
@@ -23,6 +37,12 @@ public class Dice {
     return sum;
   }
   
+  /**
+   * Gets die.
+   *
+   * @param dieNumber the die number
+   * @return the die
+   */
   public int getDie(int dieNumber) {
     if (dieNumber < 0 || dieNumber >= dice.size()) {
       throw new IllegalArgumentException("Die number is out of bounds");

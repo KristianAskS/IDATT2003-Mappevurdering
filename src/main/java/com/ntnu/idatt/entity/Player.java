@@ -20,7 +20,7 @@ public class Player {
   private int position;
   
   /**
-   * Instantiates a new Player.
+   * Instantiates a new Player that always starts at tile 0.
    *
    * @param name the name
    * @param game the game
@@ -29,6 +29,7 @@ public class Player {
     this.name = name;
     this.game = game;
     this.position = 0;
+    this.currentTile = game.getBoard().getTileId(0);
   }
   
   /**
@@ -82,27 +83,23 @@ public class Player {
   
   /**
    * Move.
-   *
+   *ikke bruk system.out.println, er placeholder for logger
    * @param steps the steps
    */
   public void move(int steps) {
-    System.out.println("Player " + name + " moves " + steps
-        + " steps"); //ikke bruk system.out.println, er placeholder for logger
-    if (currentTile == null) {
-      return;
-    }
+    System.out.println("Player " + name + " moves " + steps + " steps");
     Tile tile = currentTile;
     
     for (int i = 0; i < steps; i++) {
       if (tile.getNextTile() != null) {
-        currentTile = currentTile.getNextTile();
+        tile = tile.getNextTile();
+        placeOnTile(tile);
+        this.position = tile.getTileId();
       } else {
-        System.out.println("Player " + name
-            +
-            " has reached the end of the board");//ikke bruk system.out.println, er placeholder for logger
+        System.out.println("Player " + name + " has reached the end of the board");
         break;
       }
-      placeOnTile(tile);
     }
+    currentTile = tile;
   }
 }

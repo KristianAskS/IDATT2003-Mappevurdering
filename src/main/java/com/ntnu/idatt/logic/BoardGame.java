@@ -27,6 +27,21 @@ public class BoardGame {
   }
   
   /**
+   * For del 1 i mappevurderingen
+   * UNNGÅ Å BRUK sysout
+   */
+  public void getPlayers(){
+    if (players.isEmpty()) {
+      throw new IllegalStateException("No players found");
+    }
+    
+    System.out.println("The players are:");
+    for (Player player : players) {
+      System.out.println(player.getName());
+    }
+  }
+  
+  /**
    * Create board.
    *
    * @param numbOfTiles the number of tiles
@@ -39,7 +54,10 @@ public class BoardGame {
       Tile tile = new Tile(i);
       board.addTile(tile);
     }
-    
+  }
+  
+  public int getNumbOfTiles() {
+    return board.getTiles().size();
   }
   
   /**
@@ -55,15 +73,29 @@ public class BoardGame {
    * Play.
    */
   public void play() {
-    for (Player p : players) {
-      currentPlayer = p;
-      int roll = dice.roll();
-      p.move(roll);
+    int round = 1;
+    Player winner = null;
+
+    while (winner == null) {
+      System.out.println("Round number: " + round);
       
-      if (getWinner() != null) {
-        System.out.println("We have a winner: " + p.getName()); //fjern sysout, bruk logger
-        break;
+      for (Player player : players) {
+        currentPlayer = player;
+        int roll = dice.roll(); //Triller terning
+        
+        System.out.println("Player " + player.getName() + " rolled " + roll);
+        
+        currentPlayer.move(roll); //Flytter spiller basert på antall øyne
+        
+        System.out.println("Player " + player.getName() + " on tile " + player.getPosition());
+        
+        if (getWinner() != null) {
+          winner = getWinner();
+          break;
+        }
       }
+      System.out.println();
+      round++;
     }
   }
   
@@ -73,10 +105,15 @@ public class BoardGame {
    * @return the winner
    */
   public Player getWinner() {
-    //Implementer ønsket logikk for å sjekke om en spiller har vunnet
-    //F.eks. hvis tileID > siste tile eller lignende
+    for(Player player : players) {
+      if (player.getPosition() >= getNumbOfTiles() - 1) {
+        return player;
+      }
+    }
     return null;
   }
+  
+  
   
   /**
    * Gets board.
