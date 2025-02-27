@@ -13,11 +13,11 @@ import com.ntnu.idatt.model.Tile;
  * The type Player.
  */
 public class Player {
-  
+
   private final String name;
   private Tile currentTile;
   private int position;
-  
+
   /**
    * Instantiates a new Player that always starts at tile 0.
    *
@@ -29,7 +29,7 @@ public class Player {
     this.position = 0;
     this.currentTile = game.getBoard().getTileId(0);
   }
-  
+
   /**
    * Gets name.
    *
@@ -38,7 +38,7 @@ public class Player {
   public String getName() {
     return name;
   }
-  
+
   /**
    * Gets position.
    *
@@ -47,7 +47,7 @@ public class Player {
   public int getPosition() {
     return position;
   }
-  
+
   /**
    * Sets position.
    *
@@ -56,7 +56,7 @@ public class Player {
   public void setPosition(int position) {
     this.position = position;
   }
-  
+
   /**
    * Set current tile.
    *
@@ -65,7 +65,7 @@ public class Player {
   public void setCurrentTile(Tile currentTile) {
     this.currentTile = currentTile;
   }
-  
+
   /**
    * Place on tile.
    *
@@ -78,16 +78,16 @@ public class Player {
     currentTile = tile;
     tile.landPlayer(this);
   }
-  
+
   /**
-   * Move.
-   *ikke bruk system.out.println, er placeholder for logger
+   * Move. ikke bruk system.out.println, er placeholder for logger
+   *
    * @param steps the steps
    */
   public void move(int steps) {
     System.out.println("Player " + name + " moves " + steps + " steps");
     Tile tile = currentTile;
-    
+
     for (int i = 0; i < steps; i++) {
       if (tile.getNextTile() != null) {
         tile = tile.getNextTile();

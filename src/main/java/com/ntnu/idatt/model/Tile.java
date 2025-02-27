@@ -7,11 +7,11 @@ import com.ntnu.idatt.logic.action.TileAction;
  * The type Tile.
  */
 public class Tile {
-  
+
   private final int tileId;
   private Tile nextTile;
   private TileAction landAction;
-  
+
   /**
    * Instantiates a new Tile.
    *
@@ -20,7 +20,7 @@ public class Tile {
   public Tile(int tileId) {
     this.tileId = tileId;
   }
-  
+
   /**
    * Sets land action.
    *
@@ -29,25 +29,25 @@ public class Tile {
   public void setLandAction(TileAction landAction) {
     this.landAction = landAction;
   }
-  
+
   /**
    * Land player.
    *
    * @param player the player
    */
   public void landPlayer(Player player) {
-  
+
   }
-  
+
   /**
    * Leave player.
    *
    * @param player the player
    */
   public void leavePlayer(Player player) {
-  
+
   }
-  
+
   /**
    * Gets next tile.
    *
@@ -56,7 +56,7 @@ public class Tile {
   public Tile getNextTile() {
     return nextTile;
   }
-  
+
   /**
    * Sets next tile.
    *
@@ -65,7 +65,7 @@ public class Tile {
   public void setNextTile(Tile nextTile) {
     this.nextTile = nextTile;
   }
-  
+
   /**
    * Gets tile id.
    *
@@ -74,5 +74,5 @@ public class Tile {
   public int getTileId() {
     return tileId;
   }
-  
+
 }
