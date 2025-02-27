@@ -76,19 +76,21 @@ public class BoardGame {
     int round = 1;
     Player winner = null;
 
-    while (winner != null) {
+    while (winner == null) {
       System.out.println("Round number: " + round);
       
       for (Player player : players) {
         currentPlayer = player;
         int roll = dice.roll(); //Triller terning
+        
+        System.out.println("Player " + player.getName() + " rolled " + roll);
+        
         currentPlayer.move(roll); //Flytter spiller basert på antall øyne
         
         System.out.println("Player " + player.getName() + " on tile " + player.getPosition());
-      
+        
         if (getWinner() != null) {
           winner = getWinner();
-          System.out.println("The winner is ");
           break;
         }
       }
@@ -103,9 +105,10 @@ public class BoardGame {
    * @return the winner
    */
   public Player getWinner() {
-    if (currentPlayer.getPosition() >= getNumbOfTiles() - 1) {
-      System.out.println("The winner is: " + currentPlayer.getName());
-      return currentPlayer;
+    for(Player player : players) {
+      if (player.getPosition() >= getNumbOfTiles() - 1) {
+        return player;
+      }
     }
     return null;
   }

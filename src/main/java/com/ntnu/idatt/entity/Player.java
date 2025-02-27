@@ -83,27 +83,23 @@ public class Player {
   
   /**
    * Move.
-   *
+   *ikke bruk system.out.println, er placeholder for logger
    * @param steps the steps
    */
   public void move(int steps) {
-    System.out.println("Player " + name + " moves " + steps
-        + " steps"); //ikke bruk system.out.println, er placeholder for logger
-    if (currentTile == null) {
-      return;
-    }
+    System.out.println("Player " + name + " moves " + steps + " steps");
     Tile tile = currentTile;
     
     for (int i = 0; i < steps; i++) {
       if (tile.getNextTile() != null) {
-        currentTile = currentTile.getNextTile();
+        tile = tile.getNextTile();
+        placeOnTile(tile);
+        this.position = tile.getTileId();
       } else {
-        System.out.println("Player " + name
-            +
-            " has reached the end of the board");//ikke bruk system.out.println, er placeholder for logger
+        System.out.println("Player " + name + " has reached the end of the board");
         break;
       }
-      placeOnTile(tile);
     }
+    currentTile = tile;
   }
 }
