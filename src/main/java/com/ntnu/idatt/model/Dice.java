@@ -8,22 +8,23 @@ import java.util.List;
  * Stores the collection of dices
  */
 public class Dice {
+
   private final List<Die> dice;
-  
-  
+
+
   /**
    * Instantiates a new Dice.
    *
    * @param numberOfDice the number of dice
    */
   public Dice(int numberOfDice) {
-    
+
     dice = new ArrayList<>();
     for (int i = 0; i < numberOfDice; i++) {
       dice.add(new Die());
     }
   }
-  
+
   /**
    * Roll every die in dice.
    *
@@ -36,7 +37,7 @@ public class Dice {
     }
     return sum;
   }
-  
+
   /**
    * Gets die.
    *
