@@ -8,7 +8,7 @@ The following versions of the project are currently supported with security upda
 
 | Version            | Supported          |
 | ------------------ | ------------------ |
-| 1.0                | :white_check_mark: |
+| 1.0.0                | :white_check_mark: |
 | Pre-release/Beta   | :x:                |
 
 > **Note:** Version 1.0 corresponds to the initial release for the spring 2025 assignment (v1.0 – 25 January 2025). Future major revisions or additional modules may introduce new version numbers, which will be evaluated for continued support.
