@@ -4,6 +4,7 @@ import com.ntnu.idatt.entity.Player;
 import com.ntnu.idatt.logic.BoardGame;
 import com.ntnu.idatt.model.Board;
 import com.ntnu.idatt.model.Tile;
+import java.util.Scanner;
 
 /**
  * Main class for the board game application
@@ -41,7 +42,44 @@ public class BoardGameApp {
       }
     }
     
-    //Opprett spillere
+    Scanner scanner = new Scanner(System.in);
+    int numberOfPlayers = 0;
+    
+    try{
+      System.out.println("Enter the number of players: ");
+      
+      if (!scanner.hasNextInt()) {
+        throw new IllegalArgumentException("Please enter a number type.");
+      }
+      
+      numberOfPlayers = scanner.nextInt();
+      
+      if (numberOfPlayers < 1){
+        throw new IllegalArgumentException("Please enter a number greater than 1");
+      }
+      
+      if (numberOfPlayers > 5){
+        throw new IllegalArgumentException("Please enter a number less than 5");
+      }
+    } catch (IllegalArgumentException e) {
+      System.out.println("error: " + e.getMessage());
+      System.exit(1);
+    }
+    
+    for (int i = 0; i < numberOfPlayers; i++) {
+      System.out.println("Enter the name of player " + (i + 1) + ": ");
+      String playerName = scanner.next();
+      Player player = new Player(playerName, boardGame);
+      boardGame.addPlayer(player);
+      
+      Tile startTile = board.getTileId(0);
+      player.setCurrentTile(startTile);
+    }
+    boardGame.getPlayers();
+    
+    
+    
+    /*
     Player tri = new Player("Tri", boardGame);
     Player kristian = new Player("Kristian", boardGame);
     Player bjornAdam = new Player("Bjorn Adam", boardGame);
@@ -51,15 +89,8 @@ public class BoardGameApp {
     boardGame.addPlayer(kristian);
     boardGame.addPlayer(bjornAdam);
     boardGame.addPlayer(hector);
-    
-    boardGame.getPlayers();
-    
-    Tile startTile = board.getTileId(0);
-    tri.setCurrentTile(startTile);
-    kristian.setCurrentTile(startTile);
-    bjornAdam.setCurrentTile(startTile);
-    hector.setCurrentTile(startTile);
-    
+    */
+
     //Spill
     boardGame.play();
     

@@ -15,7 +15,6 @@ import com.ntnu.idatt.model.Tile;
 public class Player {
   
   private final String name;
-  private final BoardGame game;
   private Tile currentTile;
   private int position;
   
@@ -27,7 +26,6 @@ public class Player {
    */
   public Player(String name, BoardGame game) {
     this.name = name;
-    this.game = game;
     this.position = 0;
     this.currentTile = game.getBoard().getTileId(0);
   }

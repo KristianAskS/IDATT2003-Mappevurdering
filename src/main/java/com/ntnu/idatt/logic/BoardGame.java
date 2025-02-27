@@ -6,6 +6,7 @@ import com.ntnu.idatt.entity.Player;
 import com.ntnu.idatt.model.Tile;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * The type Board game.
@@ -71,6 +72,7 @@ public class BoardGame {
   
   /**
    * Play.
+   * Burde del logikk i mindre hjelpemetoder
    */
   public void play() {
     int round = 1;
@@ -81,10 +83,15 @@ public class BoardGame {
       
       for (Player player : players) {
         currentPlayer = player;
-        int roll = dice.roll(); //Triller terning
         
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Player " + player.getName() + " turn. Press enter to roll the dice");
+        scanner.nextLine();
+        
+        int roll = dice.roll(); //Triller terning
         System.out.println("Player " + player.getName() + " rolled " + roll);
         
+        System.out.println("Press enter to move player " + player.getName());
         currentPlayer.move(roll); //Flytter spiller basert på antall øyne
         
         System.out.println("Player " + player.getName() + " on tile " + player.getPosition());
