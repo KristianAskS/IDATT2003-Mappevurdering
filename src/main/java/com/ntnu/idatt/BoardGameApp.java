@@ -5,10 +5,10 @@ import com.ntnu.idatt.logic.BoardGame;
 import com.ntnu.idatt.model.Board;
 import com.ntnu.idatt.model.Tile;
 import com.ntnu.idatt.utils.PlayerCsvFileHandler;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -24,6 +24,11 @@ import java.util.logging.Logger;
  */
 public class BoardGameApp {
 
+  /**
+   * Main method for the board game application
+   *
+   * @param args
+   */
   public static void main(String[] args) {
     //Opprett nytt spill
     BoardGame boardGame = new BoardGame();
@@ -50,14 +55,15 @@ public class BoardGameApp {
 
     PlayerCsvFileHandler playerCsvFileHandler = new PlayerCsvFileHandler();
 
+    //Global file path
+    String filePath = "/com/ntnu/idatt/utils/players.csv";
+
     Logger logger = Logger.getLogger(BoardGameApp.class.getName());
 
     System.out.println("Do you want to load players from the csv file? (yes/no)");
     String choice = scanner.nextLine().trim();
 
     if (choice.equalsIgnoreCase("yes")) {
-      System.out.println("Enter the path to the csv file: ");
-      String filePath = scanner.nextLine().trim();
       try {
         List<Player> players = playerCsvFileHandler.readPlayersFromCsv(filePath);
         for (Player player : players) {
@@ -65,11 +71,12 @@ public class BoardGameApp {
           Tile startTile = board.getTileId(0);
           player.setCurrentTile(startTile);
         }
-
-        logger.info("Players loaded: " + players + " from the file: " + filePath + " .Size:" +
-            players.size());
+        logger.log(logger.getLevel(), "Players loaded: " + players + " from the file: " + filePath +
+            " .Size:" + players.size());
+        logger.log(Level.FINE, "Players loaded: " + players + " from the file: " + filePath +
+            " .Size:" + players.size());
       } catch (IOException e) {
-        logger.warning("Errror reading from the file: " + e.getMessage());
+        logger.log(Level.SEVERE, "Error reading from the file: " + e.getMessage());
       }
     } else {
       int numberOfPlayers = 0;
@@ -77,7 +84,7 @@ public class BoardGameApp {
         System.out.println("Enter the number of players: ");
 
         if (!scanner.hasNextInt()) {
-          throw new IllegalArgumentException("Please enter a number type.");
+          throw new IllegalArgumentException("Please enter a integer");
         }
 
         numberOfPlayers = scanner.nextInt();
@@ -91,7 +98,7 @@ public class BoardGameApp {
           throw new IllegalArgumentException("Please enter a number less than 5");
         }
       } catch (IllegalArgumentException e) {
-        System.out.println("error: " + e.getMessage());
+        logger.log(Level.SEVERE, e.getMessage());
         System.exit(1);
       }
       for (int i = 0; i < numberOfPlayers; i++) {
@@ -113,20 +120,17 @@ public class BoardGameApp {
 
     //Vinner
     Player winner = boardGame.getWinner();
-    System.out.println("The winner is: " + winner.getName());
+    logger.log(Level.INFO, "The winner is: " + winner.getName());
 
     System.out.println("Do you want to save players to the csv file? (yes/no)");
     String choiceSave = scanner.nextLine().trim();
 
     if (choiceSave.equalsIgnoreCase("yes")) {
-      System.out.println("Enter the path to the csv file: ");
-      String filePath = scanner.nextLine().trim();
       try {
         playerCsvFileHandler.writePlayersToCsv(boardGame.getPlayers(), filePath);
-        logger.info(
-            "Players saved to the file: " + filePath + " .Size:" + boardGame.getPlayers().size());
+        logger.log(Level.INFO, "Players saved to the file: " + filePath);
       } catch (IOException e) {
-        logger.warning("Error writing to the file: " + e.getMessage());
+        logger.log(Level.SEVERE, "Error writing to the file: " + e.getMessage());
       }
     }
   }

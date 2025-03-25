@@ -16,12 +16,10 @@ import java.util.logging.Logger;
  */
 public class Player {
   private final String name;
+  Logger logger = Logger.getLogger(Player.class.getName());
   private Tile currentTile;
   private int position;
   private String token;
-
-  Logger logger = Logger.getLogger(Player.class.getName());
-
 
 
   /**
@@ -72,19 +70,21 @@ public class Player {
   }
 
   /**
-   * Gets current tile.
-   * @param token the token
-   */
-  public void setToken(String token) {
-    this.token = token;
-  }
-
-  /**
    * Gets token.
+   *
    * @return the token
    */
   public String getToken() {
     return token;
+  }
+
+  /**
+   * Gets current tile.
+   *
+   * @param token the token
+   */
+  public void setToken(String token) {
+    this.token = token;
   }
 
   /**

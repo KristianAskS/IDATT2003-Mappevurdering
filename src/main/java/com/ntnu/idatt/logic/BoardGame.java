@@ -4,7 +4,6 @@ import com.ntnu.idatt.entity.Player;
 import com.ntnu.idatt.model.Board;
 import com.ntnu.idatt.model.Dice;
 import com.ntnu.idatt.model.Tile;
-import com.ntnu.idatt.utils.PlayerCsvFileHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -16,11 +15,20 @@ import java.util.logging.Logger;
  */
 public class BoardGame {
 
-  private final List<Player> players = new ArrayList<>();
   private static Board board;
+  private final List<Player> players = new ArrayList<>();
+  Logger logger = Logger.getLogger(BoardGame.class.getName());
   private Player currentPlayer;
   private Dice dice;
-  Logger logger = Logger.getLogger(BoardGame.class.getName());
+
+  /**
+   * Gets board.
+   *
+   * @return the board
+   */
+  public static Board getBoard() {
+    return board;
+  }
 
   /**
    * Add player.
@@ -121,16 +129,6 @@ public class BoardGame {
       }
     }
     return null;
-  }
-
-
-  /**
-   * Gets board.
-   *
-   * @return the board
-   */
-  public static Board getBoard() {
-    return board;
   }
 
   /**
