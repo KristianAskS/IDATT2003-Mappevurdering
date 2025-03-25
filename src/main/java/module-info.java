@@ -1,6 +1,5 @@
 module com.ntnu.idatt {
   requires javafx.controls;
-  requires javafx.fxml;
   requires javafx.web;
 
   requires org.controlsfx.controls;
@@ -10,6 +9,5 @@ module com.ntnu.idatt {
   requires eu.hansolo.tilesfx;
   requires com.almasb.fxgl.all;
 
-  opens com.ntnu.idatt to javafx.fxml;
   exports com.ntnu.idatt;
 }
