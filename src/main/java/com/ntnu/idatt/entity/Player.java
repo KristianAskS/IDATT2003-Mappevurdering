@@ -13,21 +13,21 @@ import com.ntnu.idatt.model.Tile;
  * The type Player.
  */
 public class Player {
-
   private final String name;
   private Tile currentTile;
   private int position;
+  private String token;
+
 
   /**
    * Instantiates a new Player that always starts at tile 0.
    *
    * @param name the name
-   * @param game the game
    */
-  public Player(String name, BoardGame game) {
+  public Player(String name) {
     this.name = name;
     this.position = 0;
-    this.currentTile = game.getBoard().getTileId(0);
+    this.currentTile = BoardGame.getBoard().getTileId(0);
   }
 
   /**
@@ -64,6 +64,22 @@ public class Player {
    */
   public void setCurrentTile(Tile currentTile) {
     this.currentTile = currentTile;
+  }
+
+  /**
+   * Gets current tile.
+   * @param token the token
+   */
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  /**
+   * Gets token.
+   * @return the token
+   */
+  public String getToken() {
+    return token;
   }
 
   /**

@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class BoardGame {
 
   private final List<Player> players = new ArrayList<>();
-  private Board board;
+  private static Board board;
   private Player currentPlayer;
   private Dice dice;
 
@@ -124,7 +124,7 @@ public class BoardGame {
    *
    * @return the board
    */
-  public Board getBoard() {
+  public static Board getBoard() {
     return board;
   }
 

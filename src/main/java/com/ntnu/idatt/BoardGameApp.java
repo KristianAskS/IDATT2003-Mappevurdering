@@ -68,7 +68,7 @@ public class BoardGameApp {
     for (int i = 0; i < numberOfPlayers; i++) {
       System.out.println("Enter the name of player " + (i + 1) + ": ");
       String playerName = scanner.next();
-      Player player = new Player(playerName, boardGame);
+      Player player = new Player(playerName);
       boardGame.addPlayer(player);
 
       Tile startTile = board.getTileId(0);
