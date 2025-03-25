@@ -4,9 +4,12 @@ import com.ntnu.idatt.entity.Player;
 import com.ntnu.idatt.model.Board;
 import com.ntnu.idatt.model.Dice;
 import com.ntnu.idatt.model.Tile;
+import com.ntnu.idatt.utils.PlayerCsvFileHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The type Board game.
@@ -17,6 +20,7 @@ public class BoardGame {
   private static Board board;
   private Player currentPlayer;
   private Dice dice;
+  Logger logger = Logger.getLogger(BoardGame.class.getName());
 
   /**
    * Add player.
@@ -30,15 +34,16 @@ public class BoardGame {
   /**
    * For del 1 i mappevurderingen UNNGÅ Å BRUK sysout
    */
-  public void getPlayers() {
+  public List<Player> getPlayers() {
     if (players.isEmpty()) {
       throw new IllegalStateException("No players found");
     }
 
     System.out.println("The players are:");
     for (Player player : players) {
-      System.out.println(player.getName());
+      logger.log(Level.INFO, player.getName());
     }
+    return players;
   }
 
   /**

@@ -4,6 +4,8 @@ import com.ntnu.idatt.entity.Player;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class for handling CSV-files containing players
@@ -12,6 +14,8 @@ import java.util.List;
  * @author Trile
  */
 public class PlayerCsvFileHandler {
+
+  Logger logger = Logger.getLogger(PlayerCsvFileHandler.class.getName());
   /**
    *
    * @param players List over players
@@ -24,6 +28,7 @@ public class PlayerCsvFileHandler {
         String writeLine = player.getName() + "," + player.getToken();
         bufferedWriter.write(writeLine);
         bufferedWriter.newLine();
+        logger.log(Level.INFO,"Player: " + player.getName() + " has been written to the file");
       }
     }
   }
@@ -40,11 +45,13 @@ public class PlayerCsvFileHandler {
       String line;
       while((line = bufferedReader.readLine()) != null){
         String[] playerData = line.split(",");
-        if (playerData.length == 2){
-          String name = playerData[0];
-          String token = playerData[1];
+        if (playerData.length >= 1){
+          String name = playerData[0].trim();
           Player player = new Player(name);
-          player.setToken(token);
+          if (playerData.length == 2){
+            String token = playerData[1].trim();
+            player.setToken(token);
+          }
           players.add(player);
         }
       }

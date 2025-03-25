@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import com.ntnu.idatt.logic.BoardGame;
 import com.ntnu.idatt.model.Tile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The type Player.
@@ -17,6 +19,9 @@ public class Player {
   private Tile currentTile;
   private int position;
   private String token;
+
+  Logger logger = Logger.getLogger(Player.class.getName());
+
 
 
   /**
@@ -101,7 +106,7 @@ public class Player {
    * @param steps the steps
    */
   public void move(int steps) {
-    System.out.println("Player " + name + " moves " + steps + " steps");
+    logger.log(Level.INFO, "Player " + name + " moves " + steps + " steps");
     Tile tile = currentTile;
 
     for (int i = 0; i < steps; i++) {
@@ -110,7 +115,8 @@ public class Player {
         placeOnTile(tile);
         this.position = tile.getTileId();
       } else {
-        System.out.println("Player " + name + " has reached the end of the board");
+        logger
+            .log(Level.INFO, "Player " + name + " has reached the end of the board");
         break;
       }
     }
