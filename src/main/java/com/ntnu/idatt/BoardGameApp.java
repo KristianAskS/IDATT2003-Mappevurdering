@@ -23,6 +23,7 @@ import java.util.logging.Logger;
  * @since 2025-02-27
  */
 public class BoardGameApp {
+  private static final String filePath = "/com/ntnu/idatt/players.csv";
 
   /**
    * Main method for the board game application
@@ -54,9 +55,6 @@ public class BoardGameApp {
     Scanner scanner = new Scanner(System.in);
 
     PlayerCsvFileHandler playerCsvFileHandler = new PlayerCsvFileHandler();
-
-    //Global file path
-    String filePath = "/com/ntnu/idatt/utils/players.csv";
 
     Logger logger = Logger.getLogger(BoardGameApp.class.getName());
 

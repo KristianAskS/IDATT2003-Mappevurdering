@@ -1,3 +1,5 @@
+.env
+
 ### Java template
 # Compiled class file
 *.class
@@ -36,3 +38,5 @@ replay_pid*
 # Target dir
 target/
 
+!/.env
+!/.env
