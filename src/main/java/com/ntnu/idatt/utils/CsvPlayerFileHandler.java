@@ -20,19 +20,19 @@ import java.util.logging.Logger;
  * @version 1.0
  * @since 1.0
  */
-public class PlayerCsvFileHandler {
+public class CsvPlayerFileHandler implements PlayerFileHandler {
 
-  Logger logger = Logger.getLogger(PlayerCsvFileHandler.class.getName());
+  Logger logger = Logger.getLogger(CsvPlayerFileHandler.class.getName());
 
   /**
    * @param players  List over players
    * @param filePath the path to the CSV-file
    * @throws IOException if writing to the file fails
    */
-  public void writePlayersToCsv(List<Player> players, String filePath) throws IOException {
-    //String filePath = "/com/ntnu/idatt/utils/players.csv";
+  @Override
+  public void writePlayers(List<Player> players, String filePath) throws IOException {
+    //String filePath = "/com/ntnu/idatt/players.csv";
     InputStream inputStream = getClass().getResourceAsStream(filePath);
-
     if (inputStream == null) {
       throw new FileNotFoundException("File not found: " + filePath);
     }
@@ -53,8 +53,9 @@ public class PlayerCsvFileHandler {
    * @return a list of players objects
    * @throws IOException if reading from the file fails
    */
-  public List<Player> readPlayersFromCsv(String filePath) throws IOException {
-    //String filepath = "/com/ntnu/idatt/utils/players.csv";
+  @Override
+  public List<Player> readPlayers(String filePath) throws IOException {
+    //String filepath = "/com/ntnu/idatt/players.csv";
     InputStream inputStream = getClass().getResourceAsStream(filePath);
 
     if (inputStream == null) {

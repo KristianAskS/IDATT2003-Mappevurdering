@@ -4,7 +4,7 @@ import com.ntnu.idatt.entity.Player;
 import com.ntnu.idatt.logic.BoardGame;
 import com.ntnu.idatt.model.Board;
 import com.ntnu.idatt.model.Tile;
-import com.ntnu.idatt.utils.PlayerCsvFileHandler;
+import com.ntnu.idatt.utils.CsvPlayerFileHandler;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
@@ -54,7 +54,7 @@ public class BoardGameApp {
 
     Scanner scanner = new Scanner(System.in);
 
-    PlayerCsvFileHandler playerCsvFileHandler = new PlayerCsvFileHandler();
+    CsvPlayerFileHandler playerCsvFileHandler = new CsvPlayerFileHandler();
 
     Logger logger = Logger.getLogger(BoardGameApp.class.getName());
 
@@ -63,7 +63,7 @@ public class BoardGameApp {
 
     if (choice.equalsIgnoreCase("yes")) {
       try {
-        List<Player> players = playerCsvFileHandler.readPlayersFromCsv(filePath);
+        List<Player> players = playerCsvFileHandler.readPlayers(filePath);
         for (Player player : players) {
           boardGame.addPlayer(player);
           Tile startTile = board.getTileId(0);
@@ -125,7 +125,7 @@ public class BoardGameApp {
 
     if (choiceSave.equalsIgnoreCase("yes")) {
       try {
-        playerCsvFileHandler.writePlayersToCsv(boardGame.getPlayers(), filePath);
+        playerCsvFileHandler.writePlayers(boardGame.getPlayers(), filePath);
         logger.log(Level.INFO, "Players saved to the file: " + filePath);
       } catch (IOException e) {
         logger.log(Level.SEVERE, "Error writing to the file: " + e.getMessage());
