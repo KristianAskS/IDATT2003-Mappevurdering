@@ -7,16 +7,28 @@ import com.ntnu.idatt.model.Tile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The type Board game.
  */
 public class BoardGame {
 
+  private static Board board;
   private final List<Player> players = new ArrayList<>();
-  private Board board;
+  Logger logger = Logger.getLogger(BoardGame.class.getName());
   private Player currentPlayer;
   private Dice dice;
+
+  /**
+   * Gets board.
+   *
+   * @return the board
+   */
+  public static Board getBoard() {
+    return board;
+  }
 
   /**
    * Add player.
@@ -30,15 +42,16 @@ public class BoardGame {
   /**
    * For del 1 i mappevurderingen UNNGÅ Å BRUK sysout
    */
-  public void getPlayers() {
+  public List<Player> getPlayers() {
     if (players.isEmpty()) {
       throw new IllegalStateException("No players found");
     }
 
     System.out.println("The players are:");
     for (Player player : players) {
-      System.out.println(player.getName());
+      logger.log(Level.INFO, player.getName());
     }
+    return players;
   }
 
   /**
@@ -116,16 +129,6 @@ public class BoardGame {
       }
     }
     return null;
-  }
-
-
-  /**
-   * Gets board.
-   *
-   * @return the board
-   */
-  public Board getBoard() {
-    return board;
   }
 
   /**
