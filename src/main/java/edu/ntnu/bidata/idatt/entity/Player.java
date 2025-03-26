@@ -99,7 +99,7 @@ public class Player {
   }
 
   /**
-   * Move. ikke bruk system.out.println, er placeholder for logger
+   * Move.
    *
    * @param steps the steps
    */

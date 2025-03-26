@@ -20,6 +20,7 @@ public class BoardGame {
   private Board board;
   private Player currentPlayer;
   private Dice dice;
+  private final List <BoardGameObserver> observers  = new ArrayList<>();
 
   /**
    * Gets board.
@@ -34,11 +35,6 @@ public class BoardGame {
     this.board = board;
   }
 
-  /**
-   * Add player.
-   *
-   * @param player the player
-   */
   public void addPlayer(Player player) {
     players.add(player);
   }
@@ -51,44 +47,21 @@ public class BoardGame {
       throw new IllegalStateException("No players found");
     }
 
-    System.out.println("The players are:");
+    logger.log(Level.INFO, "Players in the game:");
     for (Player player : players) {
       logger.log(Level.INFO, player.getName());
     }
     return players;
   }
 
-  /**
-   * Create board.
-   *
-   * @param numbOfTiles the number of tiles
-   */
-  public void createBoard(int numbOfTiles) {
-    board = new Board();
-
-    //Legger tiles
-    for (int i = 0; i < numbOfTiles; i++) {
-      Tile tile = new Tile(i);
-      board.addTile(tile);
-    }
-  }
-
   public int getNumbOfTiles() {
     return board.getTiles().size();
   }
 
-  /**
-   * Create dice.
-   *
-   * @param numbOfDice the number of dice
-   */
   public void createDice(int numbOfDice) {
     dice = new Dice(numbOfDice);
   }
 
-  /**
-   * Play. Burde del logikk i mindre hjelpemetoder
-   */
   public void play() {
     int round = 1;
     Player winner = null;
@@ -121,11 +94,6 @@ public class BoardGame {
     }
   }
 
-  /**
-   * Gets winner.
-   *
-   * @return the winner
-   */
   public Player getWinner() {
     for (Player player : players) {
       if (player.getPosition() >= getNumbOfTiles() - 1) {
@@ -135,21 +103,31 @@ public class BoardGame {
     return null;
   }
 
-  /**
-   * Gets dice.
-   *
-   * @return the dice
-   */
   public Dice getDice() {
     return dice;
   }
 
-  /**
-   * Gets current player.
-   *
-   * @return the current player
-   */
   public Player getCurrentPlayer() {
     return currentPlayer;
+  }
+
+  public void addObserver(BoardGameObserver observer) {
+    observers.add(observer);
+  }
+
+  public void removeObserver(BoardGameObserver observer) {
+    observers.remove(observer);
+  }
+
+  private void notifyObservers(Player player, Tile oldTile, Tile newTile) {
+    for (BoardGameObserver observer : observers) {
+      observer.onPlayerMoved(player, oldTile, newTile);
+    }
+  }
+
+  private void notifyGameFinished(Player player) {
+    for (BoardGameObserver observer : observers) {
+      observer.onGameFinished(player);
+    }
   }
 }

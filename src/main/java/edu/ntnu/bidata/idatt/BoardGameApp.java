@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.BoardGame;
+import edu.ntnu.bidata.idatt.logic.BoardGameFactory;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.service.BoardService;
@@ -19,6 +20,7 @@ public class BoardGameApp {
   private static final Scanner scanner = new Scanner(System.in);
   private static final PlayerService playerService = new PlayerService();
   private static final Logger logger = Logger.getLogger(BoardGameApp.class.getName());
+  private static final BoardGameFactory boardGameFactory = new BoardGameFactory();
 
   public static void main(String[] args) {
     System.out.println("Do you want to generate a new board and save it to JSON? (yes/no)");
@@ -54,8 +56,7 @@ public class BoardGameApp {
     }
 
     if (board == null) {
-      boardGame.createBoard(90);
-      board = boardGame.getBoard();
+      board = BoardGameFactory.createClassicBoard();
     } else {
       boardGame.setBoard(board);
     }
