@@ -42,9 +42,7 @@ public class BoardGameApp {
     System.out.println("Do you want to load the board configuration from JSON? (yes/no)");
     String choiceBoardJson = scanner.nextLine().trim();
 
-    BoardGame boardGame = new BoardGame();
     Board board = null;
-
     if (choiceBoardJson.equalsIgnoreCase("yes")) {
       BoardService boardService = new BoardService();
       try {
@@ -57,10 +55,10 @@ public class BoardGameApp {
 
     if (board == null) {
       board = BoardGameFactory.createClassicBoard();
-    } else {
-      boardGame.setBoard(board);
     }
 
+    BoardGame boardGame = new BoardGame();
+    boardGame.setBoard(board);
     boardGame.createDice(3);
 
     for (int i = 1; i <= 90; i++) {
