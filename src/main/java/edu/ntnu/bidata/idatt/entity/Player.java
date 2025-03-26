@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.entity;
+package edu.ntnu.bidata.idatt.entity;
 
 /*
 import org.slf4j.Logger;
@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
  */
 
 
-import edu.ntnu.iir.bidata.logic.BoardGame;
-import edu.ntnu.iir.bidata.model.Tile;
+import edu.ntnu.bidata.idatt.logic.BoardGame;
+import edu.ntnu.bidata.idatt.model.Tile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -1,6 +1,6 @@
-package edu.ntnu.iir.bidata.utils;
+package edu.ntnu.bidata.idatt.utils;
 
-import edu.ntnu.iir.bidata.entity.Player;
+import edu.ntnu.bidata.idatt.entity.Player;
 import java.io.IOException;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.entity;
+package edu.ntnu.bidata.idatt.entity;
 
 import java.util.Random;
 

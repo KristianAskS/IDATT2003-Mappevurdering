@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata;
+package edu.ntnu.bidata.idatt;
 
 import javafx.application.Application;
 import javafx.stage.Stage;

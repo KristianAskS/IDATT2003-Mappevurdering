@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.model;
+package edu.ntnu.bidata.idatt.model;
 
 import org.junit.jupiter.api.Test;
 

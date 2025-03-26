@@ -1,9 +1,9 @@
-package edu.ntnu.iir.bidata.logic;
+package edu.ntnu.bidata.idatt.logic;
 
-import edu.ntnu.iir.bidata.entity.Player;
-import edu.ntnu.iir.bidata.model.Board;
-import edu.ntnu.iir.bidata.model.Dice;
-import edu.ntnu.iir.bidata.model.Tile;
+import edu.ntnu.bidata.idatt.entity.Player;
+import edu.ntnu.bidata.idatt.model.Board;
+import edu.ntnu.bidata.idatt.model.Dice;
+import edu.ntnu.bidata.idatt.model.Tile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;

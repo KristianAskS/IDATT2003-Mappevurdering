@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.utils;
+package edu.ntnu.bidata.idatt.utils;
 
 public class InputValidation {
 

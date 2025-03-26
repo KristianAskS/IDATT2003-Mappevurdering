@@ -1,6 +1,6 @@
-package edu.ntnu.iir.bidata.utils;
+package edu.ntnu.bidata.idatt.utils;
 
-import edu.ntnu.iir.bidata.entity.Player;
+import edu.ntnu.bidata.idatt.entity.Player;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,11 +32,6 @@ public class CsvPlayerFileHandler implements PlayerFileHandler {
    */
   @Override
   public void writePlayers(List<Player> players, String filePath) throws IOException {
-    //String filePath = "/com/ntnu/idatt/players.csv";
-    InputStream inputStream = getClass().getResourceAsStream(filePath);
-    if (inputStream == null) {
-      throw new FileNotFoundException("File not found: " + filePath);
-    }
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
         String writeLine = player.getName() + "," + player.getToken();
@@ -55,13 +51,6 @@ public class CsvPlayerFileHandler implements PlayerFileHandler {
    */
   @Override
   public List<Player> readPlayers(String filePath) throws IOException {
-    //String filepath = "/com/ntnu/idatt/players.csv";
-    InputStream inputStream = getClass().getResourceAsStream(filePath);
-
-    if (inputStream == null) {
-      throw new FileNotFoundException("File not found: " + filePath);
-    }
-
     List<Player> players = new ArrayList<>();
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
       String line;

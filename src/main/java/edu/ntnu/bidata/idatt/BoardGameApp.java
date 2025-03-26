@@ -1,10 +1,11 @@
-package edu.ntnu.iir.bidata;
+package edu.ntnu.bidata.idatt;
 
-import edu.ntnu.iir.bidata.entity.Player;
-import edu.ntnu.iir.bidata.logic.BoardGame;
-import edu.ntnu.iir.bidata.model.Board;
-import edu.ntnu.iir.bidata.model.Tile;
-import edu.ntnu.iir.bidata.service.PlayerService;
+import edu.ntnu.bidata.idatt.entity.Player;
+import edu.ntnu.bidata.idatt.logic.BoardGame;
+import edu.ntnu.bidata.idatt.model.Board;
+import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.service.BoardService;
+import edu.ntnu.bidata.idatt.service.PlayerService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
@@ -23,29 +24,45 @@ import java.util.logging.Logger;
  * @since 2025-02-27
  */
 public class BoardGameApp {
-  private static final String filePath = "/edu/ntnu/iir/bidata/players.csv";
+  private static final String filePathPlayers = "/data/players.csv";
+  private static final String filePathLaddersAndSnakes = "/data/games/laddersAndSnakes.json";
   private static final Scanner scanner = new Scanner(System.in);
   private static final PlayerService playerService = new PlayerService();
   private static final Logger logger = Logger.getLogger(BoardGameApp.class.getName());
+
   /**
    * Main method for the board game application
    *
-   * @param args
+   * @param args the input arguments
    */
   public static void main(String[] args) {
-    //Opprett nytt spill
-    BoardGame boardGame = new BoardGame();
+    System.out.println("Do you want to load the board configuration from a JSON file? (yes/no)");
+    String choiceBoardJson = scanner.nextLine().trim();
 
-    //antall ruter
+    BoardGame boardGame = new BoardGame();
     int numberOfTiles = 90;
+    Board board = null;
+
+    if (choiceBoardJson.equalsIgnoreCase("yes")) {
+      BoardService boardService = new BoardService();
+      try {
+        board = boardService.readBoardFromFile(filePathLaddersAndSnakes);
+        logger.log(Level.INFO, "Board loaded from the file: " + filePathLaddersAndSnakes);
+      } catch (IOException e) {
+        logger.log(Level.SEVERE, "Error reading from the file: " + e.getMessage());
+      }
+    }
+
+    if(board == null){
+      boardGame.createBoard(numberOfTiles);
+      board = BoardGame.getBoard();
+    }
+
     boardGame.createBoard(numberOfTiles);
 
-    //antall terninger
     int numberOfDice = 3;
     boardGame.createDice(numberOfDice);
 
-    //koble sammen feltene
-    Board board = boardGame.getBoard();
     for (int i = 0; i < numberOfTiles; i++) {
       Tile currentTile = board.getTileId(i);
       Tile nextTile = board.getTileId(i + 1);
@@ -59,15 +76,15 @@ public class BoardGameApp {
 
     if (choice.equalsIgnoreCase("yes")) {
       try {
-        List<Player> players = playerService.readPlayersFromFile(filePath);
+        List<Player> players = playerService.readPlayersFromFile(filePathPlayers);
         for (Player player : players) {
           boardGame.addPlayer(player);
           Tile startTile = board.getTileId(0);
           player.setCurrentTile(startTile);
         }
-        logger.log(logger.getLevel(), "Players loaded: " + players + " from the file: " + filePath +
+        logger.log(logger.getLevel(), "Players loaded: " + players + " from the file: " + filePathPlayers +
             " .Size:" + players.size());
-        logger.log(Level.FINE, "Players loaded: " + players + " from the file: " + filePath +
+        logger.log(Level.FINE, "Players loaded: " + players + " from the file: " + filePathPlayers +
             " .Size:" + players.size());
       } catch (IOException e) {
         logger.log(Level.SEVERE, "Error reading from the file: " + e.getMessage());
@@ -108,11 +125,8 @@ public class BoardGameApp {
 
 
     boardGame.getPlayers();
-
-    //Spill
     boardGame.play();
 
-    //Vinner
     Player winner = boardGame.getWinner();
     logger.log(Level.INFO, "The winner is: " + winner.getName());
 
@@ -121,8 +135,8 @@ public class BoardGameApp {
 
     if (choiceSave.equalsIgnoreCase("yes")) {
       try {
-        playerService.writePlayersToFile(filePath);
-        logger.log(Level.INFO, "Players saved to the file: " + filePath);
+        playerService.writePlayersToFile(filePathPlayers);
+        logger.log(Level.INFO, "Players saved to the file: " + filePathPlayers);
       } catch (IOException e) {
         logger.log(Level.SEVERE, "Error writing to the file: " + e.getMessage());
       }

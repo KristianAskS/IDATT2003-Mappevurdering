@@ -1,10 +1,11 @@
-package edu.ntnu.iir.bidata.utils;
+package edu.ntnu.bidata.idatt.utils;
 
+import edu.ntnu.bidata.idatt.model.Board;
 import java.io.IOException;
-import edu.ntnu.iir.bidata.model.Board;
 import java.nio.file.Path;
 
 public interface BoardFileHandler {
-  Board readBoard(Path filePath) throws IOException;
-  void writeBoard(Board board, Path filePath) throws IOException;
+  Board readBoard(String filePath) throws IOException;
+
+  void writeBoard(Board board, String filePath) throws IOException;
 }
