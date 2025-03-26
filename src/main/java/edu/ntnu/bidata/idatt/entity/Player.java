@@ -30,7 +30,6 @@ public class Player {
   public Player(String name) {
     this.name = name;
     this.position = 0;
-    this.currentTile = BoardGame.getBoard().getTileId(0);
   }
 
   /**

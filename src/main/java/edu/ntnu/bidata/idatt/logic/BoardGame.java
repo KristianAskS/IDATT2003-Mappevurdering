@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class BoardGame {
 
-  private static Board board;
+  private Board board;
   private final List<Player> players = new ArrayList<>();
   Logger logger = Logger.getLogger(BoardGame.class.getName());
   private Player currentPlayer;
@@ -26,8 +26,12 @@ public class BoardGame {
    *
    * @return the board
    */
-  public static Board getBoard() {
+  public Board getBoard() {
     return board;
+  }
+
+  public void setBoard(Board board) {
+    this.board = board;
   }
 
   /**
