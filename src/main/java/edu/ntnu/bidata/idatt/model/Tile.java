@@ -16,7 +16,8 @@ public class Tile {
   /**
    * Instantiates a new Tile.
    */
-  public Tile(){}
+  public Tile() {
+  }
 
   /**
    * Instantiates a new Tile.
@@ -85,6 +86,7 @@ public class Tile {
   public int getTileId() {
     return tileId;
   }
+
   public void setTileId(int tileId) {
     this.tileId = tileId;
   }
@@ -92,6 +94,7 @@ public class Tile {
   public int getNextTileId() {
     return nextTileId;
   }
+
   public void setNextTileId(int nextTileId) {
     this.nextTileId = nextTileId;
   }

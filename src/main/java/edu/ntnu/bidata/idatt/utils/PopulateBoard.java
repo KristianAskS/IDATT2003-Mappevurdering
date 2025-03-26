@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 /**
  * Populate board.
+ *
  * @author Trile
  */
 public class PopulateBoard {

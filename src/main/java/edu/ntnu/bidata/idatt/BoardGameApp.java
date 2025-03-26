@@ -7,7 +7,6 @@ import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.service.BoardService;
 import edu.ntnu.bidata.idatt.service.PlayerService;
 import edu.ntnu.bidata.idatt.utils.PopulateBoard;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
@@ -57,7 +56,7 @@ public class BoardGameApp {
     if (board == null) {
       boardGame.createBoard(90);
       board = boardGame.getBoard();
-    }else{
+    } else {
       boardGame.setBoard(board);
     }
 

@@ -4,7 +4,6 @@ import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.utils.BoardFileHandler;
 import edu.ntnu.bidata.idatt.utils.GsonBoardFileHandler;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BoardService {
@@ -14,6 +13,7 @@ public class BoardService {
 
   /**
    * Reads a board from the specified file.
+   *
    * @param filePath the path to the JSON file containing the board configuration
    * @return the loaded Board object
    * @throws IOException if reading from the file fails
@@ -25,6 +25,7 @@ public class BoardService {
 
   /**
    * Writes the current board configuration to the specified file.
+   *
    * @param filePath the path to the JSON file where the board should be saved
    * @throws IOException if writing to the file fails
    */
@@ -36,18 +37,20 @@ public class BoardService {
   }
 
   /**
-   * Sets the board to be used by the service.
-   * @param board the board to be used
-   */
-  public void setBoard(Board board) {
-    this.board = board;
-  }
-
-  /**
    * Gets the board used by the service.
+   *
    * @return the board used by the service
    */
   public Board getBoard() {
     return board;
+  }
+
+  /**
+   * Sets the board to be used by the service.
+   *
+   * @param board the board to be used
+   */
+  public void setBoard(Board board) {
+    this.board = board;
   }
 }

@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
  */
 
 
-import edu.ntnu.bidata.idatt.logic.BoardGame;
 import edu.ntnu.bidata.idatt.model.Tile;
 import java.util.logging.Level;
 import java.util.logging.Logger;

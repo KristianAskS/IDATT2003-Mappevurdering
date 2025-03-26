@@ -2,7 +2,6 @@ package edu.ntnu.bidata.idatt.utils;
 
 import edu.ntnu.bidata.idatt.model.Board;
 import java.io.IOException;
-import java.nio.file.Path;
 
 public interface BoardFileHandler {
   Board readBoard(String filePath) throws IOException;

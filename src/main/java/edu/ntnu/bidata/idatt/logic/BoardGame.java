@@ -15,9 +15,9 @@ import java.util.logging.Logger;
  */
 public class BoardGame {
 
-  private Board board;
   private final List<Player> players = new ArrayList<>();
   Logger logger = Logger.getLogger(BoardGame.class.getName());
+  private Board board;
   private Player currentPlayer;
   private Dice dice;
 

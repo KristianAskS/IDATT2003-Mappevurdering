@@ -5,19 +5,15 @@ import com.google.gson.GsonBuilder;
 import edu.ntnu.bidata.idatt.model.Board;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GsonBoardFileHandler implements BoardFileHandler {
   Logger logger = Logger.getLogger(GsonBoardFileHandler.class.getName());
+
   @Override
   public void writeBoard(Board board, String filePath) throws IOException {
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
@@ -28,6 +24,7 @@ public class GsonBoardFileHandler implements BoardFileHandler {
       gson.toJson(board, bufferedWriter);
     }
   }
+
   @Override
   public Board readBoard(String filePath) throws IOException {
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
