@@ -23,11 +23,10 @@ public class BoardGame {
   private Player currentPlayer;
   private Dice dice;
 
-  /**
-   * Gets board.
-   *
-   * @return the board
-   */
+  public BoardGame() {
+    this.board = new Board();
+  }
+
   public Board getBoard() {
     return board;
   }
@@ -77,7 +76,7 @@ public class BoardGame {
         System.out.println("Player " + player.getName() + " turn. Press enter to roll the dice");
         scanner.nextLine();
 
-        int roll = dice.roll(); //Triller terning
+        int roll = dice.roll();
         System.out.println("Player " + player.getName() + " rolled " + roll);
 
         System.out.println("Press enter to move player " + player.getName());

@@ -1,42 +1,35 @@
 package edu.ntnu.bidata.idatt.view;
 
+import edu.ntnu.bidata.idatt.MainApplication;
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.BoardGame;
 import edu.ntnu.bidata.idatt.logic.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.Tile;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 public class BoardGameGUI implements BoardGameObserver {
-  private final BorderPane rootPane;
-  private final Pane boardPane;
-  private final Label statusLabel;
-  private BoardGame boardGame;
-
+  private final BoardGame boardGame;
+  private final BorderPane rootPane = new BorderPane();
+  Label statusLabel;
+  Scene scene = new Scene(rootPane, 800, 600);
 
   public BoardGameGUI() {
-    this.rootPane = new BorderPane();
-    this.boardPane = new BorderPane();
-    this.statusLabel = new Label("Welcome to the board game!!!!!!!");
-
-    boardGame.addObserver(this);
-
-    Button moveButton = new Button("Move Player");
-    moveButton.setOnAction(e -> {
-      handleMovePlayer();
-    });
-    rootPane.setTop(moveButton);
-    rootPane.setCenter(boardPane);
-    rootPane.setBottom(statusLabel);
-    drawBoard();
+    this.boardGame = new BoardGame();
+    statusLabel = new Label("Welcome to the board game!");
   }
 
   public BorderPane getRootPane() {
     return rootPane;
   }
 
+  public Scene getScene() {
+    return scene;
+  }
   private void drawBoard() {
 
   }
