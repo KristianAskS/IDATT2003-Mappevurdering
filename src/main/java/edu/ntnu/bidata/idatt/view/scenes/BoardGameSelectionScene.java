@@ -18,15 +18,15 @@ public class BoardGameSelectionScene {
     Button toLandingSceneBtn = new Button("Back to landing scene");
     rootPane.setCenter(selectPlayerBtn);
     rootPane.setBottom(toLandingSceneBtn);
-    selectPlayerBtn.setOnAction(e->{
+    selectPlayerBtn.setOnAction(e -> {
       SceneManager.showPlayerSelectionScene();
     });
-    toLandingSceneBtn.setOnAction(e->{
+    toLandingSceneBtn.setOnAction(e -> {
       SceneManager.showLandingScene();
     });
   }
 
-  public Scene getScene(){
+  public Scene getScene() {
     return scene;
   }
 }

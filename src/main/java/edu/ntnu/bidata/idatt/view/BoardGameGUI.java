@@ -1,80 +1,139 @@
 package edu.ntnu.bidata.idatt.view;
 
-import edu.ntnu.bidata.idatt.MainApplication;
 import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.logic.BoardGame;
+import edu.ntnu.bidata.idatt.logic.BoardGameFactory;
 import edu.ntnu.bidata.idatt.logic.BoardGameObserver;
-import edu.ntnu.bidata.idatt.logic.ConsoleBoardGameObserver;
+import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-import javafx.scene.Parent;
+import java.util.Objects;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
+import javafx.scene.text.FontWeight;
 
 public class BoardGameGUI implements BoardGameObserver {
-  private static final Logger logger = Logger.getLogger(BoardGameGUI.class.getName());
-  private final BoardGame boardGame;
-  private final Label statusLabel;
   private final Scene scene;
+  private final Label statusLabel = new Label();
 
   public BoardGameGUI() {
-    this.boardGame = new BoardGame();
-    boardGame.addObserver(this);
-
     BorderPane rootPane = new BorderPane();
-    scene = new Scene(rootPane, 800, 600);
-    Button toLandingSceneBtn = new Button("Back to landing scene");
-    Button toBoardGameSelectionSceneBtn = new Button("Back");
-    rootPane.setBottom(toLandingSceneBtn);
-    rootPane.setTop(toBoardGameSelectionSceneBtn);
+    rootPane.setStyle("-fx-background-color: #600E50;");
+    rootPane.setLeft(createOutputPanel());
 
-    rootPane.setCenter(createBoard());
-    statusLabel = new Label("Welcome to the game!");
-    rootPane.setCenter(statusLabel);
-    drawBoard();
-  }
-  private GridPane createBoard(){
-    GridPane board = new GridPane();
-    board.setPrefSize(800, 600);
-    for (int i = 0; i < boardGame.getNumbOfTiles(); i++) {
-      for (int j = 0; j < boardGame.getNumbOfTiles(); j++) {
-
-        Tile tile = new Tile(j);
-        board.add(new StackPane(tile), j, i);
-      }
-    }
-    return board;
+    Board board = BoardGameFactory.createClassicBoard();
+    GridPane boardPane = BoardGameFactory.createBoardGUI(board);
+    rootPane.setCenter(boardPane);
+    scene = new Scene(rootPane, 1000, 700);
   }
 
   public Scene getScene() {
     return scene;
   }
-  private void drawBoard() {
 
-  }
+  private VBox createOutputPanel() {
+    VBox container = new VBox();
+    container.setPrefWidth(250);
+    container.setPadding(new Insets(30));
+    container.setSpacing(15);
+    container.setAlignment(Pos.TOP_CENTER);
+    container.setStyle(
+        "-fx-background-color: #7DBED7;"
+            + "-fx-background-radius: 0 40 40 0;"
+            + "-fx-border-radius: 0 40 40 0;"
+            + "-fx-border-color: black;"
+            + "-fx-border-width: 1;"
+    );
 
-  private void handleMovePlayer() {
-    Player currentPlayer = boardGame.getCurrentPlayer();
-    if (currentPlayer == null) {
-      statusLabel.setText("No player found");
-      return;
-    }
-    Tile oldTile = null;//get old tile
-    //move after throwing dice
-    Tile newTile = null;//get new tile
-    //notify observers
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setRadius(10.0);
+    dropShadow.setOffsetX(10.0);
+    dropShadow.setOffsetY(10.0);
+    dropShadow.setColor(Color.color(0, 0, 0, 0.3));
+    container.setEffect(dropShadow);
 
-    statusLabel.setText(currentPlayer.getName() + " moved to tile " + newTile.getTileId());
+    Label pressToRoll = new Label("Press to Roll");
+    pressToRoll.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    pressToRoll.setWrapText(true);
+    container.getChildren().addAll(pressToRoll);
+
+    ImageView imageViewDice = new ImageView(new Image(Objects.requireNonNull(
+        getClass().getResourceAsStream("/edu/ntnu/bidata/idatt/dicePlaceholder.png"))));
+    imageViewDice.setFitHeight(100);
+    imageViewDice.setFitWidth(100);
+    container.getChildren().add(imageViewDice);
+
+    Label rollResult = new Label("Roll result:");
+    rollResult.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    container.getChildren().addAll(rollResult);
+
+    ImageView imageViewResult = new ImageView(new Image(Objects.requireNonNull(
+        getClass().getResourceAsStream("/edu/ntnu/bidata/idatt/rollResultPlaceholder.png"))));
+    imageViewResult.setFitHeight(100);
+    imageViewResult.setFitWidth(100);
+    container.getChildren().add(imageViewResult);
+
+    Label outputLabel = new Label("Output");
+    outputLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    outputLabel.setTextFill(Color.BLACK);
+    container.getChildren().add(outputLabel);
+
+    VBox outputArea = new VBox();
+    outputArea.setSpacing(5);
+    outputArea.setPadding(new Insets(10));
+    outputArea.setStyle(
+        "-fx-background-color: #2B2B2B;"
+            + "-fx-background-radius: 10;"
+            + "-fx-border-radius: 10;"
+            + "-fx-border-color: black;"
+            + "-fx-border-width: 1;"
+            + "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);"
+            + "-fx-padding: 10 20 150 20;"
+    );
+
+    Label roundLabel = new Label("Round number 1");
+    roundLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    roundLabel.setTextFill(Color.WHITE);
+    outputArea.getChildren().add(roundLabel);
+
+    Label example1 = new Label("Player1 on tile 12");
+    example1.setFont(Font.font("monospace", FontWeight.BOLD, 12));
+    example1.setTextFill(Color.WHITE);
+    outputArea.getChildren().add(example1);
+
+    Label example2 = new Label("Player2 moves to tile 18");
+    example2.setFont(Font.font("monospace", FontWeight.BOLD, 12));
+    example2.setTextFill(Color.WHITE);
+    outputArea.getChildren().add(example2);
+
+    container.getChildren().add(outputArea);
+
+    Region spacer = new Region();
+    VBox.setVgrow(spacer, Priority.ALWAYS);
+    container.getChildren().add(spacer);
+
+    Button leaderboardBtn = new Button("Show Leaderboard");
+    leaderboardBtn.setStyle(
+        "-fx-background-color: #7DBED7;"
+            + "-fx-border-color: black;"
+            + "-fx-border-width: 2;"
+            + "-fx-border-radius: 10;"
+            + "-fx-background-radius: 10;"
+    );
+    container.getChildren().add(leaderboardBtn);
+
+    return container;
   }
 
   @Override

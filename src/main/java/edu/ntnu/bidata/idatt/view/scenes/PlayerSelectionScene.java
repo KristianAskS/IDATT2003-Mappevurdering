@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private final Scene scene;
+
   public PlayerSelectionScene() {
     BorderPane rootPane = new BorderPane();
     scene = new Scene(rootPane, 800, 600);
@@ -20,18 +21,18 @@ public class PlayerSelectionScene {
     rootPane.setBottom(toLandingSceneBtn);
     rootPane.setTop(toBoardGameSelectionSceneBtn);
 
-    toGameSceneBtn.setOnAction(e->{
+    toGameSceneBtn.setOnAction(e -> {
       SceneManager.showGameScene();
     });
-    toLandingSceneBtn.setOnAction(e->{
+    toLandingSceneBtn.setOnAction(e -> {
       SceneManager.showLandingScene();
     });
-    toBoardGameSelectionSceneBtn.setOnAction(e->{
+    toBoardGameSelectionSceneBtn.setOnAction(e -> {
       SceneManager.showBoardGameSelectionScene();
     });
   }
 
-  public Scene getScene(){
+  public Scene getScene() {
     return scene;
   }
 }
