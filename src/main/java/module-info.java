@@ -1,4 +1,4 @@
-module com.ntnu.idatt {
+module edu.ntnu.bidata.idatt {
   requires javafx.controls;
   requires com.google.gson;
   requires java.logging;

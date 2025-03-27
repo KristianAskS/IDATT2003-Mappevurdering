@@ -11,7 +11,7 @@ public class LandingScene {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private final Scene scene;
 
-  public LandingScene(SceneManager sceneManager) {
+  public LandingScene() {
     BorderPane rootPane = new BorderPane();
     scene = new Scene(rootPane, 800, 600);
     Button playBtn = new Button("Press to play!");

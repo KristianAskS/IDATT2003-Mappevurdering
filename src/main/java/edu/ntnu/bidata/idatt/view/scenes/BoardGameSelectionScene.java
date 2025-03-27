@@ -11,7 +11,7 @@ public class BoardGameSelectionScene {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private final Scene scene;
 
-  public BoardGameSelectionScene(SceneManager sceneManager) {
+  public BoardGameSelectionScene() {
     BorderPane rootPane = new BorderPane();
     scene = new Scene(rootPane, 800, 600);
     Button selectPlayerBtn = new Button("Select players");

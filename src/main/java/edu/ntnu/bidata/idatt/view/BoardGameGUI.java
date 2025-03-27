@@ -4,37 +4,56 @@ import edu.ntnu.bidata.idatt.MainApplication;
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.BoardGame;
 import edu.ntnu.bidata.idatt.logic.BoardGameObserver;
+import edu.ntnu.bidata.idatt.logic.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.model.Tile;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class BoardGameGUI implements BoardGameObserver {
+  private static final Logger logger = Logger.getLogger(BoardGameGUI.class.getName());
   private final BoardGame boardGame;
-  private final BorderPane rootPane = new BorderPane();
-  Label statusLabel;
-  Scene scene = new Scene(rootPane, 800, 600);;
+  private final Label statusLabel;
+  private final Scene scene;
 
   public BoardGameGUI() {
     this.boardGame = new BoardGame();
-    statusLabel = new Label("Welcome to the game!");
-    rootPane.setTop(statusLabel);
     boardGame.addObserver(this);
-    Button exitBtn = new Button("Exit");
-    Button toLandingSceneBtn = new Button("Back to landing scene");
-    toLandingSceneBtn.setOnAction(e->{
-      SceneManager.showLandingScene();
-    });
-    exitBtn.setOnAction(e->{
-      System.exit(0);
-    });
-  }
 
-  public BorderPane getRootPane() {
-    return rootPane;
+    BorderPane rootPane = new BorderPane();
+    scene = new Scene(rootPane, 800, 600);
+    Button toLandingSceneBtn = new Button("Back to landing scene");
+    Button toBoardGameSelectionSceneBtn = new Button("Back");
+    rootPane.setBottom(toLandingSceneBtn);
+    rootPane.setTop(toBoardGameSelectionSceneBtn);
+
+    rootPane.setCenter(createBoard());
+    statusLabel = new Label("Welcome to the game!");
+    rootPane.setCenter(statusLabel);
+    drawBoard();
+  }
+  private GridPane createBoard(){
+    GridPane board = new GridPane();
+    board.setPrefSize(800, 600);
+    for (int i = 0; i < boardGame.getNumbOfTiles(); i++) {
+      for (int j = 0; j < boardGame.getNumbOfTiles(); j++) {
+
+        Tile tile = new Tile(j);
+        board.add(new StackPane(tile), j, i);
+      }
+    }
+    return board;
   }
 
   public Scene getScene() {

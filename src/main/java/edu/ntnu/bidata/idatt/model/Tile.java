@@ -2,91 +2,65 @@ package edu.ntnu.bidata.idatt.model;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.action.TileAction;
+import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 /**
  * The type Tile.
  */
 public class Tile extends StackPane {
-
   private int tileId;
   private int nextTileId;
   private Tile nextTile;
   private TileAction landAction;
-
   private double x;
   private double y;
 
-  /**
-   * Instantiates a new Tile.
-   */
   public Tile() {
   }
 
-  /**
-   * Instantiates a new Tile.
-   *
-   * @param tileId the tile id
-   */
   public Tile(int tileId) {
     this.tileId = tileId;
     this.nextTileId = -1;
+    Rectangle rectangle = new Rectangle(40, 40);
+    rectangle.setFill(null);
+    rectangle.setStroke(Color.BLACK);
+    Text numb = new Text(String.valueOf(tileId));
+    numb.setFont(Font.font(20));
+
+    setAlignment(Pos.CENTER);
+    getChildren().addAll(rectangle, numb);
   }
 
   public TileAction getLandAction() {
     return landAction;
   }
 
-  /**
-   * Sets land action.
-   *
-   * @param landAction the land action
-   */
   public void setLandAction(TileAction landAction) {
     this.landAction = landAction;
   }
 
-  /**
-   * Land player.
-   *
-   * @param player the player
-   */
+
   public void landPlayer(Player player) {
 
   }
 
-  /**
-   * Leave player.
-   *
-   * @param player the player
-   */
   public void leavePlayer(Player player) {
 
   }
 
-  /**
-   * Gets next tile.
-   *
-   * @return the next tile
-   */
   public Tile getNextTile() {
     return nextTile;
   }
 
-  /**
-   * Sets next tile.
-   *
-   * @param nextTile the next tile
-   */
   public void setNextTile(Tile nextTile) {
     this.nextTile = nextTile;
   }
 
-  /**
-   * Gets tile id.
-   *
-   * @return the tile id
-   */
   public int getTileId() {
     return tileId;
   }

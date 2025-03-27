@@ -10,10 +10,8 @@ import javafx.scene.layout.BorderPane;
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private final Scene scene;
-  private final BorderPane rootPane;
-
-  public PlayerSelectionScene(SceneManager sceneManager) {
-    rootPane = new BorderPane();
+  public PlayerSelectionScene() {
+    BorderPane rootPane = new BorderPane();
     scene = new Scene(rootPane, 800, 600);
     Button toGameSceneBtn = new Button("To game scene (play)");
     Button toLandingSceneBtn = new Button("Back to landing scene");
@@ -21,6 +19,7 @@ public class PlayerSelectionScene {
     rootPane.setCenter(toGameSceneBtn);
     rootPane.setBottom(toLandingSceneBtn);
     rootPane.setTop(toBoardGameSelectionSceneBtn);
+
     toGameSceneBtn.setOnAction(e->{
       SceneManager.showGameScene();
     });
