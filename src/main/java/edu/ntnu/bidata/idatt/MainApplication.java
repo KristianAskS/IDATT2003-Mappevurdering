@@ -17,7 +17,8 @@ public class MainApplication extends Application {
   }
 
   @Override
-  public void start(Stage primaryStage) throws Exception {
+  public void start(Stage primaryStage) {
+    new SceneManager(primaryStage);
     SceneManager.showLandingScene();
     primaryStage.setTitle("Board Games");
     primaryStage.show();
