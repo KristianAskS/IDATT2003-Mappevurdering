@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 /**
  * The type Board game.
+ * A facade class that represents the board game.
  */
 public class BoardGame {
 

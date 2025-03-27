@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt;
+package edu.ntnu.bidata.idatt.view;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.BoardGame;
@@ -14,6 +14,9 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * TUI.
+ */
 public class BoardGameApp {
   private static final String filePathPlayers = "data/players.csv";
   private static final String filePathLaddersAndSnakes = "data/games/laddersAndSnakes.json";
