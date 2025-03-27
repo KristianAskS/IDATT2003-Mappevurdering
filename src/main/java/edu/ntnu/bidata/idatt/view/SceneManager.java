@@ -5,8 +5,6 @@ import edu.ntnu.bidata.idatt.view.scenes.GameScene;
 import edu.ntnu.bidata.idatt.view.scenes.LandingScene;
 import edu.ntnu.bidata.idatt.view.scenes.PlayerSelectionScene;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class SceneManager {
@@ -18,9 +16,9 @@ public class SceneManager {
 
   public SceneManager(Stage primaryStage){
     SceneManager.primaryStage = primaryStage;
-    landingScene = new LandingScene(this).getScene();
-    boardGameSelectionScene = new BoardGameSelectionScene(this).getScene();
-    playerSelectionScene = new PlayerSelectionScene(this).getScene();
+    landingScene = new LandingScene().getScene();
+    boardGameSelectionScene = new BoardGameSelectionScene().getScene();
+    playerSelectionScene = new PlayerSelectionScene().getScene();
     gameScene = new GameScene().getScene();
   }
 
