@@ -14,7 +14,7 @@ public class LadderAction implements TileAction {
 
   @Override
   public void perform(Player player) {
-
+    player.move(destinationTileld);
   }
 
   public int getDestinationTileld() {

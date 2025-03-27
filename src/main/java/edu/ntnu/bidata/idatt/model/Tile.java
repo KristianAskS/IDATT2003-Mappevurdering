@@ -2,11 +2,12 @@ package edu.ntnu.bidata.idatt.model;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.action.TileAction;
+import javafx.scene.layout.StackPane;
 
 /**
  * The type Tile.
  */
-public class Tile {
+public class Tile extends StackPane {
 
   private int tileId;
   private int nextTileId;
