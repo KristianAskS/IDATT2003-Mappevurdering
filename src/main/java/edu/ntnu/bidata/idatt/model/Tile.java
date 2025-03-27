@@ -2,7 +2,9 @@ package edu.ntnu.bidata.idatt.model;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.action.TileAction;
+import java.util.Stack;
 import javafx.geometry.Pos;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -26,13 +28,24 @@ public class Tile extends StackPane {
   public Tile(int tileId) {
     this.tileId = tileId;
     this.nextTileId = -1;
-    Rectangle rectangle = new Rectangle(40, 40);
+    Rectangle rectangle = new Rectangle(70, 70);
+
     rectangle.setFill(null);
     rectangle.setStroke(Color.BLACK);
-    Text numb = new Text(String.valueOf(tileId));
-    numb.setFont(Font.font(20));
 
-    setAlignment(Pos.CENTER);
+    Text numb = new Text(String.valueOf(tileId));
+    numb.setFont(Font.font(10));
+
+    StackPane.setAlignment(numb, Pos.BOTTOM_RIGHT);
+    StackPane.setMargin(numb, new javafx.geometry.Insets(0, 5, 5, 0));
+
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setRadius(10.0);
+    dropShadow.setOffsetX(10.0);
+    dropShadow.setOffsetY(10.0);
+    dropShadow.setColor(Color.color(0, 0, 0.6, 0.9));
+    rectangle.setEffect(dropShadow);
+
     getChildren().addAll(rectangle, numb);
   }
 

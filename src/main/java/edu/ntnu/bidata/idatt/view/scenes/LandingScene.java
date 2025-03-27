@@ -18,15 +18,15 @@ public class LandingScene {
     Button exitBtn = new Button("Exit");
     rootPane.setBottom(exitBtn);
     rootPane.setCenter(playBtn);
-    playBtn.setOnAction(e->{
+    playBtn.setOnAction(e -> {
       SceneManager.showBoardGameSelectionScene();
     });
-    exitBtn.setOnAction(e->{
+    exitBtn.setOnAction(e -> {
       System.exit(0);
     });
   }
 
-  public Scene getScene(){
+  public Scene getScene() {
     return scene;
   }
 }
