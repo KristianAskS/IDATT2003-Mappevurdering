@@ -1,48 +1,42 @@
 package edu.ntnu.bidata.idatt.view;
 
+import edu.ntnu.bidata.idatt.view.scenes.BoardGameSelectionScene;
+import edu.ntnu.bidata.idatt.view.scenes.GameScene;
+import edu.ntnu.bidata.idatt.view.scenes.LandingScene;
+import edu.ntnu.bidata.idatt.view.scenes.PlayerSelectionScene;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class SceneManager {
-  private Stage primaryStage;
-  private Scene landingScene;
-  private Scene boardGameSelectionScene;
-  private Scene playerSelectionScene;
-  private Scene gameScene;
+  private static Stage primaryStage;
+  private static Scene landingScene;
+  private static Scene boardGameSelectionScene;
+  private static  Scene playerSelectionScene;
+  private static Scene gameScene;
 
   public SceneManager(Stage primaryStage){
-    this.primaryStage = primaryStage;
-    initializeScenes();
-  }
-  public void initializeScenes(){
-    BorderPane landingRoot = new BorderPane();
-    Button playBtn = new Button("Press to play!");
-    landingRoot.setCenter(playBtn);
-    landingScene = new Scene(landingRoot, 800, 600);
-
-    BorderPane gameSelectionRoot = new BorderPane();
-    Button toPlayerSelectionBtn = new Button("Select Board Game");
-    gameSelectionRoot.setCenter(toPlayerSelectionBtn);
-    boardGameSelectionScene = new Scene(gameSelectionRoot, 800, 600);
-
-    BorderPane playerSelectionRoot = new BorderPane();
-    Button toGameBtn = new Button("Select Players and Tokens");
-    playerSelectionRoot.setCenter(toGameBtn);
-    playerSelectionScene = new Scene(playerSelectionRoot, 800, 600);
-
-    BoardGameGUI boardGameGUI = new BoardGameGUI();
-    gameScene = boardGameGUI.getScene();
-
-    playBtn.setOnAction(e -> primaryStage.setScene(boardGameSelectionScene));
-    toPlayerSelectionBtn.setOnAction(e -> primaryStage.setScene(playerSelectionScene));
-    toGameBtn.setOnAction(e -> primaryStage.setScene(gameScene));
+    SceneManager.primaryStage = primaryStage;
+    landingScene = new LandingScene(this).getScene();
+    boardGameSelectionScene = new BoardGameSelectionScene(this).getScene();
+    playerSelectionScene = new PlayerSelectionScene(this).getScene();
+    gameScene = new GameScene().getScene();
   }
 
-  public void showLandingScene(){
+  public static void showLandingScene(){
     primaryStage.setScene(landingScene);
   }
 
+  public static void showBoardGameSelectionScene() {
+    primaryStage.setScene(boardGameSelectionScene);
+  }
 
+  public static void showPlayerSelectionScene() {
+    primaryStage.setScene(playerSelectionScene);
+  }
+
+  public static void showGameScene() {
+    primaryStage.setScene(gameScene);
+  }
 }

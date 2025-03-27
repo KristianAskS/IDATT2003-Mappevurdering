@@ -16,11 +16,21 @@ public class BoardGameGUI implements BoardGameObserver {
   private final BoardGame boardGame;
   private final BorderPane rootPane = new BorderPane();
   Label statusLabel;
-  Scene scene = new Scene(rootPane, 800, 600);
+  Scene scene = new Scene(rootPane, 800, 600);;
 
   public BoardGameGUI() {
     this.boardGame = new BoardGame();
-    statusLabel = new Label("Welcome to the board game!");
+    statusLabel = new Label("Welcome to the game!");
+    rootPane.setTop(statusLabel);
+    boardGame.addObserver(this);
+    Button exitBtn = new Button("Exit");
+    Button toLandingSceneBtn = new Button("Back to landing scene");
+    toLandingSceneBtn.setOnAction(e->{
+      SceneManager.showLandingScene();
+    });
+    exitBtn.setOnAction(e->{
+      System.exit(0);
+    });
   }
 
   public BorderPane getRootPane() {
