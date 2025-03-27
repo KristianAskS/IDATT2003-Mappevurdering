@@ -7,10 +7,12 @@ import java.util.logging.Logger;
 
 public class ConsoleBoardGameObserver implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
+
   @Override
   public void onPlayerMoved(Player player, Tile oldTile, Tile newTile) {
     logger.log(
-        Level.INFO, player.getName() + " moved from " + oldTile.getTileId() + " to " + newTile.getTileId());
+        Level.INFO,
+        player.getName() + " moved from " + oldTile.getTileId() + " to " + newTile.getTileId());
   }
 
   @Override

@@ -4,7 +4,6 @@ import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.utils.BoardFileHandler;
 import edu.ntnu.bidata.idatt.utils.GsonBoardFileHandler;
-import edu.ntnu.bidata.idatt.utils.PopulateBoard;
 import java.io.IOException;
 
 public class BoardGameFactory {

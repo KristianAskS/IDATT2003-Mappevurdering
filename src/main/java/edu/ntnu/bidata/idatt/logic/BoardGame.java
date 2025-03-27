@@ -17,11 +17,11 @@ import java.util.logging.Logger;
 public class BoardGame {
 
   private final List<Player> players = new ArrayList<>();
+  private final List<BoardGameObserver> observers = new ArrayList<>();
   Logger logger = Logger.getLogger(BoardGame.class.getName());
   private Board board;
   private Player currentPlayer;
   private Dice dice;
-  private final List <BoardGameObserver> observers  = new ArrayList<>();
 
   /**
    * Gets board.

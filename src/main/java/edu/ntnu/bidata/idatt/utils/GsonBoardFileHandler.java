@@ -33,7 +33,7 @@ public class GsonBoardFileHandler implements BoardFileHandler {
       Gson gson = new Gson();
       logger.log(Level.INFO, "Reading board from file: " + filePath);
       return gson.fromJson(bufferedReader, Board.class);
-    } catch (JsonSyntaxException error){
+    } catch (JsonSyntaxException error) {
       throw new BoardParsingException("Error parsing board from JSON file: " + filePath, error);
     }
   }

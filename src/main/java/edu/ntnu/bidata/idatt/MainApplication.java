@@ -1,6 +1,5 @@
 package edu.ntnu.bidata.idatt;
 
-import edu.ntnu.bidata.idatt.logic.BoardGame;
 import edu.ntnu.bidata.idatt.view.BoardGameGUI;
 import javafx.application.Application;
 import javafx.scene.Scene;

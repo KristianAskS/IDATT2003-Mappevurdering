@@ -21,11 +21,15 @@ public class BoardGameGUI implements BoardGameObserver {
     this.boardPane = new BorderPane();
     this.statusLabel = new Label("Welcome to the board game!!!!!!!");
 
+    boardGame.addObserver(this);
+
     Button moveButton = new Button("Move Player");
     moveButton.setOnAction(e -> {
-      handleMovePlayer()
+      handleMovePlayer();
     });
     rootPane.setTop(moveButton);
+    rootPane.setCenter(boardPane);
+    rootPane.setBottom(statusLabel);
     drawBoard();
   }
 
@@ -33,11 +37,11 @@ public class BoardGameGUI implements BoardGameObserver {
     return rootPane;
   }
 
-  private void drawBoard(){
+  private void drawBoard() {
 
   }
 
-  private void handleMovePlayer(){
+  private void handleMovePlayer() {
     Player currentPlayer = boardGame.getCurrentPlayer();
     if (currentPlayer == null) {
       statusLabel.setText("No player found");
@@ -53,7 +57,8 @@ public class BoardGameGUI implements BoardGameObserver {
 
   @Override
   public void onPlayerMoved(Player player, Tile oldTile, Tile newTile) {
-    statusLabel.setText(player.getName() + " moved from " + oldTile.getTileId() + " to " + newTile.getTileId());
+    statusLabel.setText(
+        player.getName() + " moved from " + oldTile.getTileId() + " to " + newTile.getTileId());
     //Update GUI: move a token from old tile to new tile on the boardPane
   }
 
