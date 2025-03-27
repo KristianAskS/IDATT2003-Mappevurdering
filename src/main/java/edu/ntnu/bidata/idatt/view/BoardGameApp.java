@@ -1,7 +1,8 @@
-package edu.ntnu.bidata.idatt;
+package edu.ntnu.bidata.idatt.view;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.BoardGame;
+import edu.ntnu.bidata.idatt.logic.BoardGameFactory;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.service.BoardService;
@@ -13,12 +14,16 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * TUI.
+ */
 public class BoardGameApp {
   private static final String filePathPlayers = "data/players.csv";
   private static final String filePathLaddersAndSnakes = "data/games/laddersAndSnakes.json";
   private static final Scanner scanner = new Scanner(System.in);
   private static final PlayerService playerService = new PlayerService();
   private static final Logger logger = Logger.getLogger(BoardGameApp.class.getName());
+  private static final BoardGameFactory boardGameFactory = new BoardGameFactory();
 
   public static void main(String[] args) {
     System.out.println("Do you want to generate a new board and save it to JSON? (yes/no)");
@@ -40,9 +45,7 @@ public class BoardGameApp {
     System.out.println("Do you want to load the board configuration from JSON? (yes/no)");
     String choiceBoardJson = scanner.nextLine().trim();
 
-    BoardGame boardGame = new BoardGame();
     Board board = null;
-
     if (choiceBoardJson.equalsIgnoreCase("yes")) {
       BoardService boardService = new BoardService();
       try {
@@ -54,12 +57,11 @@ public class BoardGameApp {
     }
 
     if (board == null) {
-      boardGame.createBoard(90);
-      board = boardGame.getBoard();
-    } else {
-      boardGame.setBoard(board);
+      board = BoardGameFactory.createClassicBoard();
     }
 
+    BoardGame boardGame = new BoardGame();
+    boardGame.setBoard(board);
     boardGame.createDice(3);
 
     for (int i = 1; i <= 90; i++) {

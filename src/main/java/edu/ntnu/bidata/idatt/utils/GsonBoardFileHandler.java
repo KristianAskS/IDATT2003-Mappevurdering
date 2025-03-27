@@ -2,6 +2,8 @@ package edu.ntnu.bidata.idatt.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import edu.ntnu.bidata.idatt.exceptions.BoardParsingException;
 import edu.ntnu.bidata.idatt.model.Board;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,6 +33,8 @@ public class GsonBoardFileHandler implements BoardFileHandler {
       Gson gson = new Gson();
       logger.log(Level.INFO, "Reading board from file: " + filePath);
       return gson.fromJson(bufferedReader, Board.class);
+    } catch (JsonSyntaxException error) {
+      throw new BoardParsingException("Error parsing board from JSON file: " + filePath, error);
     }
   }
 }

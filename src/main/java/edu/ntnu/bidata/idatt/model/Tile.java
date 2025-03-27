@@ -13,6 +13,9 @@ public class Tile {
   private Tile nextTile;
   private TileAction landAction;
 
+  private double x;
+  private double y;
+
   /**
    * Instantiates a new Tile.
    */
