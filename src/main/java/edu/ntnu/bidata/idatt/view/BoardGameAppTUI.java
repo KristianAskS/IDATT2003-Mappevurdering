@@ -16,12 +16,12 @@ import java.util.logging.Logger;
 /**
  * TUI.
  */
-public class BoardGameApp {
+public class BoardGameAppTUI {
   private static final String filePathPlayers = "data/players.csv";
   private static final String filePathLaddersAndSnakes = "data/games/laddersAndSnakes.json";
   private static final Scanner scanner = new Scanner(System.in);
   private static final PlayerService playerService = new PlayerService();
-  private static final Logger logger = Logger.getLogger(BoardGameApp.class.getName());
+  private static final Logger logger = Logger.getLogger(BoardGameAppTUI.class.getName());
   private static final BoardGameFactory boardGameFactory = new BoardGameFactory();
 
   public static void main(String[] args) {

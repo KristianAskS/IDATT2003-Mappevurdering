@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt.view;
+package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.model.Tile;
 import javafx.geometry.Pos;

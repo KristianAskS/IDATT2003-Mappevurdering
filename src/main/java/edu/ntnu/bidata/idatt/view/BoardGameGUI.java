@@ -2,10 +2,10 @@ package edu.ntnu.bidata.idatt.view;
 
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
-import edu.ntnu.bidata.idatt.patterns.factory.BoardGameGUIFactory;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
 import edu.ntnu.bidata.idatt.service.BoardService;
+import edu.ntnu.bidata.idatt.view.components.BoardView;
 import java.io.IOException;
 import java.util.Objects;
 import javafx.geometry.Insets;
@@ -43,7 +43,7 @@ public class BoardGameGUI implements BoardGameObserver {
     boardService.writeBoardToFile("data/games/laddersAndSnakes.json");
     //---
 
-    GridPane boardPane = BoardGameGUIFactory.createBoardGUI(board);
+    GridPane boardPane = BoardView.createBoardGUI(board);
     rootPane.setCenter(boardPane);
     scene = new Scene(rootPane, 1000, 700);
   }

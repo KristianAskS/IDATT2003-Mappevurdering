@@ -1,13 +1,12 @@
-package edu.ntnu.bidata.idatt.patterns.factory;
+package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
-import edu.ntnu.bidata.idatt.view.TileView;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 
-public class BoardGameGUIFactory {
-  private BoardGameGUIFactory() {
+public class BoardView {
+  private BoardView() {
   }
 
   public static GridPane createBoardGUI(Board board) {
