@@ -7,6 +7,26 @@ import edu.ntnu.bidata.idatt.entity.Player;
  */
 public class SomeOtherAction implements TileAction {
 
+  @Override
+  public int getDestinationTileId() {
+    return 0;
+  }
+
+  @Override
+  public void setDestinationTileId(int destinationTileId) {
+
+  }
+
+  @Override
+  public String getDescription() {
+    return "";
+  }
+
+  @Override
+  public void setDescription(String description) {
+
+  }
+
   public void perform(Player player) {
 
   }

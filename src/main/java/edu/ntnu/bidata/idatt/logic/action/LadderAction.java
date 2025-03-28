@@ -21,7 +21,22 @@ public class LadderAction implements TileAction {
     return destinationTileld;
   }
 
+  @Override
+  public int getDestinationTileId() {
+    return 0;
+  }
+
+  @Override
+  public void setDestinationTileId(int destinationTileId) {
+
+  }
+
   public String getDescription() {
     return description;
+  }
+
+  @Override
+  public void setDescription(String description) {
+
   }
 }

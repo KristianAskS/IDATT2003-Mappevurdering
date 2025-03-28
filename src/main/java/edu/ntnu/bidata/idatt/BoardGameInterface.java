@@ -16,7 +16,7 @@ public class BoardGameInterface {
     SceneManager.showLandingScene();
   }
 
-  public void start(){
+  public void start() {
     primaryStage.show();
   }
 }

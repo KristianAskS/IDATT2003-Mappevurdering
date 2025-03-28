@@ -6,4 +6,5 @@ module edu.ntnu.bidata.idatt {
   exports edu.ntnu.bidata.idatt;
   exports edu.ntnu.bidata.idatt.view;
   exports edu.ntnu.bidata.idatt.view.components;
+  exports edu.ntnu.bidata.idatt.view.scenes;
 }

@@ -2,21 +2,22 @@ package edu.ntnu.bidata.idatt.patterns.factory;
 
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
-import edu.ntnu.bidata.idatt.utils.io.BoardFileHandler;
+import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
+import java.util.List;
 
 public class BoardGameFactory {
 
-  public static Board createBoardTiles(int numbOfTiles) {
-    Board board = new Board();
+  public static Board createBoardTiles(String name, String description, int numbOfTiles) {
+    Board board = new Board(name, description);
 
     for (int i = 1; i <= numbOfTiles; i++) {
       Tile tile = new Tile(i);
       board.addTile(tile);
     }
 
-    for (int i = 1; i <= 10; i++) {
+    for (int i = 1; i <= numbOfTiles; i++) {
       Tile currentTile = board.getTileId(i);
       Tile nextTile = board.getTileId(i + 1);
       if (currentTile != null && nextTile != null) {
@@ -42,7 +43,10 @@ public class BoardGameFactory {
 
   public static Board createClassicBoard() {
     int numbOfTiles = 90;
-    Board board = createBoardTiles(numbOfTiles);
+    String name = "Classic Board";
+    String description = "Classic board with 90 tiles";
+
+    Board board = createBoardTiles(name, description, numbOfTiles);
     snakesOrLadders(board, 7, 14);
     snakesOrLadders(board, 16, 27);
     snakesOrLadders(board, 31, 42);
@@ -52,7 +56,9 @@ public class BoardGameFactory {
 
   public static Board createSmallBoard() {
     int numbOfTiles = 30;
-    Board board = createBoardTiles(numbOfTiles);
+    String name = "Small Board";
+    String description = "Small board with 30 tiles";
+    Board board = createBoardTiles(name, description, numbOfTiles);
     snakesOrLadders(board, 7, 14);
     snakesOrLadders(board, 16, 27);
     snakesOrLadders(board, 31, 42);
@@ -62,11 +68,13 @@ public class BoardGameFactory {
 
   public static Board createBoardNoLaddersAndSnakes() {
     int numbOfTiles = 90;
-    return createBoardTiles(numbOfTiles);
+    String name = "Classic Board with no actions";
+    String description = "Classic board with 90 tiles and no ladders and snakes";
+    return createBoardTiles(name, description, numbOfTiles);
   }
 
-  public static Board createBoardFromJSON(String filePath) throws IOException {
-    BoardFileHandler boardFileHandler = new GsonBoardFileHandler();
-    return boardFileHandler.readBoard(filePath);
+  public static List createBoardFromJSON(String filePath) throws IOException {
+    FileHandler<Board> boardFileHandler = new GsonBoardFileHandler();
+    return boardFileHandler.readFromFile(filePath);
   }
 }
