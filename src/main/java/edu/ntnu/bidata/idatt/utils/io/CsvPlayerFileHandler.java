@@ -36,7 +36,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
         bufferedWriter.newLine();
         logger.log(Level.INFO, "Player: " + player.getName() + " has been written to the file");
       }
-    }catch (IOException e) {
+    } catch (IOException e) {
       logger.log(Level.SEVERE, "Error writing to the file: " + e.getMessage());
     }
   }
@@ -65,7 +65,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
           players.add(player);
         }
       }
-    }catch (IOException e) {
+    } catch (IOException e) {
       logger.log(Level.SEVERE, "Error reading from the file: " + e.getMessage());
     }
     return players;
