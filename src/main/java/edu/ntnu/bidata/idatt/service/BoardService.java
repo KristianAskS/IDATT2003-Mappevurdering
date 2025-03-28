@@ -10,9 +10,9 @@ import java.util.logging.Logger;
 
 public class BoardService {
   private static final Logger logger = Logger.getLogger(BoardService.class.getName());
+  private final FileHandler<Board> boardFileHandler = new GsonBoardFileHandler();
   private Board board;
   private List<Board> boards;
-  private final FileHandler<Board> boardFileHandler = new GsonBoardFileHandler();
 
   /**
    * Reads a board from the specified file.
@@ -48,7 +48,7 @@ public class BoardService {
 
   public List<Board> getBoards() {
     if (boards == null) {
-      boards=new ArrayList<>();
+      boards = new ArrayList<>();
     }
     return boards;
   } // TODO: Remove <Board>

@@ -1,7 +1,5 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
-import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.model.Board;
 import java.io.IOException;
 import java.util.List;
 

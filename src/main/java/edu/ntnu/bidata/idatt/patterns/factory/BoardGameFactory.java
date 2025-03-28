@@ -3,14 +3,13 @@ package edu.ntnu.bidata.idatt.patterns.factory;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
-import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
 import java.util.List;
 
 public class BoardGameFactory {
 
-  public static Board createBoardTiles(String name ,String description, int numbOfTiles) {
+  public static Board createBoardTiles(String name, String description, int numbOfTiles) {
     Board board = new Board(name, description);
 
     for (int i = 1; i <= numbOfTiles; i++) {

@@ -26,13 +26,13 @@ public class LadderAction implements TileAction {
     return 0;
   }
 
-  public String getDescription() {
-    return description;
-  }
-
   @Override
   public void setDestinationTileId(int destinationTileId) {
 
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   @Override

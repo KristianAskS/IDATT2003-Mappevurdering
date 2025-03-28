@@ -13,13 +13,13 @@ public class SomeOtherAction implements TileAction {
   }
 
   @Override
-  public String getDescription() {
-    return "";
+  public void setDestinationTileId(int destinationTileId) {
+
   }
 
   @Override
-  public void setDestinationTileId(int destinationTileId) {
-
+  public String getDescription() {
+    return "";
   }
 
   @Override

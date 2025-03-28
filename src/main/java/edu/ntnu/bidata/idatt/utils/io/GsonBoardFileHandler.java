@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 public class GsonBoardFileHandler implements FileHandler<Board> {
   Logger logger = Logger.getLogger(GsonBoardFileHandler.class.getName());
+
   @Override
   public void writeToFile(List<Board> boards, String filePath) throws IOException {
     if (boards == null || boards.isEmpty() || filePath == null || filePath.isBlank()) {
@@ -45,7 +46,7 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
       StringBuilder stringBuilder = new StringBuilder();
       String line;
-      while((line = bufferedReader.readLine()) != null) {
+      while ((line = bufferedReader.readLine()) != null) {
         stringBuilder.append(line);
       }
       String jsonString = stringBuilder.toString();
@@ -65,11 +66,11 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
     board.getTiles().forEach((tileId, tile) -> {
       JsonObject tileJson = new JsonObject();
       tileJson.addProperty("tileId", tile.getTileId());
-      if(tile.getNextTile() != null){
+      if (tile.getNextTile() != null) {
         tileJson.addProperty("nextTileId", tile.getNextTileId());
       }
 
-      if(tile.getLandAction() != null){
+      if (tile.getLandAction() != null) {
         tileJson.addProperty("landAction", tile.getLandAction().getClass().getName());
         tileJson.addProperty("destination tile", tile.getLandAction().getDestinationTileId());
         tileJson.addProperty("description", tile.getLandAction().getDescription());
@@ -86,7 +87,7 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
 
   public Board deserializeJsonToBoard(String jsonString) {
     JsonElement jsonElement = JsonParser.parseString(jsonString);
-    if (jsonElement == null || !jsonElement.isJsonObject()){
+    if (jsonElement == null || !jsonElement.isJsonObject()) {
       return null;
     }
     JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -99,7 +100,7 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
       Tile tile = new Tile(tileId);
       board.addTile(tile);
     }
-    for (JsonElement tileJson : jsonArray){
+    for (JsonElement tileJson : jsonArray) {
       JsonObject tileJsonObject = tileJson.getAsJsonObject();
       int tileId = tileJsonObject.get("tileId").getAsInt();
       Tile tile = board.getTileId(tileId);

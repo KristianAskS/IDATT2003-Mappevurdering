@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 
 /**
  * Main class for running the application
+ *
  * @author Tri Le
  * @author Kristian Ask
  * @version 2.0

@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt.view;
+package edu.ntnu.bidata.idatt.view.scenes;
 
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
@@ -6,6 +6,7 @@ import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
 import edu.ntnu.bidata.idatt.service.BoardService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
+import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +44,7 @@ public class BoardGameGUI implements BoardGameObserver {
     Board board = BoardGameFactory.createClassicBoard();
     boards.add(board);
     boardService.setBoard(board);
-    boardService.writeBoardToFile(boards,"data/games/laddersAndSnakes.json");
+    boardService.writeBoardToFile(boards, "data/games/laddersAndSnakes.json");
     //midlertidig ----
 
     GridPane boardPane = BoardView.createBoardGUI(board);
@@ -136,15 +137,8 @@ public class BoardGameGUI implements BoardGameObserver {
     VBox.setVgrow(spacer, Priority.ALWAYS);
     container.getChildren().add(spacer);
 
-    Button leaderboardBtn = new Button("Show Leaderboard");
-    leaderboardBtn.setStyle(
-        "-fx-background-color: #7DBED7;"
-            + "-fx-border-color: black;"
-            + "-fx-border-width: 2;"
-            + "-fx-border-radius: 10;"
-            + "-fx-background-radius: 10;"
-    );
-    container.getChildren().add(leaderboardBtn);
+    Button backBtn = Buttons.getBackBtn("Back");
+    container.getChildren().add(backBtn);
 
     return container;
   }
