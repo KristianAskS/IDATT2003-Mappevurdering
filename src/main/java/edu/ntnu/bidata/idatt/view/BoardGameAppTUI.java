@@ -32,9 +32,11 @@ public class BoardGameAppTUI {
       Board newBoard = BoardGameFactory.createClassicBoard();
 
       BoardService boardService = new BoardService();
-      boardService.setBoard(newBoard);
+      boardService.getBoards().add(newBoard);
+      List<Board> boards = boardService.getBoards();
+      boards.add(newBoard);
       try {
-        boardService.writeBoardToFile(filePathLaddersAndSnakes);
+        boardService.writeBoardToFile(boards, filePathLaddersAndSnakes);
         logger.log(Level.INFO, "New board generated and saved to: " + filePathLaddersAndSnakes);
       } catch (IOException e) {
         logger.log(Level.SEVERE, "Error writing new board to JSON: " + e.getMessage());
@@ -48,7 +50,7 @@ public class BoardGameAppTUI {
     if (choiceBoardJson.equalsIgnoreCase("yes")) {
       BoardService boardService = new BoardService();
       try {
-        board = boardService.readBoardFromFile(filePathLaddersAndSnakes);
+        board = (Board) boardService.readBoardFromFile(filePathLaddersAndSnakes);
         logger.log(Level.INFO, "Board loaded from: " + filePathLaddersAndSnakes);
       } catch (IOException e) {
         logger.log(Level.SEVERE, "Error reading from the file: " + e.getMessage());

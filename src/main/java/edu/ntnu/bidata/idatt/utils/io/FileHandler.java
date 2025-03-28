@@ -1,25 +1,24 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
 import edu.ntnu.bidata.idatt.entity.Player;
+import edu.ntnu.bidata.idatt.model.Board;
 import java.io.IOException;
 import java.util.List;
 
 /*
- * Interface for handling player files
- * @version 1.0
+ * Interface for handling reading and writing from/to files
+ * @version 1.3
  * @since 1.0
- * @see CsvPlayerFileHandler
  * @author Trile
  */
-public interface PlayerFileHandler {
+public interface FileHandler<T> {
   /**
    * Writes a list of players objects to a file
    *
-   * @param players  a list of players objects
    * @param filePath the path to the file
    * @throws IOException if writing to the file fails
    */
-  void writePlayers(List<Player> players, String filePath) throws IOException;
+  void writeToFile(List<T> element, String filePath) throws IOException;
 
   /**
    * Reads a list of players objects from a file
@@ -28,5 +27,5 @@ public interface PlayerFileHandler {
    * @return a list of players objects
    * @throws IOException if reading from the file fails
    */
-  List<Player> readPlayers(String filePath) throws IOException;
+  List<T> readFromFile(String filePath) throws IOException;
 }

@@ -4,6 +4,13 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+/**
+ * Main class for running the application
+ * @author Tri Le
+ * @author Kristian Ask
+ * @version 2.0
+ * @since 2.0
+ */
 public class MainApplication extends Application {
 
   public static void main(String[] args) {

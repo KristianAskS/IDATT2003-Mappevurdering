@@ -1,15 +1,18 @@
 package edu.ntnu.bidata.idatt.service;
 
 import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.utils.io.BoardFileHandler;
+import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class BoardService {
   private static final Logger logger = Logger.getLogger(BoardService.class.getName());
   private Board board;
-  private final BoardFileHandler boardFileHandler = new GsonBoardFileHandler();
+  private List<Board> boards;
+  private final FileHandler<Board> boardFileHandler = new GsonBoardFileHandler();
 
   /**
    * Reads a board from the specified file.
@@ -18,9 +21,8 @@ public class BoardService {
    * @return the loaded Board object
    * @throws IOException if reading from the file fails
    */
-  public Board readBoardFromFile(String filePath) throws IOException {
-    board = boardFileHandler.readBoard(filePath);
-    return board;
+  public List<Board> readBoardFromFile(String filePath) throws IOException {
+    return boardFileHandler.readFromFile(filePath);
   }
 
   /**
@@ -29,28 +31,25 @@ public class BoardService {
    * @param filePath the path to the JSON file where the board should be saved
    * @throws IOException if writing to the file fails
    */
-  public void writeBoardToFile(String filePath) throws IOException {
-    if (board == null) {
+  public void writeBoardToFile(List<Board> boards, String filePath) throws IOException {
+    if (boards.isEmpty()) {
       throw new IllegalStateException("No board to write");
     }
-    boardFileHandler.writeBoard(board, filePath);
+    boardFileHandler.writeToFile(boards, filePath);
   }
 
-  /**
-   * Gets the board used by the service.
-   *
-   * @return the board used by the service
-   */
   public Board getBoard() {
     return board;
   }
 
-  /**
-   * Sets the board to be used by the service.
-   *
-   * @param board the board to be used
-   */
   public void setBoard(Board board) {
     this.board = board;
   }
+
+  public List<Board> getBoards() {
+    if (boards == null) {
+      boards=new ArrayList<>();
+    }
+    return boards;
+  } // TODO: Remove <Board>
 }

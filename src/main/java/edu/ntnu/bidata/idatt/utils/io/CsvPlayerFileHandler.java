@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @version 1.0
  * @since 1.0
  */
-public class CsvPlayerFileHandler implements PlayerFileHandler {
+public class CsvPlayerFileHandler implements FileHandler<Player> {
 
   Logger logger = Logger.getLogger(CsvPlayerFileHandler.class.getName());
 
@@ -28,7 +28,7 @@ public class CsvPlayerFileHandler implements PlayerFileHandler {
    * @throws IOException if writing to the file fails
    */
   @Override
-  public void writePlayers(List<Player> players, String filePath) throws IOException {
+  public void writeToFile(List<Player> players, String filePath) throws IOException {
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
         String writeLine = player.getName() + "," + player.getToken();
@@ -47,7 +47,7 @@ public class CsvPlayerFileHandler implements PlayerFileHandler {
    * @throws IOException if reading from the file fails
    */
   @Override
-  public List<Player> readPlayers(String filePath) throws IOException {
+  public List<Player> readFromFile(String filePath) throws IOException {
     List<Player> players = new ArrayList<>();
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
       String line;

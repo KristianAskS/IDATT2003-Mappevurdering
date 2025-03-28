@@ -7,6 +7,7 @@ import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
 import edu.ntnu.bidata.idatt.service.BoardService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -34,13 +35,16 @@ public class BoardGameGUI implements BoardGameObserver {
     rootPane.setStyle("-fx-background-color: #600E50;");
     rootPane.setLeft(createIOContainer());
 
+    //nødvendige instanser
     BoardService boardService = new BoardService();
+    List<Board> boards = boardService.getBoards();
 
-    //midlertidig
+    //midlertidig ----
     Board board = BoardGameFactory.createClassicBoard();
+    boards.add(board);
     boardService.setBoard(board);
-    boardService.writeBoardToFile("data/games/laddersAndSnakes.json");
-    //---
+    boardService.writeBoardToFile(boards,"data/games/laddersAndSnakes.json");
+    //midlertidig ----
 
     GridPane boardPane = BoardView.createBoardGUI(board);
     rootPane.setCenter(boardPane);
