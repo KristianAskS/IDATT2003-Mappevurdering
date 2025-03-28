@@ -7,7 +7,6 @@ import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.service.BoardService;
 import edu.ntnu.bidata.idatt.service.PlayerService;
-import edu.ntnu.bidata.idatt.utils.PopulateBoard;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
@@ -30,7 +29,7 @@ public class BoardGameApp {
     String choiceGenerate = scanner.nextLine().trim();
 
     if (choiceGenerate.equalsIgnoreCase("yes")) {
-      Board newBoard = PopulateBoard.createBoard(90);
+      Board newBoard = BoardGameFactory.createClassicBoard();
 
       BoardService boardService = new BoardService();
       boardService.setBoard(newBoard);

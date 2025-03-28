@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.patterns.factory;
 
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.view.TileView;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 
@@ -19,10 +20,11 @@ public class BoardGameGUIFactory {
 
     for (int tileId = 1; tileId <= totalTiles; tileId++) {
       Tile tile = board.getTileId(tileId);
+      TileView tileView = new TileView(tile);
       if (tileId % 2 == 0) {
-        tile.setStyle("-fx-background-color: #004DFF;");
+        tileView.setStyle("-fx-background-color: #004DFF;");
       } else {
-        tile.setStyle("-fx-background-color: #FF00D4;");
+        tileView.setStyle("-fx-background-color: #FF00D4;");
       }
 
       int bottomRow = (tileId - 1) / columns;
@@ -34,7 +36,7 @@ public class BoardGameGUIFactory {
 
       int gridRow = rows - 1 - bottomRow;
 
-      grid.add(tile, col, gridRow);
+      grid.add(tileView, col, gridRow);
     }
 
     grid.setStyle("-fx-border-width: 2; -fx-border-color: black;");

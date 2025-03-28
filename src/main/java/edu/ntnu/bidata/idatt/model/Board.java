@@ -26,7 +26,7 @@ public class Board {
     return tiles.get(tileId);
   }
 
-  public Collection<Tile> getTiles() {
-    return tiles.values();
+  public Map<Integer, Tile>  getTiles() {
+    return tiles;
   }
 }

@@ -27,9 +27,12 @@ public class BoardGameFactory {
   }
 
   /**
-   * Ladders and snakes
+   * Creates ladders and snakes
+   * Overrides nextTile
+   * If start > end -> snake
+   * If end > start -> ladder
    */
-  public static void linkTiles(Board board, int start, int end) {
+  public static void snakesOrLadders(Board board, int start, int end) {
     Tile startTile = board.getTileId(start);
     Tile endTile = board.getTileId(end);
     if (startTile != null && endTile != null) {
@@ -40,20 +43,20 @@ public class BoardGameFactory {
   public static Board createClassicBoard() {
     int numbOfTiles = 90;
     Board board = createBoardTiles(numbOfTiles);
-    linkTiles(board, 7, 14);
-    linkTiles(board, 16, 27);
-    linkTiles(board, 31, 42);
-    linkTiles(board, 67, 74);
+    snakesOrLadders(board, 7, 14);
+    snakesOrLadders(board, 16, 27);
+    snakesOrLadders(board, 31, 42);
+    snakesOrLadders(board, 67, 74);
     return board;
   }
 
   public static Board createSmallBoard() {
     int numbOfTiles = 30;
     Board board = createBoardTiles(numbOfTiles);
-    linkTiles(board, 7, 14);
-    linkTiles(board, 16, 27);
-    linkTiles(board, 31, 42);
-    linkTiles(board, 67, 74);
+    snakesOrLadders(board, 7, 14);
+    snakesOrLadders(board, 16, 27);
+    snakesOrLadders(board, 31, 42);
+    snakesOrLadders(board, 67, 74);
     return board;
   }
 

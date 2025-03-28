@@ -5,6 +5,8 @@ import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameGUIFactory;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
+import edu.ntnu.bidata.idatt.service.BoardService;
+import java.io.IOException;
 import java.util.Objects;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,12 +29,20 @@ public class BoardGameGUI implements BoardGameObserver {
   private final Scene scene;
   private final Label statusLabel = new Label();
 
-  public BoardGameGUI() {
+  public BoardGameGUI() throws IOException {
     BorderPane rootPane = new BorderPane();
     rootPane.setStyle("-fx-background-color: #600E50;");
     rootPane.setLeft(createIOContainer());
 
+    BoardService boardService = new BoardService();
+
+
+    //midlertidig
     Board board = BoardGameFactory.createClassicBoard();
+    boardService.setBoard(board);
+    boardService.writeBoardToFile("data/games/laddersAndSnakes.json");
+    //---
+
     GridPane boardPane = BoardGameGUIFactory.createBoardGUI(board);
     rootPane.setCenter(boardPane);
     scene = new Scene(rootPane, 1000, 700);
