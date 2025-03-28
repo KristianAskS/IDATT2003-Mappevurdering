@@ -2,7 +2,6 @@ package edu.ntnu.bidata.idatt.model;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.action.TileAction;
-import java.util.Stack;
 import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
@@ -28,7 +27,7 @@ public class Tile extends StackPane {
   public Tile(int tileId) {
     this.tileId = tileId;
     this.nextTileId = -1;
-    Rectangle rectangle = new Rectangle(70, 70);
+    Rectangle rectangle = new Rectangle(67, 67);
 
     rectangle.setFill(null);
     rectangle.setStroke(Color.BLACK);

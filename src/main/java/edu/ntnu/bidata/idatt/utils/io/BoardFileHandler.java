@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt.utils;
+package edu.ntnu.bidata.idatt.utils.io;
 
 import edu.ntnu.bidata.idatt.model.Board;
 import java.io.IOException;

@@ -1,10 +1,10 @@
 package edu.ntnu.bidata.idatt.view;
 
-import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.logic.BoardGameFactory;
-import edu.ntnu.bidata.idatt.logic.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
+import edu.ntnu.bidata.idatt.patterns.factory.BoardGameGUIFactory;
+import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
+import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
 import java.util.Objects;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,10 +30,10 @@ public class BoardGameGUI implements BoardGameObserver {
   public BoardGameGUI() {
     BorderPane rootPane = new BorderPane();
     rootPane.setStyle("-fx-background-color: #600E50;");
-    rootPane.setLeft(createOutputPanel());
+    rootPane.setLeft(createIOContainer());
 
     Board board = BoardGameFactory.createClassicBoard();
-    GridPane boardPane = BoardGameFactory.createBoardGUI(board);
+    GridPane boardPane = BoardGameGUIFactory.createBoardGUI(board);
     rootPane.setCenter(boardPane);
     scene = new Scene(rootPane, 1000, 700);
   }
@@ -42,7 +42,7 @@ public class BoardGameGUI implements BoardGameObserver {
     return scene;
   }
 
-  private VBox createOutputPanel() {
+  private VBox createIOContainer() {
     VBox container = new VBox();
     container.setPrefWidth(250);
     container.setPadding(new Insets(30));
@@ -137,14 +137,23 @@ public class BoardGameGUI implements BoardGameObserver {
   }
 
   @Override
-  public void onPlayerMoved(Player player, Tile oldTile, Tile newTile) {
-    statusLabel.setText(
-        player.getName() + " moved from " + oldTile.getTileId() + " to " + newTile.getTileId());
-    //Update GUI: move a token from old tile to new tile on the boardPane
-  }
-
-  @Override
-  public void onGameFinished(Player player) {
-    statusLabel.setText(player.getName() + " won the game!");
+  public void onEvent(BoardGameEvent eventType) {
+    switch (eventType.eventType()) {
+      case PLAYER_MOVED -> {
+        statusLabel.setText(
+            eventType.player().getName() + " moved from "
+                + eventType.oldTile().getTileId()
+                + " to " + eventType.newTile().getTileId());
+        break;
+      }
+      case GAME_FINISHED -> {
+        statusLabel.setText(eventType.player().getName() + " won the game!");
+        break;
+      }
+      default -> {
+        statusLabel.setText("Unknown event type: " + eventType.eventType());
+        break;
+      }
+    }
   }
 }

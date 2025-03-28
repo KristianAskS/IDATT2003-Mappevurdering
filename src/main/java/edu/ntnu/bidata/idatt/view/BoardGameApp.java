@@ -2,9 +2,9 @@ package edu.ntnu.bidata.idatt.view;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.BoardGame;
-import edu.ntnu.bidata.idatt.logic.BoardGameFactory;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.service.BoardService;
 import edu.ntnu.bidata.idatt.service.PlayerService;
 import edu.ntnu.bidata.idatt.utils.PopulateBoard;
