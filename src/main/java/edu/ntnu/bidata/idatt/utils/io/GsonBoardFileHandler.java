@@ -37,7 +37,7 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
       logger.log(Level.INFO, "Writing board to file: " + filePath);
       bufferedWriter.write(jsonString);
     } catch (JsonSyntaxException error) {
-      throw new BoardParsingException("Error parsing board to the JSON file: " + filePath, error);
+      throw new BoardParsingException(filePath, error);
     }
   }
 
@@ -53,7 +53,7 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
       logger.log(Level.INFO, "Reading board from file: " + filePath);
       return (List<Board>) deserializeJsonToBoard(jsonString);
     } catch (JsonSyntaxException error) {
-      throw new BoardParsingException("Error parsing board from the JSON file: " + filePath, error);
+      throw new BoardParsingException(filePath, error);
     }
   }
 
