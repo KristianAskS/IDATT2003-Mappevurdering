@@ -11,6 +11,7 @@ public class Tile {
   private int nextTileId;
   private Tile nextTile;
   private TileAction landAction;
+
   public Tile(int tileId) {
     this.tileId = tileId;
   }

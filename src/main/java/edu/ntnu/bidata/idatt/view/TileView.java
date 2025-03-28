@@ -10,7 +10,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class TileView extends StackPane {
-  private Tile tile;
   public TileView(Tile tile) {
     int tileId = tile.getTileId();
     tile.setNextTileId(-1);

@@ -1,6 +1,5 @@
 package edu.ntnu.bidata.idatt.model;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ public class Board {
     return tiles.get(tileId);
   }
 
-  public Map<Integer, Tile>  getTiles() {
+  public Map<Integer, Tile> getTiles() {
     return tiles;
   }
 }
