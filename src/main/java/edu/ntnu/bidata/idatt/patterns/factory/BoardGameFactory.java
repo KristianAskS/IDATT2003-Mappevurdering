@@ -7,9 +7,9 @@ import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
 
 public class BoardGameFactory {
-  public static Board createClassicBoard() {
+
+  public static Board createBoardTiles(int numbOfTiles) {
     Board board = new Board();
-    int numbOfTiles = 90;
 
     for (int i = 1; i <= numbOfTiles; i++) {
       Tile tile = new Tile(i);
@@ -24,6 +24,42 @@ public class BoardGameFactory {
       }
     }
     return board;
+  }
+
+  /**
+   * Ladders and snakes
+   */
+  public static void linkTiles(Board board, int start, int end) {
+    Tile startTile = board.getTileId(start);
+    Tile endTile = board.getTileId(end);
+    if (startTile != null && endTile != null) {
+      startTile.setNextTile(endTile);
+    }
+  }
+
+  public static Board createClassicBoard() {
+    int numbOfTiles = 90;
+    Board board = createBoardTiles(numbOfTiles);
+    linkTiles(board, 7, 14);
+    linkTiles(board, 16, 27);
+    linkTiles(board, 31, 42);
+    linkTiles(board, 67, 74);
+    return board;
+  }
+
+  public static Board createSmallBoard() {
+    int numbOfTiles = 30;
+    Board board = createBoardTiles(numbOfTiles);
+    linkTiles(board, 7, 14);
+    linkTiles(board, 16, 27);
+    linkTiles(board, 31, 42);
+    linkTiles(board, 67, 74);
+    return board;
+  }
+
+  public static Board createBoardNoLaddersAndSnakes() {
+    int numbOfTiles = 90;
+    return createBoardTiles(numbOfTiles);
   }
 
   public static Board createBoardFromJSON(String filePath) throws IOException {
