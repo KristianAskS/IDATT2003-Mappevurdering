@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt.exceptions;
+package edu.ntnu.bidata.idatt.utils.exceptions;
 
 /**
  * A domain spesific exception shows error when parsing a board from a JSON file

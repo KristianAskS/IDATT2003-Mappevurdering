@@ -1,8 +1,8 @@
 package edu.ntnu.bidata.idatt.service;
 
 import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.utils.BoardFileHandler;
-import edu.ntnu.bidata.idatt.utils.GsonBoardFileHandler;
+import edu.ntnu.bidata.idatt.utils.io.BoardFileHandler;
+import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
 import java.util.logging.Logger;
 

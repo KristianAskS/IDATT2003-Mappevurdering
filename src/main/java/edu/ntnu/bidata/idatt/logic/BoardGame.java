@@ -4,6 +4,9 @@ import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Dice;
 import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
+import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEventType;
+import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -119,15 +122,10 @@ public class BoardGame {
     observers.remove(observer);
   }
 
-  private void notifyObservers(Player player, Tile oldTile, Tile newTile) {
+  private void notifyObservers(BoardGameEventType eventType, Player player, Tile oldTile,
+                               Tile newTile) {
     for (BoardGameObserver observer : observers) {
-      observer.onPlayerMoved(player, oldTile, newTile);
-    }
-  }
-
-  private void notifyGameFinished(Player player) {
-    for (BoardGameObserver observer : observers) {
-      observer.onGameFinished(player);
+      observer.onEvent(new BoardGameEvent(eventType, player, oldTile, newTile));
     }
   }
 }

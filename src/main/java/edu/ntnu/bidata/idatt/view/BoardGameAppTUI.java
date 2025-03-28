@@ -2,12 +2,11 @@ package edu.ntnu.bidata.idatt.view;
 
 import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.logic.BoardGame;
-import edu.ntnu.bidata.idatt.logic.BoardGameFactory;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.service.BoardService;
 import edu.ntnu.bidata.idatt.service.PlayerService;
-import edu.ntnu.bidata.idatt.utils.PopulateBoard;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
@@ -17,12 +16,12 @@ import java.util.logging.Logger;
 /**
  * TUI.
  */
-public class BoardGameApp {
+public class BoardGameAppTUI {
   private static final String filePathPlayers = "data/players.csv";
   private static final String filePathLaddersAndSnakes = "data/games/laddersAndSnakes.json";
   private static final Scanner scanner = new Scanner(System.in);
   private static final PlayerService playerService = new PlayerService();
-  private static final Logger logger = Logger.getLogger(BoardGameApp.class.getName());
+  private static final Logger logger = Logger.getLogger(BoardGameAppTUI.class.getName());
   private static final BoardGameFactory boardGameFactory = new BoardGameFactory();
 
   public static void main(String[] args) {
@@ -30,7 +29,7 @@ public class BoardGameApp {
     String choiceGenerate = scanner.nextLine().trim();
 
     if (choiceGenerate.equalsIgnoreCase("yes")) {
-      Board newBoard = PopulateBoard.createBoard(90);
+      Board newBoard = BoardGameFactory.createClassicBoard();
 
       BoardService boardService = new BoardService();
       boardService.setBoard(newBoard);

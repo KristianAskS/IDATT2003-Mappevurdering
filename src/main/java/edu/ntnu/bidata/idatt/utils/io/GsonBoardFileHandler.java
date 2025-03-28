@@ -1,10 +1,10 @@
-package edu.ntnu.bidata.idatt.utils;
+package edu.ntnu.bidata.idatt.utils.io;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import edu.ntnu.bidata.idatt.exceptions.BoardParsingException;
 import edu.ntnu.bidata.idatt.model.Board;
+import edu.ntnu.bidata.idatt.utils.exceptions.BoardParsingException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;

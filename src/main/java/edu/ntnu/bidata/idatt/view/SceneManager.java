@@ -4,6 +4,7 @@ import edu.ntnu.bidata.idatt.view.scenes.BoardGameSelectionScene;
 import edu.ntnu.bidata.idatt.view.scenes.GameScene;
 import edu.ntnu.bidata.idatt.view.scenes.LandingScene;
 import edu.ntnu.bidata.idatt.view.scenes.PlayerSelectionScene;
+import java.io.IOException;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -14,7 +15,7 @@ public class SceneManager {
   private static Scene playerSelectionScene;
   private static Scene gameScene;
 
-  public SceneManager(Stage primaryStage) {
+  public SceneManager(Stage primaryStage) throws IOException {
     SceneManager.primaryStage = primaryStage;
     landingScene = new LandingScene().getScene();
     boardGameSelectionScene = new BoardGameSelectionScene().getScene();

@@ -1,6 +1,6 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import edu.ntnu.bidata.idatt.logic.ConsoleBoardGameObserver;
+import edu.ntnu.bidata.idatt.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import java.util.logging.Logger;
 import javafx.scene.Scene;
