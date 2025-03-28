@@ -2,9 +2,16 @@ package edu.ntnu.bidata.idatt.view.scenes;
 
 import edu.ntnu.bidata.idatt.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.view.SceneManager;
+import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.util.logging.Logger;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 
 public class LandingScene {
@@ -14,16 +21,30 @@ public class LandingScene {
   public LandingScene() {
     BorderPane rootPane = new BorderPane();
     scene = new Scene(rootPane, 800, 600);
-    Button playBtn = new Button("Press to play!");
-    Button exitBtn = new Button("Exit");
-    rootPane.setBottom(exitBtn);
+
+    Image bgImage = new Image(
+        getClass().getResource("/edu/ntnu/bidata/idatt/images/backgroundImg.jpg").toExternalForm()
+    );
+
+    BackgroundImage backgroundImage = new BackgroundImage(
+        bgImage,
+        BackgroundRepeat.NO_REPEAT,
+        BackgroundRepeat.NO_REPEAT,
+        BackgroundPosition.CENTER,
+        new BackgroundSize(
+            1.0, 1.0, true, true, false, false
+        )
+    );
+
+    rootPane.setBackground(new Background(backgroundImage));
+
+    Button playBtn = Buttons.getPlayBtn("Press to play!");
+    Button exitBtn = Buttons.getExitBtn("Exit");
     rootPane.setCenter(playBtn);
-    playBtn.setOnAction(e -> {
-      SceneManager.showBoardGameSelectionScene();
-    });
-    exitBtn.setOnAction(e -> {
-      System.exit(0);
-    });
+    rootPane.setBottom(exitBtn);
+
+    playBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
+    exitBtn.setOnAction(e -> System.exit(0));
   }
 
   public Scene getScene() {

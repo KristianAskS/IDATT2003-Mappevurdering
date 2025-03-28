@@ -73,8 +73,8 @@ public class BoardGameFactory {
     return createBoardTiles(name, description, numbOfTiles);
   }
 
-  public static List<Board> createBoardFromJSON(String filePath) throws IOException {
-    FileHandler boardFileHandler = new GsonBoardFileHandler();
+  public static List createBoardFromJSON(String filePath) throws IOException {
+    FileHandler<Board> boardFileHandler = new GsonBoardFileHandler();
     return boardFileHandler.readFromFile(filePath);
   }
 }
