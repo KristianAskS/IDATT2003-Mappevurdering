@@ -39,6 +39,9 @@ public class Tile {
 
   public void setNextTile(Tile nextTile) {
     this.nextTile = nextTile;
+    if (nextTile != null) {
+      this.nextTileId = nextTile.getTileId();
+    }
   }
 
   public int getTileId() {

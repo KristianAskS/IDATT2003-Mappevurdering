@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class BoardService {
   private static final Logger logger = Logger.getLogger(BoardService.class.getName());
   private Board board;
-  private BoardFileHandler boardFileHandler = new GsonBoardFileHandler();
+  private final BoardFileHandler boardFileHandler = new GsonBoardFileHandler();
 
   /**
    * Reads a board from the specified file.

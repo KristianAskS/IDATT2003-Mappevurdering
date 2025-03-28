@@ -36,7 +36,6 @@ public class BoardGameGUI implements BoardGameObserver {
 
     BoardService boardService = new BoardService();
 
-
     //midlertidig
     Board board = BoardGameFactory.createClassicBoard();
     boardService.setBoard(board);
