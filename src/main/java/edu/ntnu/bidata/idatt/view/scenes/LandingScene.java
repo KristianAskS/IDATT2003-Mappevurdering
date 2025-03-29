@@ -1,7 +1,11 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
+import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
+import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
+
 import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.view.SceneManager;
+import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,14 +13,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 
 public class LandingScene {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
@@ -24,23 +24,12 @@ public class LandingScene {
 
   public LandingScene() {
     BorderPane rootPane = new BorderPane();
-    scene = new Scene(rootPane, 800, 600);
+    scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    Image bgImage = new Image(
-        getClass().getResource("/edu/ntnu/bidata/idatt/images/backgroundImg.jpg").toExternalForm()
-    );
-    BackgroundImage backgroundImage = new BackgroundImage(
-        bgImage,
-        BackgroundRepeat.NO_REPEAT,
-        BackgroundRepeat.NO_REPEAT,
-        BackgroundPosition.CENTER,
-        new BackgroundSize(1.0, 1.0, true, true, false, false)
-    );
-    rootPane.setBackground(new Background(backgroundImage));
+    rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
 
-    Button playBtn = Buttons.getPlayBtn("Press to play!");
+    Button playBtn = Buttons.getMainBtn("Press to play!");
     Button exitBtn = Buttons.getExitBtn("Exit");
-
     rootPane.setCenter(playBtn);
 
     HBox exitBox = new HBox(exitBtn);

@@ -1,5 +1,7 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
+import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
+import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
@@ -11,6 +13,7 @@ import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
+import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.TileView;
@@ -63,7 +66,7 @@ public class BoardGameScene implements BoardGameObserver {
 
     GridPane boardPane = BoardView.createBoardGUI(board);
     rootPane.setCenter(boardPane);
-    scene = new Scene(rootPane, 1000, 700);
+    scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
     //Initialiser spillere og plasser tokenene på starttilen (midlertidig løsning)
     initializePlayers(board);
@@ -190,6 +193,8 @@ public class BoardGameScene implements BoardGameObserver {
 
     Button backBtn = Buttons.getBackBtn("Back");
     container.getChildren().add(backBtn);
+    //midlertidig løsning
+    backBtn.setOnAction(e -> SceneManager.showPlayerSelectionScene());
 
     return container;
   }
