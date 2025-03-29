@@ -12,7 +12,7 @@ public class GameScene {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private final Scene scene;
 
-  public GameScene() throws IOException {
+  public GameScene() throws IOException, InterruptedException {
     BoardGameGUI boardGameGUI = new BoardGameGUI();
     scene = boardGameGUI.getScene();
   }

@@ -4,7 +4,6 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.entity.TokenType;
 import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
@@ -14,10 +13,12 @@ import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -59,30 +60,40 @@ public class BoardGameGUI implements BoardGameObserver {
     rootPane.setCenter(boardPane);
     scene = new Scene(rootPane, 1000, 700);
 
-    TileView tileView = (TileView) scene.lookup("#tile1");
-    if(tileView!=null){
-      TokenView redToken = new TokenView(TokenType.RED, 0, 0);
-      TokenView greenToken = new TokenView(TokenType.GREEN, 0, 0);
-      TokenView yellowToken = new TokenView(TokenType.YELLOW, 0, 0);
-      TokenView blueToken = new TokenView(TokenType.BLUE, 0, 0);
-      TokenView pinkToken = new TokenView(TokenType.PINK, 0, 0);
 
-      redToken.setTranslateX((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
-      redToken.setTranslateY((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
-
-      greenToken.setTranslateX((TILE_SIZE - 0.8 * TILE_SIZE * 2) / 2);
-      greenToken.setTranslateY((TILE_SIZE - 0.8 * TILE_SIZE * 2) / 2);
-
-      yellowToken.setTranslateX((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
-      yellowToken.setTranslateY((TILE_SIZE - 0.8 * TILE_SIZE * 2) / 2);
-
-      blueToken.setTranslateX((TILE_SIZE - 0.8 * TILE_SIZE * 2) / 2);
-      blueToken.setTranslateY((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
-
-      pinkToken.setTranslateX((TILE_SIZE - 0.5 * TILE_SIZE * 2) / 2);
-      pinkToken.setTranslateY((TILE_SIZE - 0.5 * TILE_SIZE * 2) / 2);
-
-      tileView.getChildren().addAll(redToken, greenToken, yellowToken, blueToken, pinkToken);
+    for (int i = 1; i <= board.getTiles().size(); i++) {
+      TileView tile = (TileView) scene.lookup("#tile" + i);
+      if (tile != null) {
+        List<TokenView> tokens = Arrays.asList(
+            new TokenView(TokenType.RED),
+            new TokenView(TokenType.GREEN),
+            new TokenView(TokenType.YELLOW),
+            new TokenView(TokenType.BLUE),
+            new TokenView(TokenType.PINK)
+        );
+        tile.getChildren().addAll(tokens);
+        setTokenPositionOnTile(tile);
+      }
+    }
+  }
+  private static final double[][] tokenOFFSETS = {
+      {0.2, 0.2},
+      {0.5, 0.5},
+      {0.8, 0.8},
+      {0.2, 0.8},
+      {0.8, 0.2}
+  };
+  private void setTokenPositionOnTile(TileView tile) {
+    //hent kunt tokenViews noder
+    List<Node> tokens = tile.getChildren().stream()
+        .filter(node -> node instanceof TokenView)
+        .toList();
+    for (int i = 0; i < tokens.size() && i < tokenOFFSETS.length; i++) {
+      Node token = tokens.get(i);
+      double x = (TILE_SIZE - tokenOFFSETS[i][0] * TILE_SIZE * 2) / 2;
+      double y = (TILE_SIZE - tokenOFFSETS[i][1] * TILE_SIZE * 2) / 2;
+      token.setTranslateX(x);
+      token.setTranslateY(y);
     }
   }
 
@@ -175,10 +186,6 @@ public class BoardGameGUI implements BoardGameObserver {
     container.getChildren().add(backBtn);
 
     return container;
-  }
-
-  private TokenView createToken(TokenType tokenType, int x, int y) {
-    return new TokenView(tokenType, x, y);
   }
 
   @Override

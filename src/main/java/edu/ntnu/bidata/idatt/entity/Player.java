@@ -20,76 +20,31 @@ public class Player {
   private int position;
   private String token;
 
-
-  /**
-   * Instantiates a new Player that always starts at tile 0.
-   *
-   * @param name the name
-   */
   public Player(String name) {
     this.name = name;
     this.position = 0;
   }
 
-  /**
-   * Gets name.
-   *
-   * @return the name
-   */
   public String getName() {
     return name;
   }
 
-  /**
-   * Gets position.
-   *
-   * @return the position
-   */
   public int getPosition() {
     return position;
   }
 
-  /**
-   * Sets position.
-   *
-   * @param position the position
-   */
-  public void setPosition(int position) {
-    this.position = position;
-  }
-
-  /**
-   * Set current tile.
-   *
-   * @param currentTile the current tile
-   */
   public void setCurrentTile(Tile currentTile) {
     this.currentTile = currentTile;
   }
 
-  /**
-   * Gets token.
-   *
-   * @return the token
-   */
   public String getToken() {
     return token;
   }
 
-  /**
-   * Gets current tile.
-   *
-   * @param token the token
-   */
   public void setToken(String token) {
     this.token = token;
   }
 
-  /**
-   * Place on tile.
-   *
-   * @param tile the tile
-   */
   public void placeOnTile(Tile tile) {
     if (currentTile != null) {
       currentTile.leavePlayer(this);
@@ -98,11 +53,6 @@ public class Player {
     tile.landPlayer(this);
   }
 
-  /**
-   * Move.
-   *
-   * @param steps the steps
-   */
   public void move(int steps) {
     logger.log(Level.INFO, "Player " + name + " moves " + steps + " steps");
     Tile tile = currentTile;

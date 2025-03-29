@@ -14,18 +14,14 @@ import javafx.scene.shape.StrokeType;
 public class TokenView extends StackPane {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private TokenType tokenType;
-  private double oldXCord, oldYCord;
-  private double newXCord, newYCord;
 
-  public TokenView(TokenType tokenType, int x, int y) {
-    relocate(x * TILE_SIZE, y * TILE_SIZE);
-
+  public TokenView(TokenType tokenType) {
     Ellipse token = new Ellipse(0.2 * TILE_SIZE, 0.2 * TILE_SIZE);
     token.setFill(tokenType.getColor());
     TokenView.setStrokeHandler(token);
     getChildren().addAll(token);
 
-    logger.log(Level.INFO,"TokenView created");
+    logger.log(Level.INFO, "TokenView created");
   }
 
   private static void setStrokeHandler(Ellipse token) {

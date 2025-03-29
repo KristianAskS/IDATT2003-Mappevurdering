@@ -26,7 +26,8 @@ public class BoardView {
         tileView.setStyle("-fx-background-color: #1E90FF");
       } else {
         //tileView.setStyle("-fx-background-color: #FF00D4"); //1
-        tileView.setStyle("-fx-background-color: #FFA500");      }
+        tileView.setStyle("-fx-background-color: #FFA500");
+      }
 
       int bottomRow = (tileId - 1) / columns;
       int col = (tileId - 1) % columns;

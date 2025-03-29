@@ -11,6 +11,7 @@ import javafx.scene.text.Text;
 
 public class TileView extends StackPane {
   public static final int TILE_SIZE = 67;
+
   public TileView(Tile tile, int TILE_SIZE) {
     this.setId("tile" + tile.getTileId());
 

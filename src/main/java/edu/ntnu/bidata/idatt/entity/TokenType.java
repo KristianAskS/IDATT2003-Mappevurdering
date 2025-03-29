@@ -12,6 +12,7 @@ public enum TokenType {
   YELLOW(Color.YELLOW),
   PINK(Color.PINK);
   private final Color color;
+
   TokenType(Color color) {
     this.color = color;
   }

@@ -15,7 +15,7 @@ public class SceneManager {
   private static Scene playerSelectionScene;
   private static Scene gameScene;
 
-  public SceneManager(Stage primaryStage) throws IOException {
+  public SceneManager(Stage primaryStage) throws IOException, InterruptedException {
     SceneManager.primaryStage = primaryStage;
     landingScene = new LandingScene().getScene();
     boardGameSelectionScene = new BoardGameSelectionScene().getScene();
