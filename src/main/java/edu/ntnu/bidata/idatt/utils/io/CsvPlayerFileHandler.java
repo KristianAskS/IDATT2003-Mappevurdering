@@ -57,15 +57,13 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
       String line;
       while ((line = bufferedReader.readLine()) != null) {
         String[] playerData = line.split(",");
-        if (playerData.length >= 1) {
+        if (playerData.length >= 1 && playerData.length <= 2) {
           String name = playerData[0].trim();
-          Player player = new Player(name);
-          if (playerData.length == 2) {
-            String tokenTypeString = playerData[1].trim();
-            TokenType tokenType = TokenType.valueOf(tokenTypeString);
-            TokenView token = new TokenView(tokenType);
-            player.setToken(token);
-          }
+
+          String tokenTypeString = playerData[1].trim();
+          TokenType tokenType = TokenType.valueOf(tokenTypeString);
+          TokenView token = new TokenView(tokenType);
+          Player player = new Player(name, token);
           players.add(player);
         }
       }

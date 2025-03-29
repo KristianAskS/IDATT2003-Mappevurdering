@@ -2,20 +2,26 @@ package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
+import edu.ntnu.bidata.idatt.entity.Player;
 import edu.ntnu.bidata.idatt.entity.TokenType;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
+import edu.ntnu.bidata.idatt.patterns.factory.PlayerFactory;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
 import edu.ntnu.bidata.idatt.service.BoardService;
+import edu.ntnu.bidata.idatt.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -35,8 +41,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class BoardGameGUI implements BoardGameObserver {
+  private static final Logger logger = Logger.getLogger(BoardGameGUI.class.getName());
   private final Scene scene;
   private final Label statusLabel = new Label();
+  PlayerService playerService = new PlayerService();
+  BoardService boardService = new BoardService();
 
   public BoardGameGUI() throws IOException {
     BorderPane rootPane = new BorderPane();
@@ -44,9 +53,6 @@ public class BoardGameGUI implements BoardGameObserver {
     rootPane.setStyle("-fx-background-color: #1A237E;");
 
     rootPane.setLeft(createIOContainer());
-
-    //nødvendige instanser
-    BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
 
     //midlertidig ----
@@ -60,22 +66,32 @@ public class BoardGameGUI implements BoardGameObserver {
     rootPane.setCenter(boardPane);
     scene = new Scene(rootPane, 1000, 700);
 
-    for (int i = 1; i <= board.getTiles().size(); i++) {
-      TileView tile = (TileView) scene.lookup("#tile" + i);
-      if (tile != null) {
-        List<TokenView> tokens = Arrays.asList(
-            new TokenView(TokenType.RED),
-            new TokenView(TokenType.GREEN),
-            new TokenView(TokenType.YELLOW),
-            new TokenView(TokenType.BLUE),
-            new TokenView(TokenType.PINK)
-        );
-        tile.getChildren().addAll(tokens);
-        setTokenPositionOnTile(tile);
+    List<Player> players = PlayerFactory.createPlayersDummies();
+    playerService.setPlayers(players);
+    TileView tile = (TileView) scene.lookup("#tile" + 1);
+    if (tile != null) {
+      List<Node> playerTokens = new ArrayList<>();
+      for(Player player : players) {
+        playerTokens.add(player.getToken());
       }
+      tile.getChildren().addAll(playerTokens);
+      setTokenPositionOnTile(tile);
+      movePlayer(players.get(2), 4, board);
+    }
+    logger.log(Level.INFO, "BoardGameGUI created");
+  }
+  public void movePlayer(Player player, int steps, Board board) {
+    int nextTileId = player.getCurrentTileId() + steps;
+    if (nextTileId > board.getTiles().size()) {
+      nextTileId = board.getTiles().size();
+    }
+
+    TileView nextTileView = (TileView) scene.lookup("#tile" + nextTileId);
+    if(nextTileView != null) {
+      nextTileView.getChildren().add(player.getToken());
+      setTokenPositionOnTile(nextTileView);
     }
   }
-
   private static final double[][] tokenOFFSETS = {
       {0.2, 0.2},
       {0.5, 0.5},

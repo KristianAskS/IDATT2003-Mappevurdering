@@ -15,22 +15,12 @@ public class Tile {
   public Tile(int tileId) {
     this.tileId = tileId;
   }
-
   public TileAction getLandAction() {
     return landAction;
   }
 
   public void setLandAction(TileAction landAction) {
     this.landAction = landAction;
-  }
-
-
-  public void landPlayer(Player player) {
-
-  }
-
-  public void leavePlayer(Player player) {
-
   }
 
   public Tile getNextTile() {

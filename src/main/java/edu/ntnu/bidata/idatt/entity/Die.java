@@ -11,6 +11,10 @@ public class Die {
 
   }
 
+  /*
+   * Roll a single die
+   * @return the value rolled
+   */
   public int roll() {
     lastRolledValue = random.nextInt(6) + 1;
     return lastRolledValue;
@@ -18,10 +22,5 @@ public class Die {
 
   public int getValue() {
     return lastRolledValue;
-  }
-
-  public void setValue(int value) {
-    InputValidation.validateSetDiceValue(value);
-    this.lastRolledValue = value;
   }
 }

@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.view.scenes;
 
 import edu.ntnu.bidata.idatt.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.view.SceneManager;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -30,6 +31,7 @@ public class PlayerSelectionScene {
     toBoardGameSelectionSceneBtn.setOnAction(e -> {
       SceneManager.showBoardGameSelectionScene();
     });
+    logger.log(Level.INFO, "PlayerSelectionScene created");
   }
 
   public Scene getScene() {

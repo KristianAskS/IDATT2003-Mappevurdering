@@ -10,7 +10,6 @@ public class Board {
   private Map<Integer, Tile> tiles = new HashMap<>();
   private String name;
   private String description;
-
   public Board() {
   }
 

@@ -38,10 +38,6 @@ public class BoardService {
     boardFileHandler.writeToFile(boards, filePath);
   }
 
-  public Board getBoard() {
-    return board;
-  }
-
   public void setBoard(Board board) {
     this.board = board;
   }

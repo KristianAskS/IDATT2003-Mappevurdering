@@ -12,10 +12,13 @@ public class LadderAction implements TileAction {
     this.description = description;
   }
 
+
   @Override
   public void perform(Player player) {
-    player.move(destinationTileld);
+    //player.move(destinationTileld);
   }
+
+
 
   public int getDestinationTileld() {
     return destinationTileld;
