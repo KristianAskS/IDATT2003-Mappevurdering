@@ -1,17 +1,17 @@
 package edu.ntnu.bidata.idatt.controller;
 
-import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
-import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 import edu.ntnu.bidata.idatt.view.components.TileView;
-import javafx.scene.Node;
+import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 
 /**
  * BoardGameController er ansvarlig for view-relaterte operasjoner,
  * Den kommuniserer med både viewet (BoardGameScene) og modell-tjenestene (BoardService, PlayerService)
  * uten å inneholde forretningslogikk.
+ *
  * @author Trile
  * @version 1.0
  * @since 1.0
@@ -36,8 +36,8 @@ public class BoardGameController {
    * Initialiserer controlleren, ex: ved å koble eventhandlers til view-komponenter.
    */
   private void initController() {
-    // Eksempel: Dersom viewet har en "roll dice" knapp, kan du knytte en event-handler:
-    // view.getRollButton().setOnAction(e -> handleRollDice());
+    //ex: på roll dice knapp, kan du knytte en event-handler:
+    //view.getRollButton().setOnAction(e -> handleRollDice());
   }
 
   /**

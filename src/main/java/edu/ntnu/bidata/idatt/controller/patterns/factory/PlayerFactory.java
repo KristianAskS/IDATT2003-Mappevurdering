@@ -26,7 +26,7 @@ public class PlayerFactory {
     if (name == null || name.isBlank() || token == null) {
       throw new IllegalArgumentException("Name and token cannot be null");
     }
-    return new Player(name,token);
+    return new Player(name, token);
   }
 
   public static List<Player> createPlayersDummies() {

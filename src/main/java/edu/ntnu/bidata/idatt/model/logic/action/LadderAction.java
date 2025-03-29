@@ -19,7 +19,6 @@ public class LadderAction implements TileAction {
   }
 
 
-
   public int getDestinationTileld() {
     return destinationTileld;
   }

@@ -3,12 +3,12 @@ package edu.ntnu.bidata.idatt.view.scenes;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
-import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.PlayerFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameObserver;
+import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
@@ -71,6 +71,22 @@ public class BoardGameScene implements BoardGameObserver {
     logger.log(Level.INFO, "BoardGameGUI created");
   }
 
+  /**
+   * Returns hardcoded offset-coordinates based on total tokens on a tile.
+   *
+   * @param tokenCount total number of tokens
+   * @return 2D-array of offsets
+   */
+  private static double[][] getTokenOffsets(int tokenCount) {
+    return switch (tokenCount) {
+      case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
+      case 3 -> new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
+      case 4 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
+      case 5 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
+      default -> new double[][] {{0.5, 0.5}};
+    };
+  }
+
   private BorderPane createRootPane() {
     BorderPane root = new BorderPane();
     root.setStyle("-fx-background-color: #1A237E;");
@@ -113,22 +129,6 @@ public class BoardGameScene implements BoardGameObserver {
           token.setTranslateX(x);
           token.setTranslateY(y);
         });
-  }
-
-  /**
-   * Returns hardcoded offset-coordinates based on total tokens on a tile.
-   *
-   * @param tokenCount total number of tokens
-   * @return 2D-array of offsets
-   */
-  private static double[][] getTokenOffsets(int tokenCount) {
-    return switch (tokenCount) {
-      case 2 -> new double[][] { {0.2, 0.5}, {0.8, 0.5} };
-      case 3 -> new double[][] { {0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8} };
-      case 4 -> new double[][] { {0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8} };
-      case 5 -> new double[][] { {0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5} };
-      default -> new double[][] { {0.5, 0.5} };
-    };
   }
 
   public Scene getScene() {
@@ -229,15 +229,12 @@ public class BoardGameScene implements BoardGameObserver {
   @Override
   public void onEvent(BoardGameEvent eventType) {
     switch (eventType.eventType()) {
-      case PLAYER_MOVED ->
-          statusLabel.setText(
-              eventType.player().getName() + " moved from "
-                  + eventType.oldTile().getTileId()
-                  + " to " + eventType.newTile().getTileId());
-      case GAME_FINISHED ->
-          statusLabel.setText(eventType.player().getName() + " won the game!");
-      default ->
-          statusLabel.setText("Unknown event type: " + eventType.eventType());
+      case PLAYER_MOVED -> statusLabel.setText(
+          eventType.player().getName() + " moved from "
+              + eventType.oldTile().getTileId()
+              + " to " + eventType.newTile().getTileId());
+      case GAME_FINISHED -> statusLabel.setText(eventType.player().getName() + " won the game!");
+      default -> statusLabel.setText("Unknown event type: " + eventType.eventType());
     }
   }
 }

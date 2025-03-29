@@ -1,12 +1,12 @@
 package edu.ntnu.bidata.idatt.model.logic;
 
-import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.Board;
-import edu.ntnu.bidata.idatt.model.entity.Dice;
-import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameObserver;
+import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Dice;
+import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -32,6 +32,7 @@ public class BoardGame {
     createDice(numbOfDice);
     addPlayers(players);
   }
+
   public void addObserver(BoardGameObserver observer) {
     observers.add(observer);
   }

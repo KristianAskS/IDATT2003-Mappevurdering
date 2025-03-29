@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 
 /**
  * Stores the collection of dices
+ *
  * @author Trile
  * @version 2.0
  */
@@ -15,12 +16,13 @@ public class Dice {
 
   public Dice(int numberOfDice) {
     dice = IntStream.range(0, numberOfDice)
-        .mapToObj(Die-> new Die())
+        .mapToObj(Die -> new Die())
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
    * Roll all the dices in the dice array
+   *
    * @return the sum of the rolled dices
    */
   public int roll() {

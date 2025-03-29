@@ -7,8 +7,8 @@ import java.util.logging.Logger;
  * The type Player.
  */
 public class Player {
-  private final String name;
   private static final Logger logger = Logger.getLogger(Player.class.getName());
+  private final String name;
   private final TokenView token;
   private int currentTileId;
 
@@ -20,12 +20,15 @@ public class Player {
   public String getName() {
     return name;
   }
+
   public TokenView getToken() {
     return token;
   }
+
   public int getCurrentTileId() {
     return currentTileId;
   }
+
   public void setCurrentTileId(int currentTileId) {
     this.currentTileId = currentTileId;
   }
