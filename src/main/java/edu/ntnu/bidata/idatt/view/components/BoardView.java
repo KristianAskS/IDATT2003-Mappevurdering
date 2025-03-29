@@ -20,10 +20,11 @@ public class BoardView {
     for (int tileId = 1; tileId <= totalTiles; tileId++) {
       Tile tile = board.getTileId(tileId);
       TileView tileView = new TileView(tile);
+
       if (tileId % 2 == 0) {
-        tileView.setStyle("-fx-background-color: #004DFF;");
+        tileView.setStyle("-fx-background-color: #004DFF");
       } else {
-        tileView.setStyle("-fx-background-color: #FF00D4;");
+        tileView.setStyle("-fx-background-color: #FF00D4");
       }
 
       int bottomRow = (tileId - 1) / columns;

@@ -10,10 +10,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class TileView extends StackPane {
+  public static final int TILE_SIZE = 67;
   public TileView(Tile tile) {
     int tileId = tile.getTileId();
     tile.setNextTileId(-1);
-    Rectangle rectangle = new Rectangle(67, 67);
+    Rectangle rectangle = new Rectangle(TILE_SIZE, TILE_SIZE);
 
     rectangle.setFill(null);
     rectangle.setStroke(Color.BLACK);

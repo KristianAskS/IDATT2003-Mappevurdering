@@ -1,5 +1,6 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
+import edu.ntnu.bidata.idatt.entity.TokenType;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
@@ -7,6 +8,7 @@ import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
 import edu.ntnu.bidata.idatt.service.BoardService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -141,6 +143,10 @@ public class BoardGameGUI implements BoardGameObserver {
     container.getChildren().add(backBtn);
 
     return container;
+  }
+
+  private TokenView createToken(TokenType tokenType, int x, int y) {
+    return new TokenView(tokenType, x, y);
   }
 
   @Override
