@@ -92,25 +92,47 @@ public class BoardGameGUI implements BoardGameObserver {
       setTokenPositionOnTile(nextTileView);
     }
   }
-  private static final double[][] tokenOFFSETS = {
-      {0.2, 0.2},
-      {0.5, 0.5},
-      {0.8, 0.8},
-      {0.2, 0.8},
-      {0.8, 0.2}
-  };
   private void setTokenPositionOnTile(TileView tile) {
     //hent kunt tokenViews noder
     List<Node> tokens = tile.getChildren().stream()
         .filter(node -> node instanceof TokenView)
         .toList();
-    for (int i = 0; i < tokens.size() && i < tokenOFFSETS.length; i++) {
+
+    final double[][] offsets = getDoubles(tokens);
+
+    for (int i = 0; i < tokens.size() && i < offsets.length; i++) {
       Node token = tokens.get(i);
-      double x = (TILE_SIZE - tokenOFFSETS[i][0] * TILE_SIZE * 2) / 2;
-      double y = (TILE_SIZE - tokenOFFSETS[i][1] * TILE_SIZE * 2) / 2;
+      double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
+      double y = (TILE_SIZE - offsets[i][1] * TILE_SIZE * 2) / 2;
       token.setTranslateX(x);
       token.setTranslateY(y);
     }
+  }
+
+  /**
+   * hardcoded coordinates for how many tokens are on a tile
+   * @param tokens tokens
+   * @return the offset coordinates
+   */
+  private static double[][] getDoubles(List<Node> tokens) {
+    double [][]offsets;
+    switch (tokens.size()) {
+      case 2 ->{
+        offsets = new double[][] {{0.2, 0.5}, {0.8, 0.5}};
+      }
+      case 3 ->{
+        offsets = new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
+      }
+      case 4->{
+        offsets = new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
+      }
+      case 5 ->{
+        offsets =
+            new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
+      }
+      default -> offsets = new double[][] {{0.5, 0.5}};
+    }
+    return offsets;
   }
 
   public Scene getScene() {
