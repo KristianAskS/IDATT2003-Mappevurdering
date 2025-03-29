@@ -3,7 +3,6 @@ package edu.ntnu.bidata.idatt.view.scenes;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.entity.TokenType;
 import edu.ntnu.bidata.idatt.model.Board;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.patterns.factory.PlayerFactory;
@@ -17,7 +16,6 @@ import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -40,66 +38,81 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-public class BoardGameGUI implements BoardGameObserver {
-  private static final Logger logger = Logger.getLogger(BoardGameGUI.class.getName());
+public class BoardGameScene implements BoardGameObserver {
+  private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
   private final Scene scene;
   private final Label statusLabel = new Label();
-  PlayerService playerService = new PlayerService();
-  BoardService boardService = new BoardService();
+  private final PlayerService playerService = new PlayerService();
+  private final BoardService boardService = new BoardService();
 
-  public BoardGameGUI() throws IOException {
-    BorderPane rootPane = new BorderPane();
-    rootPane.setStyle("-fx-background-color: #600E50;");
-    rootPane.setStyle("-fx-background-color: #1A237E;");
-
+  public BoardGameScene() throws IOException {
+    BorderPane rootPane = createRootPane();
     rootPane.setLeft(createIOContainer());
-    List<Board> boards = boardService.getBoards();
 
-    //midlertidig ----
+    List<Board> boards = boardService.getBoards();
+    //Hent et brett (brukeren velger ikke enda) og skriv det til fil (midlertidig løsning)
     Board board = BoardGameFactory.createClassicBoard();
     boards.add(board);
     boardService.setBoard(board);
     boardService.writeBoardToFile(boards, "data/games/laddersAndSnakes.json");
-    //midlertidig ----
 
     GridPane boardPane = BoardView.createBoardGUI(board);
     rootPane.setCenter(boardPane);
     scene = new Scene(rootPane, 1000, 700);
 
-    List<Player> players = PlayerFactory.createPlayersDummies();
-    playerService.setPlayers(players);
-    TileView tile = (TileView) scene.lookup("#tile" + 1);
-    if (tile != null) {
-      List<Node> playerTokens = new ArrayList<>();
-      for(Player player : players) {
-        playerTokens.add(player.getToken());
-      }
-      tile.getChildren().addAll(playerTokens);
-      setTokenPositionOnTile(tile);
-      movePlayer(players.get(2), 4, board);
-    }
+    //Initialiser spillere og plasser tokenene på starttilen (midlertidig løsning)
+    initializePlayers(board);
+
     logger.log(Level.INFO, "BoardGameGUI created");
   }
+
+  private BorderPane createRootPane() {
+    BorderPane root = new BorderPane();
+    root.setStyle("-fx-background-color: #1A237E;");
+    return root;
+  }
+
+  private void initializePlayers(Board board) {
+    List<Player> players = PlayerFactory.createPlayersDummies();
+    playerService.setPlayers(players);
+
+    //Legg alle spilleres token på starttile (midlertidig løsning). Spillerne skal egt starte utanfor brettet
+    TileView startTile = (TileView) scene.lookup("#tile1");
+    if (startTile != null) {
+      List<Node> playerTokens = new ArrayList<>();
+      for (Player player : players) {
+        playerTokens.add(player.getToken());
+      }
+      startTile.getChildren().addAll(playerTokens);
+      setTokenPositionOnTile(startTile);
+
+      //Eksempel: Flytt spiller 3 med 4 steg
+      movePlayer(players.get(2), 4, board);
+    }
+  }
+
   public void movePlayer(Player player, int steps, Board board) {
     int nextTileId = player.getCurrentTileId() + steps;
     if (nextTileId > board.getTiles().size()) {
       nextTileId = board.getTiles().size();
     }
 
+    player.setCurrentTileId(nextTileId);
+
     TileView nextTileView = (TileView) scene.lookup("#tile" + nextTileId);
-    if(nextTileView != null) {
+    if (nextTileView != null) {
       nextTileView.getChildren().add(player.getToken());
       setTokenPositionOnTile(nextTileView);
     }
   }
+
   private void setTokenPositionOnTile(TileView tile) {
-    //hent kunt tokenViews noder
+    //Filtrer ut kun noder fra tile
     List<Node> tokens = tile.getChildren().stream()
         .filter(node -> node instanceof TokenView)
         .toList();
 
-    final double[][] offsets = getDoubles(tokens);
-
+    final double[][] offsets = getTokenOffsets(tokens.size());
     for (int i = 0; i < tokens.size() && i < offsets.length; i++) {
       Node token = tokens.get(i);
       double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
@@ -110,29 +123,19 @@ public class BoardGameGUI implements BoardGameObserver {
   }
 
   /**
-   * hardcoded coordinates for how many tokens are on a tile
-   * @param tokens tokens
-   * @return the offset coordinates
+   * Returnerer hardkodede offset-koordinater for antall tokens på en tile.
+   *
+   * @param tokenCount antall tokens på tile
+   * @return 2D-array med relative offset-verdier
    */
-  private static double[][] getDoubles(List<Node> tokens) {
-    double [][]offsets;
-    switch (tokens.size()) {
-      case 2 ->{
-        offsets = new double[][] {{0.2, 0.5}, {0.8, 0.5}};
-      }
-      case 3 ->{
-        offsets = new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
-      }
-      case 4->{
-        offsets = new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
-      }
-      case 5 ->{
-        offsets =
-            new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
-      }
-      default -> offsets = new double[][] {{0.5, 0.5}};
-    }
-    return offsets;
+  private static double[][] getTokenOffsets(int tokenCount) {
+    return switch (tokenCount) {
+      case 2 -> new double[][] { {0.2, 0.5}, {0.8, 0.5} };
+      case 3 -> new double[][] { {0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8} };
+      case 4 -> new double[][] { {0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8} };
+      case 5 -> new double[][] { {0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5} };
+      default -> new double[][] { {0.5, 0.5} };
+    };
   }
 
   public Scene getScene() {
@@ -163,7 +166,7 @@ public class BoardGameGUI implements BoardGameObserver {
     Label pressToRoll = new Label("Press to Roll");
     pressToRoll.setFont(Font.font("monospace", FontWeight.BOLD, 16));
     pressToRoll.setWrapText(true);
-    container.getChildren().addAll(pressToRoll);
+    container.getChildren().add(pressToRoll);
 
     ImageView imageViewDice = new ImageView(new Image(Objects.requireNonNull(
         getClass().getResourceAsStream("/edu/ntnu/bidata/idatt/dicePlaceholder.png"))));
@@ -173,7 +176,7 @@ public class BoardGameGUI implements BoardGameObserver {
 
     Label rollResult = new Label("Roll result:");
     rollResult.setFont(Font.font("monospace", FontWeight.BOLD, 16));
-    container.getChildren().addAll(rollResult);
+    container.getChildren().add(rollResult);
 
     ImageView imageViewResult = new ImageView(new Image(Objects.requireNonNull(
         getClass().getResourceAsStream("/edu/ntnu/bidata/idatt/rollResultPlaceholder.png"))));
@@ -186,6 +189,19 @@ public class BoardGameGUI implements BoardGameObserver {
     outputLabel.setTextFill(Color.BLACK);
     container.getChildren().add(outputLabel);
 
+    container.getChildren().add(createOutputArea());
+
+    Region spacer = new Region();
+    VBox.setVgrow(spacer, Priority.ALWAYS);
+    container.getChildren().add(spacer);
+
+    Button backBtn = Buttons.getBackBtn("Back");
+    container.getChildren().add(backBtn);
+
+    return container;
+  }
+
+  private VBox createOutputArea() {
     VBox outputArea = new VBox();
     outputArea.setSpacing(5);
     outputArea.setPadding(new Insets(10));
@@ -214,36 +230,21 @@ public class BoardGameGUI implements BoardGameObserver {
     example2.setTextFill(Color.WHITE);
     outputArea.getChildren().add(example2);
 
-    container.getChildren().add(outputArea);
-
-    Region spacer = new Region();
-    VBox.setVgrow(spacer, Priority.ALWAYS);
-    container.getChildren().add(spacer);
-
-    Button backBtn = Buttons.getBackBtn("Back");
-    container.getChildren().add(backBtn);
-
-    return container;
+    return outputArea;
   }
 
   @Override
   public void onEvent(BoardGameEvent eventType) {
     switch (eventType.eventType()) {
-      case PLAYER_MOVED -> {
-        statusLabel.setText(
-            eventType.player().getName() + " moved from "
-                + eventType.oldTile().getTileId()
-                + " to " + eventType.newTile().getTileId());
-        break;
-      }
-      case GAME_FINISHED -> {
-        statusLabel.setText(eventType.player().getName() + " won the game!");
-        break;
-      }
-      default -> {
-        statusLabel.setText("Unknown event type: " + eventType.eventType());
-        break;
-      }
+      case PLAYER_MOVED ->
+          statusLabel.setText(
+              eventType.player().getName() + " moved from "
+                  + eventType.oldTile().getTileId()
+                  + " to " + eventType.newTile().getTileId());
+      case GAME_FINISHED ->
+          statusLabel.setText(eventType.player().getName() + " won the game!");
+      default ->
+          statusLabel.setText("Unknown event type: " + eventType.eventType());
     }
   }
 }

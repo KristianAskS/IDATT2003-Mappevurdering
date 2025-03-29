@@ -2,7 +2,6 @@ package edu.ntnu.bidata.idatt.entity;
 
 import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
-import edu.ntnu.bidata.idatt.view.scenes.BoardGameGUI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

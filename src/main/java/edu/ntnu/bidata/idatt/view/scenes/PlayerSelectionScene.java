@@ -15,15 +15,15 @@ public class PlayerSelectionScene {
   public PlayerSelectionScene() {
     BorderPane rootPane = new BorderPane();
     scene = new Scene(rootPane, 800, 600);
-    Button toGameSceneBtn = new Button("To game scene (play)");
+    Button toBoardGameScene = new Button("To game scene (play)");
     Button toLandingSceneBtn = new Button("Back to landing scene");
     Button toBoardGameSelectionSceneBtn = new Button("Back");
-    rootPane.setCenter(toGameSceneBtn);
+    rootPane.setCenter(toBoardGameScene);
     rootPane.setBottom(toLandingSceneBtn);
     rootPane.setTop(toBoardGameSelectionSceneBtn);
 
-    toGameSceneBtn.setOnAction(e -> {
-      SceneManager.showGameScene();
+    toBoardGameScene.setOnAction(e -> {
+      SceneManager.showBoardGameScene();
     });
     toLandingSceneBtn.setOnAction(e -> {
       SceneManager.showLandingScene();
