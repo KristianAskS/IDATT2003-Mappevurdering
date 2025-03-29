@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 
 import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ public class Player {
   Logger logger = Logger.getLogger(Player.class.getName());
   private Tile currentTile;
   private int position;
-  private String token;
+  private TokenView token;
 
   public Player(String name) {
     this.name = name;
@@ -37,11 +38,11 @@ public class Player {
     this.currentTile = currentTile;
   }
 
-  public String getToken() {
+  public TokenView getToken() {
     return token;
   }
 
-  public void setToken(String token) {
+  public void setToken(TokenView token) {
     this.token = token;
   }
 

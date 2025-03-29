@@ -60,7 +60,6 @@ public class BoardGameGUI implements BoardGameObserver {
     rootPane.setCenter(boardPane);
     scene = new Scene(rootPane, 1000, 700);
 
-
     for (int i = 1; i <= board.getTiles().size(); i++) {
       TileView tile = (TileView) scene.lookup("#tile" + i);
       if (tile != null) {
@@ -76,6 +75,7 @@ public class BoardGameGUI implements BoardGameObserver {
       }
     }
   }
+
   private static final double[][] tokenOFFSETS = {
       {0.2, 0.2},
       {0.5, 0.5},
