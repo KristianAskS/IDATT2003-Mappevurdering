@@ -1,7 +1,8 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import edu.ntnu.bidata.idatt.patterns.observer.ConsoleBoardGameObserver;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.view.SceneManager;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,6 +25,7 @@ public class BoardGameSelectionScene {
     toLandingSceneBtn.setOnAction(e -> {
       SceneManager.showLandingScene();
     });
+    logger.log(Level.INFO, "BoardGameSelectionScene created");
   }
 
   public Scene getScene() {

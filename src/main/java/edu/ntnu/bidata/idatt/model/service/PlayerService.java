@@ -1,6 +1,6 @@
-package edu.ntnu.bidata.idatt.service;
+package edu.ntnu.bidata.idatt.model.service;
 
-import edu.ntnu.bidata.idatt.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.utils.io.CsvPlayerFileHandler;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import java.io.IOException;
@@ -21,6 +21,14 @@ public class PlayerService {
     this.players.addAll(readPlayers);
     players = playerFileHandler.readFromFile(filePath);
     return players;
+  }
+
+  public List<Player> getPlayers() {
+    return players;
+  }
+
+  public void setPlayers(List<Player> players) {
+    this.players = players;
   }
 }
 

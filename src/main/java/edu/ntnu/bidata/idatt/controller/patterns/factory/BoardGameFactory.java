@@ -1,29 +1,30 @@
-package edu.ntnu.bidata.idatt.patterns.factory;
+package edu.ntnu.bidata.idatt.controller.patterns.factory;
 
-import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class BoardGameFactory {
 
   public static Board createBoardTiles(String name, String description, int numbOfTiles) {
     Board board = new Board(name, description);
 
-    for (int i = 1; i <= numbOfTiles; i++) {
-      Tile tile = new Tile(i);
-      board.addTile(tile);
-    }
+    IntStream.rangeClosed(1, numbOfTiles)
+        .mapToObj(Tile::new)
+        .forEach(board::addTile);
 
-    for (int i = 1; i <= numbOfTiles; i++) {
-      Tile currentTile = board.getTileId(i);
-      Tile nextTile = board.getTileId(i + 1);
-      if (currentTile != null && nextTile != null) {
-        currentTile.setNextTile(nextTile);
-      }
-    }
+    IntStream.rangeClosed(1, numbOfTiles)
+        .forEach(i -> {
+          Tile currentTile = board.getTileId(i);
+          Tile nextTile = board.getTileId(i + 1);
+          if (currentTile != null && nextTile != null) {
+            currentTile.setNextTile(nextTile);
+          }
+        });
     return board;
   }
 

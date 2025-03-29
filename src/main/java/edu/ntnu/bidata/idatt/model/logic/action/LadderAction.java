@@ -1,6 +1,6 @@
-package edu.ntnu.bidata.idatt.logic.action;
+package edu.ntnu.bidata.idatt.model.logic.action;
 
-import edu.ntnu.bidata.idatt.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Player;
 
 public class LadderAction implements TileAction {
 
@@ -12,10 +12,12 @@ public class LadderAction implements TileAction {
     this.description = description;
   }
 
+
   @Override
   public void perform(Player player) {
-    player.move(destinationTileld);
+    //player.move(destinationTileld);
   }
+
 
   public int getDestinationTileld() {
     return destinationTileld;

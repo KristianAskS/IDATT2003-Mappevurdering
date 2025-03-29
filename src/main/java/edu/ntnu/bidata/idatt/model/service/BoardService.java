@@ -1,6 +1,6 @@
-package edu.ntnu.bidata.idatt.service;
+package edu.ntnu.bidata.idatt.model.service;
 
-import edu.ntnu.bidata.idatt.model.Board;
+import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
@@ -36,10 +36,6 @@ public class BoardService {
       throw new IllegalStateException("No board to write");
     }
     boardFileHandler.writeToFile(boards, filePath);
-  }
-
-  public Board getBoard() {
-    return board;
   }
 
   public void setBoard(Board board) {

@@ -1,8 +1,9 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import edu.ntnu.bidata.idatt.patterns.observer.ConsoleBoardGameObserver;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -49,6 +50,8 @@ public class LandingScene {
 
     playBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
     exitBtn.setOnAction(e -> System.exit(0));
+
+    logger.log(Level.INFO, "LandingScene created");
   }
 
   public Scene getScene() {

@@ -1,6 +1,6 @@
-package edu.ntnu.bidata.idatt.logic.action;
+package edu.ntnu.bidata.idatt.model.logic.action;
 
-import edu.ntnu.bidata.idatt.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Player;
 
 public interface TileAction {
 

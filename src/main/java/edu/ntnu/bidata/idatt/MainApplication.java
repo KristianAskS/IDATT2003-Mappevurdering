@@ -19,7 +19,7 @@ public class MainApplication extends Application {
   }
 
   @Override
-  public void start(Stage primaryStage) throws IOException {
+  public void start(Stage primaryStage) throws IOException, InterruptedException {
     BoardGameInterface boardGameInterface = new BoardGameInterface(primaryStage);
     boardGameInterface.init();
     boardGameInterface.start();

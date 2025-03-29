@@ -1,6 +1,6 @@
 package edu.ntnu.bidata.idatt.view.components;
 
-import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
 import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
@@ -10,10 +10,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class TileView extends StackPane {
-  public TileView(Tile tile) {
+  public static final int TILE_SIZE = 67;
+
+  public TileView(Tile tile, int TILE_SIZE) {
+    this.setId("tile" + tile.getTileId());
+
     int tileId = tile.getTileId();
     tile.setNextTileId(-1);
-    Rectangle rectangle = new Rectangle(67, 67);
+    Rectangle rectangle = new Rectangle(TILE_SIZE, TILE_SIZE);
 
     rectangle.setFill(null);
     rectangle.setStroke(Color.BLACK);

@@ -1,7 +1,6 @@
-package edu.ntnu.bidata.idatt.model;
+package edu.ntnu.bidata.idatt.model.entity;
 
-import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.logic.action.TileAction;
+import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 
 /**
  * The type Tile.
@@ -22,15 +21,6 @@ public class Tile {
 
   public void setLandAction(TileAction landAction) {
     this.landAction = landAction;
-  }
-
-
-  public void landPlayer(Player player) {
-
-  }
-
-  public void leavePlayer(Player player) {
-
   }
 
   public Tile getNextTile() {

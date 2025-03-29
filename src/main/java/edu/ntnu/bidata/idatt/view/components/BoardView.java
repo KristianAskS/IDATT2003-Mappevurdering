@@ -1,7 +1,7 @@
 package edu.ntnu.bidata.idatt.view.components;
 
-import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 
@@ -19,11 +19,14 @@ public class BoardView {
 
     for (int tileId = 1; tileId <= totalTiles; tileId++) {
       Tile tile = board.getTileId(tileId);
-      TileView tileView = new TileView(tile);
+      TileView tileView = new TileView(tile, TileView.TILE_SIZE);
+
       if (tileId % 2 == 0) {
-        tileView.setStyle("-fx-background-color: #004DFF;");
+        //tileView.setStyle("-fx-background-color: #004DFF"); //1
+        tileView.setStyle("-fx-background-color: #1E90FF");
       } else {
-        tileView.setStyle("-fx-background-color: #FF00D4;");
+        //tileView.setStyle("-fx-background-color: #FF00D4"); //1
+        tileView.setStyle("-fx-background-color: #FFA500");
       }
 
       int bottomRow = (tileId - 1) / columns;

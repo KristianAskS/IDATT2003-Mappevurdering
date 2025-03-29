@@ -16,10 +16,4 @@ public class InputValidation {
       throw new IllegalArgumentException("Input cannot be negative");
     }
   }
-
-  public static void validateSetDiceValue(int input) {
-    if (input < 1 || input > 6) {
-      throw new IllegalArgumentException("Dice number input must be between 1 and 6");
-    }
-  }
 }

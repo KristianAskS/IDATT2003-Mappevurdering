@@ -1,41 +1,34 @@
-package edu.ntnu.bidata.idatt.model;
+package edu.ntnu.bidata.idatt.model.entity;
 
-import edu.ntnu.bidata.idatt.entity.Die;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Stores the collection of dices
+ *
+ * @author Trile
+ * @version 2.0
  */
 public class Dice {
-
   private final List<Die> dice;
 
-
-  /**
-   * Instantiates a new Dice.
-   *
-   * @param numberOfDice the number of dice
-   */
   public Dice(int numberOfDice) {
-
-    dice = new ArrayList<>();
-    for (int i = 0; i < numberOfDice; i++) {
-      dice.add(new Die());
-    }
+    dice = IntStream.range(0, numberOfDice)
+        .mapToObj(Die -> new Die())
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
-   * Roll every die in dice.
+   * Roll all the dices in the dice array
    *
-   * @return the sum of eyes rolled
+   * @return the sum of the rolled dices
    */
   public int roll() {
-    int sum = 0;
-    for (Die die : dice) {
-      sum += die.roll();
-    }
-    return sum;
+    return dice.stream()
+        .mapToInt(Die::roll)
+        .sum();
   }
 
   /**

@@ -1,6 +1,8 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
-import edu.ntnu.bidata.idatt.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.TokenType;
+import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -55,13 +57,13 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
       String line;
       while ((line = bufferedReader.readLine()) != null) {
         String[] playerData = line.split(",");
-        if (playerData.length >= 1) {
+        if (playerData.length >= 1 && playerData.length <= 2) {
           String name = playerData[0].trim();
-          Player player = new Player(name);
-          if (playerData.length == 2) {
-            String token = playerData[1].trim();
-            player.setToken(token);
-          }
+
+          String tokenTypeString = playerData[1].trim();
+          TokenType tokenType = TokenType.valueOf(tokenTypeString);
+          TokenView token = new TokenView(tokenType);
+          Player player = new Player(name, token);
           players.add(player);
         }
       }

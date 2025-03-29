@@ -1,6 +1,5 @@
-package edu.ntnu.bidata.idatt.entity;
+package edu.ntnu.bidata.idatt.model.entity;
 
-import edu.ntnu.bidata.idatt.utils.InputValidation;
 import java.util.Random;
 
 public class Die {
@@ -11,6 +10,10 @@ public class Die {
 
   }
 
+  /*
+   * Roll a single die
+   * @return the value rolled
+   */
   public int roll() {
     lastRolledValue = random.nextInt(6) + 1;
     return lastRolledValue;
@@ -18,10 +21,5 @@ public class Die {
 
   public int getValue() {
     return lastRolledValue;
-  }
-
-  public void setValue(int value) {
-    InputValidation.validateSetDiceValue(value);
-    this.lastRolledValue = value;
   }
 }
