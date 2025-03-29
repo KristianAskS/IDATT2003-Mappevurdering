@@ -5,8 +5,10 @@ import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
+import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
@@ -23,12 +25,17 @@ public class PlayerSelectionScene {
 
     rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
 
-    Button toBoardGameScene = new Button("To game scene (play)");
-    Button toLandingSceneBtn = new Button("Back to landing scene");
-    Button toBoardGameSelectionSceneBtn = new Button("Back");
+    Button toBoardGameScene = Buttons.getMainBtn("Play!");
+    Button toLandingSceneBtn = Buttons.getExitBtn("To main page");
+    Button toBoardGameSelectionSceneBtn = Buttons.getBackBtn("Back");
+
+    BorderPane bottomPane = new BorderPane();
+    bottomPane.setLeft(toBoardGameSelectionSceneBtn);
+    bottomPane.setRight(toLandingSceneBtn);
+    bottomPane.setPadding(new Insets(10));
+    rootPane.setBottom(bottomPane);
+
     rootPane.setCenter(toBoardGameScene);
-    rootPane.setBottom(toLandingSceneBtn);
-    rootPane.setTop(toBoardGameSelectionSceneBtn);
 
     toBoardGameScene.setOnAction(e -> {
       SceneManager.showBoardGameScene();

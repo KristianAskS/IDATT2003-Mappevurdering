@@ -9,14 +9,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class SceneManager {
+  public final static int SCENE_WIDTH = 1000;
+  public final static int SCENE_HEIGHT = 700;
   private static Stage primaryStage;
   private static Scene landingScene;
   private static Scene boardGameSelectionScene;
   private static Scene playerSelectionScene;
   private static Scene boardGameScene;
-
-  public final static int SCENE_WIDTH = 1000;
-  public final static int SCENE_HEIGHT = 700;
 
   public SceneManager(Stage primaryStage) throws IOException {
     SceneManager.primaryStage = primaryStage;

@@ -39,6 +39,7 @@ public class Buttons {
     String defaultStyle =
         "-fx-font-size: 16px;" +
             "-fx-font-weight: bold;" +
+            "-fx-font-family: 'monospace';" +
             "-fx-text-fill: #ffffff;" +
             "-fx-background-color: #7DBED7;" +
             "-fx-border-color: black;" +
@@ -50,6 +51,7 @@ public class Buttons {
     String hoverStyle =
         "-fx-font-size: 16px;" +
             "-fx-font-weight: bold;" +
+            "-fx-font-family: 'monospace';" +
             "-fx-text-fill: #ffffff;" +
             "-fx-background-color: #B3E5FC;" +
             "-fx-border-color: black;" +
@@ -70,6 +72,7 @@ public class Buttons {
     String defaultStyle =
         "-fx-font-size: 16px;" +
             "-fx-font-weight: bold;" +
+            "-fx-font-family: 'monospace';" +
             "-fx-text-fill: #ffffff;" +
             "-fx-background-color: #E57373;" +
             "-fx-border-color: black;" +
@@ -81,6 +84,7 @@ public class Buttons {
     String hoverStyle =
         "-fx-font-size: 16px;" +
             "-fx-font-weight: bold;" +
+            "-fx-font-family: 'monospace';" +
             "-fx-text-fill: #ffffff;" +
             "-fx-background-color: #EF5350;" +
             "-fx-border-color: black;" +
@@ -96,10 +100,11 @@ public class Buttons {
     return exitBtn;
   }
 
-  public static Button getPlayBtn(String text) {
+  public static Button getMainBtn(String text) {
     Button playBtn = new Button(text);
     String defaultStyle =
         "-fx-font-size: 26px;" +
+            "-fx-font-family: 'monospace';" +
             "-fx-font-weight: bold;" +
             "-fx-text-fill: #ffffff;" +
             "-fx-background-color: linear-gradient(#61a2b1, #2A5058);" +
@@ -110,6 +115,7 @@ public class Buttons {
     String hoverStyle =
         "-fx-font-size: 30px;" +
             "-fx-font-weight: bold;" +
+            "-fx-font-family: 'monospace';" +
             "-fx-text-fill: #ffffff;" +
             "-fx-background-color: linear-gradient(#8BC6EC, #9599E2);" +
             "-fx-background-radius: 100;" +
