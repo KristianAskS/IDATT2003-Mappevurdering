@@ -2,12 +2,14 @@ package edu.ntnu.bidata.idatt.view.scenes;
 
 import edu.ntnu.bidata.idatt.entity.TokenType;
 import edu.ntnu.bidata.idatt.model.Board;
+import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
 import edu.ntnu.bidata.idatt.service.BoardService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.List;
@@ -36,6 +38,8 @@ public class BoardGameGUI implements BoardGameObserver {
   public BoardGameGUI() throws IOException {
     BorderPane rootPane = new BorderPane();
     rootPane.setStyle("-fx-background-color: #600E50;");
+    rootPane.setStyle("-fx-background-color: #1A237E;");
+
     rootPane.setLeft(createIOContainer());
 
     //nødvendige instanser
@@ -52,6 +56,12 @@ public class BoardGameGUI implements BoardGameObserver {
     GridPane boardPane = BoardView.createBoardGUI(board);
     rootPane.setCenter(boardPane);
     scene = new Scene(rootPane, 1000, 700);
+
+    TileView tileView = (TileView) scene.lookup("#tile1");
+    if(tileView!=null){
+      TokenView redToken = new TokenView(TokenType.RED, 0, 0);
+      tileView.getChildren().add(redToken);
+    }
   }
 
   public Scene getScene() {

@@ -57,6 +57,10 @@ public class BoardGame {
     return players;
   }
 
+  public void movePlayer(Player player, int roll) {
+    player.move(roll);
+  }
+
   public int getNumbOfTiles() {
     return board.getTiles().size();
   }

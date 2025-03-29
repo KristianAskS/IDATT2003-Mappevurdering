@@ -4,6 +4,7 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.entity.TokenType;
 import edu.ntnu.bidata.idatt.patterns.observer.ConsoleBoardGameObserver;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -25,15 +26,8 @@ public class TokenView extends StackPane {
     token.setTranslateX((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
     token.setTranslateY((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
 
-    Ellipse ellipse = new Ellipse(0.2 * TILE_SIZE, 0.2 * TILE_SIZE);
-    ellipse.setFill(tokenType.getColor());
-    ellipse.setStroke(Color.PINK);
-    ellipse.setStrokeWidth(0.03);
-    token.setTranslateX((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
-    token.setTranslateY((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
+    getChildren().addAll(token);
 
-    getChildren().addAll(token, ellipse);
-
-    logger.info("TokenView created");
+    logger.log(Level.INFO,"TokenView created");
   }
 }
