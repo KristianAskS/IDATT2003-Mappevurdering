@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt.patterns.observer;
+package edu.ntnu.bidata.idatt.controller.patterns.observer;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

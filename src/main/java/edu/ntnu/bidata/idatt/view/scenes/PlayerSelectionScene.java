@@ -1,6 +1,5 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import edu.ntnu.bidata.idatt.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,7 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 
 public class PlayerSelectionScene {
-  private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
+  private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
   private final Scene scene;
 
   public PlayerSelectionScene() {

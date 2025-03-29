@@ -1,7 +1,6 @@
-package edu.ntnu.bidata.idatt.model;
+package edu.ntnu.bidata.idatt.model.entity;
 
-import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.logic.action.TileAction;
+import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 
 /**
  * The type Tile.

@@ -1,8 +1,6 @@
-package edu.ntnu.bidata.idatt.entity;
+package edu.ntnu.bidata.idatt.model.entity;
 
-import edu.ntnu.bidata.idatt.model.Tile;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

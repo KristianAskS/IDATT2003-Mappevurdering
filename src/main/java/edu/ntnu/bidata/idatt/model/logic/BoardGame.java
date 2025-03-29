@@ -1,16 +1,14 @@
-package edu.ntnu.bidata.idatt.logic;
+package edu.ntnu.bidata.idatt.model.logic;
 
-import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.model.Dice;
-import edu.ntnu.bidata.idatt.model.Tile;
-import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
-import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEventType;
-import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
+import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Dice;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameObserver;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

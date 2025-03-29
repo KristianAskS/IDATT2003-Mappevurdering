@@ -2,14 +2,15 @@ package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
-import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.patterns.factory.BoardGameFactory;
-import edu.ntnu.bidata.idatt.patterns.factory.PlayerFactory;
-import edu.ntnu.bidata.idatt.patterns.observer.BoardGameEvent;
-import edu.ntnu.bidata.idatt.patterns.observer.BoardGameObserver;
-import edu.ntnu.bidata.idatt.service.BoardService;
-import edu.ntnu.bidata.idatt.service.PlayerService;
+import edu.ntnu.bidata.idatt.controller.BoardGameController;
+import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
+import edu.ntnu.bidata.idatt.controller.patterns.factory.PlayerFactory;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameObserver;
+import edu.ntnu.bidata.idatt.model.service.BoardService;
+import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.TileView;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -44,6 +46,7 @@ public class BoardGameScene implements BoardGameObserver {
   private final Label statusLabel = new Label();
   private final PlayerService playerService = new PlayerService();
   private final BoardService boardService = new BoardService();
+  private final BoardGameController boardGameController;
 
   public BoardGameScene() throws IOException {
     BorderPane rootPane = createRootPane();
@@ -55,6 +58,8 @@ public class BoardGameScene implements BoardGameObserver {
     boards.add(board);
     boardService.setBoard(board);
     boardService.writeBoardToFile(boards, "data/games/laddersAndSnakes.json");
+
+    boardGameController = new BoardGameController(this, boardService, playerService, board);
 
     GridPane boardPane = BoardView.createBoardGUI(board);
     rootPane.setCenter(boardPane);
@@ -80,53 +85,41 @@ public class BoardGameScene implements BoardGameObserver {
     TileView startTile = (TileView) scene.lookup("#tile1");
     if (startTile != null) {
       List<Node> playerTokens = new ArrayList<>();
-      for (Player player : players) {
-        playerTokens.add(player.getToken());
-      }
+      players.stream()
+          .filter(player -> player.getToken() != null)
+          .forEach(player -> playerTokens.add(player.getToken()));
+
       startTile.getChildren().addAll(playerTokens);
       setTokenPositionOnTile(startTile);
 
       //Eksempel: Flytt spiller 3 med 4 steg
-      movePlayer(players.get(2), 4, board);
+      boardGameController.movePlayer(players.get(2), 4);
     }
   }
 
-  public void movePlayer(Player player, int steps, Board board) {
-    int nextTileId = player.getCurrentTileId() + steps;
-    if (nextTileId > board.getTiles().size()) {
-      nextTileId = board.getTiles().size();
-    }
-
-    player.setCurrentTileId(nextTileId);
-
-    TileView nextTileView = (TileView) scene.lookup("#tile" + nextTileId);
-    if (nextTileView != null) {
-      nextTileView.getChildren().add(player.getToken());
-      setTokenPositionOnTile(nextTileView);
-    }
-  }
-
-  private void setTokenPositionOnTile(TileView tile) {
+  public void setTokenPositionOnTile(TileView tile) {
     //Filtrer ut kun noder fra tile
     List<Node> tokens = tile.getChildren().stream()
         .filter(node -> node instanceof TokenView)
         .toList();
 
     final double[][] offsets = getTokenOffsets(tokens.size());
-    for (int i = 0; i < tokens.size() && i < offsets.length; i++) {
-      Node token = tokens.get(i);
-      double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
-      double y = (TILE_SIZE - offsets[i][1] * TILE_SIZE * 2) / 2;
-      token.setTranslateX(x);
-      token.setTranslateY(y);
-    }
+
+    IntStream.range(0, tokens.size())
+        .forEach(i -> {
+          Node token = tokens.get(i);
+          double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
+          double y = (TILE_SIZE - offsets[i][1] * TILE_SIZE * 2) / 2;
+          token.setTranslateX(x);
+          token.setTranslateY(y);
+        });
   }
 
   /**
-   * Returnerer hardkodede offset-koordinater for antall tokens på en tile.
+   * Returns hardcoded offset-coordinates based on total tokens on a tile.
    *
-   * @param tokenCount antall tokens på tile
-   * @return 2D-array med relative offset-verdier
+   * @param tokenCount total number of tokens
+   * @return 2D-array of offsets
    */
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {

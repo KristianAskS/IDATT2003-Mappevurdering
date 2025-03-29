@@ -1,6 +1,5 @@
-package edu.ntnu.bidata.idatt.model;
+package edu.ntnu.bidata.idatt.model.entity;
 
-import edu.ntnu.bidata.idatt.entity.Die;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

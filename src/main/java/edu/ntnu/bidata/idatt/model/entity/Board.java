@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt.model;
+package edu.ntnu.bidata.idatt.model.entity;
 
 import java.util.HashMap;
 import java.util.Map;

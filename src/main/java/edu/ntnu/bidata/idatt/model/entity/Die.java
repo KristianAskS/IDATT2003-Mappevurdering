@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt.entity;
+package edu.ntnu.bidata.idatt.model.entity;
 
 import edu.ntnu.bidata.idatt.utils.InputValidation;
 import java.util.Random;

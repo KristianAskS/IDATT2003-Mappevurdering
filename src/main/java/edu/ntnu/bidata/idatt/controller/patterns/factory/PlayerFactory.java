@@ -1,7 +1,7 @@
-package edu.ntnu.bidata.idatt.patterns.factory;
+package edu.ntnu.bidata.idatt.controller.patterns.factory;
 
-import edu.ntnu.bidata.idatt.entity.Player;
-import edu.ntnu.bidata.idatt.entity.TokenType;
+import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.TokenType;
 import edu.ntnu.bidata.idatt.utils.io.CsvPlayerFileHandler;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.view.components.TokenView;

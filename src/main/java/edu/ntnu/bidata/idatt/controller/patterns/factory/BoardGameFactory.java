@@ -1,13 +1,11 @@
-package edu.ntnu.bidata.idatt.patterns.factory;
+package edu.ntnu.bidata.idatt.controller.patterns.factory;
 
-import edu.ntnu.bidata.idatt.model.Board;
-import edu.ntnu.bidata.idatt.model.Tile;
+import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class BoardGameFactory {

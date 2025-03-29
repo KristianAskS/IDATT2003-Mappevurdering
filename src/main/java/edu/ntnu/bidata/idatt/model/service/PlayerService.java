@@ -1,6 +1,6 @@
-package edu.ntnu.bidata.idatt.service;
+package edu.ntnu.bidata.idatt.model.service;
 
-import edu.ntnu.bidata.idatt.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.utils.io.CsvPlayerFileHandler;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import java.io.IOException;

@@ -2,8 +2,8 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
-import edu.ntnu.bidata.idatt.entity.TokenType;
-import edu.ntnu.bidata.idatt.patterns.observer.ConsoleBoardGameObserver;
+import edu.ntnu.bidata.idatt.model.entity.TokenType;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.layout.StackPane;
