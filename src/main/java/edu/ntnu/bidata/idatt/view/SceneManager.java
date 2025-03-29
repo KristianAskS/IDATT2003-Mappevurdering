@@ -15,6 +15,9 @@ public class SceneManager {
   private static Scene playerSelectionScene;
   private static Scene boardGameScene;
 
+  public final static int SCENE_WIDTH = 1000;
+  public final static int SCENE_HEIGHT = 700;
+
   public SceneManager(Stage primaryStage) throws IOException {
     SceneManager.primaryStage = primaryStage;
     landingScene = new LandingScene().getScene();
