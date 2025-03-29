@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.StrokeType;
 
 public class TokenView extends StackPane {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
@@ -21,13 +22,16 @@ public class TokenView extends StackPane {
 
     Ellipse token = new Ellipse(0.2 * TILE_SIZE, 0.2 * TILE_SIZE);
     token.setFill(tokenType.getColor());
-    token.setStroke(Color.BLACK);
-    token.setStrokeWidth(0.03);
-    token.setTranslateX((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
-    token.setTranslateY((TILE_SIZE - 0.2 * TILE_SIZE * 2) / 2);
-
+    TokenView.setStrokeHandler(token);
     getChildren().addAll(token);
 
     logger.log(Level.INFO,"TokenView created");
+  }
+
+  private static void setStrokeHandler(Ellipse token) {
+    token.setStrokeType(StrokeType.CENTERED);
+    token.setStroke(Color.BLACK);
+    token.setStrokeWidth(3);
+    token.setSmooth(true);
   }
 }
