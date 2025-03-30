@@ -4,14 +4,12 @@ import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.view.SceneManager;
-import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 

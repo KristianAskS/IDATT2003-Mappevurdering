@@ -1,7 +1,7 @@
 package edu.ntnu.bidata.idatt.view.components;
 
-import javafx.animation.ScaleTransition;
 import javafx.animation.RotateTransition;
+import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -15,13 +15,14 @@ public class Buttons {
   /**
    * Applies distinct effects for hover, active (pressed), and focused states.
    *
-   * @param btn the button to style
+   * @param btn          the button to style
    * @param defaultStyle the style for the default state
-   * @param hoverStyle the style when the mouse hovers over the button
-   * @param activeStyle the style when the button is pressed
+   * @param hoverStyle   the style when the mouse hovers over the button
+   * @param activeStyle  the style when the button is pressed
    * @param focusedStyle the style when the button is focused
    */
-  private static void applyButtonEffects(Button btn, String defaultStyle, String hoverStyle, String activeStyle, String focusedStyle) {
+  private static void applyButtonEffects(Button btn, String defaultStyle, String hoverStyle,
+                                         String activeStyle, String focusedStyle) {
     btn.setOnMouseEntered(e -> {
       btn.setStyle(hoverStyle);
       ScaleTransition scaleUp = new ScaleTransition(Duration.millis(ANIMATION_DURATION), btn);
@@ -54,7 +55,8 @@ public class Buttons {
       scaleDown.setToY(0.95);
       scaleDown.play();
 
-      TranslateTransition bounce = new TranslateTransition(Duration.millis(ANIMATION_DURATION), btn);
+      TranslateTransition bounce =
+          new TranslateTransition(Duration.millis(ANIMATION_DURATION), btn);
       bounce.setByY(3);
       bounce.setCycleCount(2);
       bounce.setAutoReverse(true);
