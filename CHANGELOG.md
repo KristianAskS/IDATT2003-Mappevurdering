@@ -13,7 +13,8 @@ Format: Task/description
 
 ### Changes
 
-- GUI implementation:
+- GUI implementation: New version v2.1.0. Added navigation styling and buttons styling. 
+- File handling: can now handle (write/read) JSON array and single JSON object
 
 ## 2025-03-29
 
