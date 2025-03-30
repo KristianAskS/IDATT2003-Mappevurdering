@@ -13,9 +13,10 @@ import javafx.scene.shape.StrokeType;
 
 public class TokenView extends StackPane {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
-  private TokenType tokenType;
+  private final TokenType tokenType;
 
   public TokenView(TokenType tokenType) {
+    this.tokenType = tokenType;
     Ellipse token = new Ellipse(0.2 * TILE_SIZE, 0.2 * TILE_SIZE);
     token.setFill(tokenType.getColor());
     TokenView.setStrokeHandler(token);
@@ -29,5 +30,9 @@ public class TokenView extends StackPane {
     token.setStroke(Color.BLACK);
     token.setStrokeWidth(3);
     token.setSmooth(true);
+  }
+
+  public String getTokenType() {
+    return tokenType.name();
   }
 }

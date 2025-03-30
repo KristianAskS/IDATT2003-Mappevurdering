@@ -33,7 +33,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
   public void writeToFile(List<Player> players, String filePath) throws IOException {
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
-        String writeLine = player.getName() + "," + player.getToken();
+        String writeLine = player.getName() + "," + player.getToken().getTokenType();
         bufferedWriter.write(writeLine);
         bufferedWriter.newLine();
         logger.log(Level.INFO, "Player: " + player.getName() + " has been written to the file");

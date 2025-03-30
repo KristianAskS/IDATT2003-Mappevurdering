@@ -44,31 +44,6 @@ public class PlayerSelectionScene {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTBLUE);
 
-    TextInputDialog numPlayersDialog = new TextInputDialog("2");
-    numPlayersDialog.setTitle("Select Number of Players");
-    numPlayersDialog.setHeaderText("How many players will be playing? (max 5)");
-    numPlayersDialog.setContentText("Enter a number (1-5):");
-
-    Optional<String> numPlayersResult = numPlayersDialog.showAndWait();
-    if (numPlayersResult.isPresent()) {
-      try {
-        int num = Integer.parseInt(numPlayersResult.get().trim());
-        if (num < 1 || num > 5) {
-          showAlert("Invalid Number", "Please enter a number between 1 and 5. Defaulting to 2 players.");
-          maxPlayers = 2;
-        } else {
-          maxPlayers = num;
-        }
-      } catch (NumberFormatException ex) {
-        showAlert("Invalid Input", "Please enter a valid number. Defaulting to 2 players.");
-        maxPlayers = 2;
-      }
-    } else {
-      // if closed the dialog, the default is 2 players
-      maxPlayers = 2;
-    }
-    logger.log(Level.INFO, "Max players set to: " + maxPlayers);
-
     try {
       List<Player> csvPlayers = playerService.readPlayersFromFile(PLAYER_FILE_PATH);
       for (Player p : csvPlayers) {
@@ -80,6 +55,8 @@ public class PlayerSelectionScene {
     } catch (IOException ex) {
       logger.log(Level.SEVERE, "Error reading players from CSV: " + ex.getMessage());
     }
+
+    promptNumberOfPlayers();
 
     ListView<String> playerListView = new ListView<>(players);
     playerListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -129,7 +106,8 @@ public class PlayerSelectionScene {
               showAlert("Duplicate Player", "A player with that name already exists.");
             }
           } catch (IllegalArgumentException ex) {
-            showAlert("Invalid Color", "Please enter a valid token color (e.g., RED, BLUE, GREEN, YELLOW, PINK).");
+            showAlert("Invalid Color",
+                "Please enter a valid token color (e.g., RED, BLUE, GREEN, YELLOW, PINK).");
           }
         }
       }
@@ -138,8 +116,10 @@ public class PlayerSelectionScene {
     startGameBtn.setOnAction(e -> {
       var selectedPlayers = playerListView.getSelectionModel().getSelectedItems();
       if (selectedPlayers.size() != maxPlayers) {
-        showAlert("Incorrect Number of Players", "You must select exactly " + maxPlayers + " player(s).");
-        logger.log(Level.WARNING, "Expected " + maxPlayers + " players, but got " + selectedPlayers.size());
+        showAlert("Incorrect Number of Players",
+            "You must select exactly " + maxPlayers + " player(s).");
+        logger.log(Level.WARNING,
+            "Expected " + maxPlayers + " players, but got " + selectedPlayers.size());
       } else {
         try {
           CsvPlayerFileHandler csvHandler = new CsvPlayerFileHandler();
@@ -157,6 +137,34 @@ public class PlayerSelectionScene {
     backBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
 
     logger.log(Level.INFO, "PlayerSelectionScene created");
+  }
+
+  private void promptNumberOfPlayers() {
+    TextInputDialog numPlayersDialog = new TextInputDialog("2");
+    numPlayersDialog.setTitle("Select Number of Players");
+    numPlayersDialog.setHeaderText("How many players will be playing? (max 5)");
+    numPlayersDialog.setContentText("Enter a number (1-5):");
+
+    Optional<String> numPlayersResult = numPlayersDialog.showAndWait();
+    if (numPlayersResult.isPresent()) {
+      try {
+        int num = Integer.parseInt(numPlayersResult.get().trim());
+        if (num < 1 || num > 5) {
+          showAlert("Invalid Number",
+              "Please enter a number between 1 and 5. Defaulting to 2 players.");
+          maxPlayers = 2;
+        } else {
+          maxPlayers = num;
+        }
+      } catch (NumberFormatException ex) {
+        showAlert("Invalid Input", "Please enter a valid number. Defaulting to 2 players.");
+        maxPlayers = 2;
+      }
+    } else {
+      // if closed the dialog, the default is 2 players
+      maxPlayers = 2;
+    }
+    logger.log(Level.INFO, "Max players set to: " + maxPlayers);
   }
 
   /**

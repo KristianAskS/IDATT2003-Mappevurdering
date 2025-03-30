@@ -5,7 +5,7 @@ import java.io.IOException;
 import javafx.stage.Stage;
 
 public class BoardGameInterface {
-  private Stage primaryStage;
+  private final Stage primaryStage;
 
   public BoardGameInterface(Stage primaryStage) {
     this.primaryStage = primaryStage;
