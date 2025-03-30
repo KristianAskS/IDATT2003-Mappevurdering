@@ -8,9 +8,10 @@ import edu.ntnu.bidata.idatt.controller.BoardGameController;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.PlayerFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
-import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameObserver;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.logic.BoardGame;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
@@ -57,7 +58,10 @@ public class BoardGameScene implements BoardGameObserver {
 
     BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
+
     Board board = BoardGameFactory.createClassicBoard();
+    //Board board = boardService.readBoardFromFile("data/games/laddersAndSnakes.json").get(0);
+
     boards.add(board);
     boardService.setBoard(board);
     boardService.writeBoardToFile(boards, "data/games/laddersAndSnakes.json");

@@ -1,5 +1,6 @@
 package edu.ntnu.bidata.idatt.controller.patterns.observer;
 
+import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

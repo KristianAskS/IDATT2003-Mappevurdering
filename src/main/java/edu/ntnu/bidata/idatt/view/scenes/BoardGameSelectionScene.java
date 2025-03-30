@@ -6,6 +6,8 @@ import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.logic.BoardGame;
+import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
@@ -30,6 +32,7 @@ public class BoardGameSelectionScene {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private final Scene scene;
 
+  private final BoardService boardService = new BoardService();
   private Board selectedBoard;
   private Label detailsTitle;
   private Label detailsDescription;
@@ -88,20 +91,23 @@ public class BoardGameSelectionScene {
 
     Button smallBoardBtn = Buttons.getSecondaryBtn("Small Board");
     smallBoardBtn.setOnAction(e -> {
-      Board board = BoardGameFactory.createSmallBoard();
-      updateDetails(board);
+      Board smallBoard = BoardGameFactory.createSmallBoard();
+      boardService.setBoard(smallBoard);
+      updateDetails(smallBoard);
     });
 
     Button classicBoardBtn = Buttons.getSecondaryBtn("Classic Board");
     classicBoardBtn.setOnAction(e -> {
-      Board board = BoardGameFactory.createClassicBoard();
-      updateDetails(board);
+      Board classicBoard = BoardGameFactory.createClassicBoard();
+      boardService.setBoard(classicBoard);
+      updateDetails(classicBoard);
     });
 
     Button noLaddersSnakesBtn = Buttons.getSecondaryBtn("No Ladders and Snakes");
     noLaddersSnakesBtn.setOnAction(e -> {
-      Board board = BoardGameFactory.createBoardNoLaddersAndSnakes();
-      updateDetails(board);
+      Board noLaddersAndSnakesBoard = BoardGameFactory.createBoardNoLaddersAndSnakes();
+      boardService.setBoard(noLaddersAndSnakesBoard);
+      updateDetails(noLaddersAndSnakesBoard);
     });
 
     container.getChildren().addAll(title, smallBoardBtn, classicBoardBtn, noLaddersSnakesBtn);
