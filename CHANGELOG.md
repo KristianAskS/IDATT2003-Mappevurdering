@@ -2,11 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 Format: Task/description
+## 2025-04-03
 
-## 2025-04-01
-
-### Changes
-
+## 2025-04-02
 - GUI implementation:
 
 ## 2025-03-30

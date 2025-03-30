@@ -20,7 +20,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextInputDialog;
@@ -98,15 +97,15 @@ public class PlayerSelectionScene {
       } else {
 
        */
-        try {
-          CsvPlayerFileHandler csvHandler = new CsvPlayerFileHandler();
-          csvHandler.writeToFile(playerService.getPlayers(), PLAYER_FILE_PATH);
-          logger.log(Level.INFO, "Player data saved to CSV file.");
-        } catch (IOException ex) {
-          logger.log(Level.SEVERE, "Error saving players: " + ex.getMessage());
-        }
-        logger.log(Level.INFO, "Selected players: " + selectedPlayers);
-        SceneManager.showBoardGameScene();
+      try {
+        CsvPlayerFileHandler csvHandler = new CsvPlayerFileHandler();
+        csvHandler.writeToFile(playerService.getPlayers(), PLAYER_FILE_PATH);
+        logger.log(Level.INFO, "Player data saved to CSV file.");
+      } catch (IOException ex) {
+        logger.log(Level.SEVERE, "Error saving players: " + ex.getMessage());
+      }
+      logger.log(Level.INFO, "Selected players: " + selectedPlayers);
+      SceneManager.showBoardGameScene();
       //}
     });
 
