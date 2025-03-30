@@ -26,7 +26,7 @@ public class LandingScene {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    Button choseGameBtn = Buttons.getMainBtn("Chose game!");
+    Button choseGameBtn = Buttons.getPrimaryBtn("Chose game!");
     Button exitBtn = Buttons.getExitBtn("Exit");
     rootPane.setCenter(choseGameBtn);
 

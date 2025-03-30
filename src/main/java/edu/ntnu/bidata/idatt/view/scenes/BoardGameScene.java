@@ -48,13 +48,13 @@ public class BoardGameScene implements BoardGameObserver {
   private final Scene scene;
   private final Label statusLabel = new Label();
   private final PlayerService playerService = new PlayerService();
-  private final BoardService boardService = new BoardService();
   private final BoardGameController boardGameController;
 
   public BoardGameScene() throws IOException {
     BorderPane rootPane = createRootPane();
     rootPane.setLeft(createIOContainer());
 
+    BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
     //Hent et brett (brukeren velger ikke enda) og skriv det til fil (midlertidig løsning)
     Board board = BoardGameFactory.createClassicBoard();

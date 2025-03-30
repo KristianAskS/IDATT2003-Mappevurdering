@@ -23,7 +23,7 @@ public class PlayerSelectionScene {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    Button toBoardGameScene = Buttons.getMainBtn("Play!");
+    Button toBoardGameScene = Buttons.getPrimaryBtn("Start Game!");
     Button toLandingSceneBtn = Buttons.getExitBtn("To main page");
     Button toBoardGameSelectionSceneBtn = Buttons.getBackBtn("Back");
 
