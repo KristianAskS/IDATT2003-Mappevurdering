@@ -25,6 +25,8 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -38,6 +40,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -56,7 +59,6 @@ public class BoardGameScene implements BoardGameObserver {
 
     BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
-    //Hent et brett (brukeren velger ikke enda) og skriv det til fil (midlertidig løsning)
     Board board = BoardGameFactory.createClassicBoard();
     boards.add(board);
     boardService.setBoard(board);
@@ -66,19 +68,19 @@ public class BoardGameScene implements BoardGameObserver {
 
     GridPane boardPane = BoardView.createBoardGUI(board);
     rootPane.setCenter(boardPane);
-    scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    //Initialiser spillere og plasser tokenene på starttilen (midlertidig løsning)
+    // Pakke inn rootPane i en StackPane slik at vi kan skalere rootPane (for senere)
+    StackPane container = new StackPane(rootPane);
+    scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
+
+    // Initialiser spillere og plasser tokenene på starttilen (midlertidig løsning)
     initializePlayers(board);
 
     logger.log(Level.INFO, "BoardGameGUI created");
   }
 
   /**
-   * Returns hardcoded offset-coordinates based on total tokens on a tile.
-   *
-   * @param tokenCount total number of tokens
-   * @return 2D-array of offsets
+   * Returnerer hardkodede offset-koordinater basert på antall tokens på en tile.
    */
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
@@ -100,7 +102,7 @@ public class BoardGameScene implements BoardGameObserver {
     List<Player> players = PlayerFactory.createPlayersDummies();
     playerService.setPlayers(players);
 
-    //Legg alle spilleres token på starttile (midlertidig løsning). Spillerne skal egt starte utanfor brettet
+    // Legg alle spilleres token på starttile (midlertidig løsning)
     TileView startTile = (TileView) scene.lookup("#tile1");
     if (startTile != null) {
       List<Node> playerTokens = new ArrayList<>();
@@ -111,13 +113,12 @@ public class BoardGameScene implements BoardGameObserver {
       startTile.getChildren().addAll(playerTokens);
       setTokenPositionOnTile(startTile);
 
-      //Eksempel: Flytt spiller 3 med 4 steg
+      // Eksempel: Flytt spiller 3 med 4 steg
       boardGameController.movePlayer(players.get(2), 4);
     }
   }
 
   public void setTokenPositionOnTile(TileView tile) {
-    //Filtrer ut kun noder fra tile
     List<Node> tokens = tile.getChildren().stream()
         .filter(node -> node instanceof TokenView)
         .toList();
@@ -193,7 +194,6 @@ public class BoardGameScene implements BoardGameObserver {
 
     Button backBtn = Buttons.getBackBtn("Back");
     container.getChildren().add(backBtn);
-    //midlertidig løsning
     backBtn.setOnAction(e -> SceneManager.showPlayerSelectionScene());
 
     return container;
