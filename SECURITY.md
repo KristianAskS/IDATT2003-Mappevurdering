@@ -18,7 +18,7 @@ The following versions of the project are currently supported with security upda
 If you discover a security vulnerability in our project, we encourage you to report it immediately. Your input helps us improve the security and resilience of our application. Please follow these guidelines when reporting an issue:
 
 - **How to Report:**  
-  Submit a detailed report via our GitHub/GitLab issue tracker or email our development team at [security@yourdomain.com].
+  Submit a detailed report via our GitHub/GitLab issue tracker or email our development team at [kristians.sin.konto@gmail.com].
 
 - **What to Include:**  
   - A clear description of the vulnerability  
