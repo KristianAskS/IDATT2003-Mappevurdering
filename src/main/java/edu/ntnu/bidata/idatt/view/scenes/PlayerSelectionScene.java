@@ -88,14 +88,16 @@ public class PlayerSelectionScene {
 
     startGameBtn.setOnAction(e -> {
       var selectedPlayers = playerListView.getSelectionModel().getSelectedItems();
+      /*
       if (selectedPlayers.isEmpty()) {
         logger.log(Level.WARNING, "No players selected!");
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("No players selected");
         dialog.setHeaderText(null);
         dialog.setContentText("Please select at least one player.");
-        dialog.showAndWait();
       } else {
+
+       */
         try {
           CsvPlayerFileHandler csvHandler = new CsvPlayerFileHandler();
           csvHandler.writeToFile(playerService.getPlayers(), PLAYER_FILE_PATH);
@@ -105,7 +107,7 @@ public class PlayerSelectionScene {
         }
         logger.log(Level.INFO, "Selected players: " + selectedPlayers);
         SceneManager.showBoardGameScene();
-      }
+      //}
     });
 
     mainPageBtn.setOnAction(e -> SceneManager.showLandingScene());
