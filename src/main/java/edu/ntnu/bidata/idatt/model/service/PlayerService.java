@@ -10,6 +10,7 @@ import java.util.List;
 public class PlayerService {
   private final FileHandler<Player> playerFileHandler = new CsvPlayerFileHandler();
   private List<Player> players = new ArrayList<>();
+  public static final String PLAYER_FILE_PATH = "data/players.csv";
 
   public void writePlayersToFile(String filePath) throws IOException {
     playerFileHandler.writeToFile(players, filePath);
@@ -29,6 +30,9 @@ public class PlayerService {
 
   public void setPlayers(List<Player> players) {
     this.players = players;
+  }
+
+  public void addPlayer(Player newPlayer) {
   }
 }
 

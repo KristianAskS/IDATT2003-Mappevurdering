@@ -1,5 +1,6 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
+import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
 import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
@@ -63,7 +64,7 @@ public class BoardGameScene implements BoardGameObserver {
 
     boards.add(board);
     boardService.setBoard(board);
-    boardService.writeBoardToFile(boards, "data/games/laddersAndSnakes.json");
+    boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
 
     boardGameController = new BoardGameController(this, boardService, playerService, board);
 

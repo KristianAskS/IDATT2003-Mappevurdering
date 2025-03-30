@@ -12,6 +12,9 @@ public class BoardService {
   private static final Logger logger = Logger.getLogger(BoardService.class.getName());
   private final FileHandler<Board> boardFileHandler = new GsonBoardFileHandler();
   private Board board;
+
+  public final static String BOARD_FILE_PATH = "data/games/boards.json";
+
   private List<Board> boards;
 
   /**
