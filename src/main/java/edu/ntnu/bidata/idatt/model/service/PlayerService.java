@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerService {
+  public static final String PLAYER_FILE_PATH = "data/players.csv";
   private final FileHandler<Player> playerFileHandler = new CsvPlayerFileHandler();
   private List<Player> players = new ArrayList<>();
-  public static final String PLAYER_FILE_PATH = "data/players.csv";
 
   public void writePlayersToFile(String filePath) throws IOException {
     playerFileHandler.writeToFile(players, filePath);

@@ -9,12 +9,10 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class BoardService {
+  public final static String BOARD_FILE_PATH = "data/games/boards.json";
   private static final Logger logger = Logger.getLogger(BoardService.class.getName());
   private final FileHandler<Board> boardFileHandler = new GsonBoardFileHandler();
   private Board board;
-
-  public final static String BOARD_FILE_PATH = "data/games/boards.json";
-
   private List<Board> boards;
 
   /**
