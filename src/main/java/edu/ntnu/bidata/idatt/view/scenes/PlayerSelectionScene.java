@@ -54,7 +54,8 @@ public class PlayerSelectionScene {
 
 
     startGameBtn.setOnAction(e -> {
-      ObservableList<String> selectedPlayers = playerListView.getSelectionModel().getSelectedItems();
+      ObservableList<String> selectedPlayers =
+          playerListView.getSelectionModel().getSelectedItems();
       if (selectedPlayers.isEmpty()) {
         logger.log(Level.WARNING, "No players selected!");
         Dialog<String> dialog = new Dialog<>();

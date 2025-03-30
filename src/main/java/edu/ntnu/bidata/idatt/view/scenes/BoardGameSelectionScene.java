@@ -6,7 +6,6 @@ import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
-import edu.ntnu.bidata.idatt.model.logic.BoardGame;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;

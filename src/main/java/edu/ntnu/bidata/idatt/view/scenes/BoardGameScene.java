@@ -11,7 +11,6 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.logic.BoardGame;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.SceneManager;

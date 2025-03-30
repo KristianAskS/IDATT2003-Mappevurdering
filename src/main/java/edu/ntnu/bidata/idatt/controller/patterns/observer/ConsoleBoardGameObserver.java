@@ -20,10 +20,7 @@ public class ConsoleBoardGameObserver implements BoardGameObserver {
         logger.log(Level.INFO, "{0} won the game!", eventType.player().getName());
         break;
       }
-      default -> {
-        logger.log(Level.INFO, "Unknown event type: {0}", eventType.eventType());
-      }
+      default -> logger.log(Level.INFO, "Unknown event type: {0}", eventType.eventType());
     }
-
   }
 }
