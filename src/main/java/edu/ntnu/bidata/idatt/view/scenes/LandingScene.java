@@ -23,21 +23,19 @@ public class LandingScene {
   private final Scene scene;
 
   public LandingScene() {
-    BorderPane rootPane = new BorderPane();
+    BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
-
-    Button playBtn = Buttons.getMainBtn("Press to play!");
+    Button choseGameBtn = Buttons.getMainBtn("Chose game!");
     Button exitBtn = Buttons.getExitBtn("Exit");
-    rootPane.setCenter(playBtn);
+    rootPane.setCenter(choseGameBtn);
 
     HBox exitBox = new HBox(exitBtn);
     exitBox.setAlignment(Pos.CENTER_RIGHT);
     exitBox.setPadding(new Insets(10));
     rootPane.setBottom(exitBox);
 
-    playBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
+    choseGameBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
     exitBtn.setOnAction(e -> System.exit(0));
 
     logger.log(Level.INFO, "LandingScene created");

@@ -20,10 +20,8 @@ public class PlayerSelectionScene {
   private final Scene scene;
 
   public PlayerSelectionScene() {
-    BorderPane rootPane = new BorderPane();
+    BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
-
-    rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
 
     Button toBoardGameScene = Buttons.getMainBtn("Play!");
     Button toLandingSceneBtn = Buttons.getExitBtn("To main page");
