@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"edu.ntnu.bidata.idatt","l":"edu.ntnu.bidata.idatt"},{"m":"edu.ntnu.bidata.idatt","l":"edu.ntnu.bidata.idatt.view"},{"m":"edu.ntnu.bidata.idatt","l":"edu.ntnu.bidata.idatt.view.components"},{"m":"edu.ntnu.bidata.idatt","l":"edu.ntnu.bidata.idatt.view.scenes"}];updateSearchResults();

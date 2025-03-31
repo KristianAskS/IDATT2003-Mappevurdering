@@ -1,0 +1,5 @@
+module:edu.ntnu.bidata.idatt
+edu.ntnu.bidata.idatt
+edu.ntnu.bidata.idatt.view
+edu.ntnu.bidata.idatt.view.components
+edu.ntnu.bidata.idatt.view.scenes
