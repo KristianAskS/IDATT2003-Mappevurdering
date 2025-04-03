@@ -92,4 +92,10 @@ public class Buttons {
     applyButtonEffects(secondaryBtn);
     return secondaryBtn;
   }
+
+  public static Button getEditBtn(String text){
+    Button editBtn = new Button(text);
+    editBtn.getStyleClass().addAll("button", "edit-btn");
+    return editBtn;
+  }
 }

@@ -41,6 +41,7 @@ public class PlayerSelectionScene {
   private final Scene scene;
   private final PlayerService playerService = new PlayerService();
   private final int VBOX_WIDTH = 300;
+  private static Optional<Integer> placerSelectionResult;
 
   public PlayerSelectionScene() {
     BorderPane rootPane = SceneManager.getRootPane();
@@ -57,6 +58,19 @@ public class PlayerSelectionScene {
     BorderPane.setAlignment(bottomContainer, Pos.BOTTOM_LEFT);
 
     logger.log(Level.INFO, "PlayerSelectionScene initialized");
+  }
+
+  public static void showPlayerSelectionDialog(){
+    List<Integer> choices = new ArrayList<>();
+    IntStream.range(1,6).forEach(choices::add);
+
+    ChoiceDialog<Integer> dialog = new ChoiceDialog<>(5, choices);
+    dialog.setTitle("Total player selection");
+    dialog.setHeaderText("Select total players");
+    dialog.setContentText("Choose your number:");
+
+    placerSelectionResult = dialog.showAndWait();
+    placerSelectionResult.ifPresent(letter -> logger.log(Level.INFO, "The user's choice: " + placerSelectionResult));
   }
 
   private String getVBoxPanelStyles() {
@@ -111,7 +125,12 @@ public class PlayerSelectionScene {
     TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
     playersTableView.getColumns().addAll(List.of(nameColumn, tokenColumn));
 
-    middlePanel.getChildren().addAll(headingLabel, playersTableView);
+    Button totalPlayerchoice = Buttons.getEditBtn("Edit total players");
+    totalPlayerchoice.setOnAction(e->{
+      showPlayerSelectionDialog();
+    });
+
+    middlePanel.getChildren().addAll(headingLabel, playersTableView, totalPlayerchoice);
     return middlePanel;
   }
 
@@ -157,6 +176,10 @@ public class PlayerSelectionScene {
   private Button getStartGameBtn() {
     Button startGameBtn = Buttons.getSmallPrimaryBtn("Start Game!");
     startGameBtn.setOnAction(p -> {
+      if (getPlacerSelectionResult().isEmpty()){
+        showPlayerSelectionDialog();
+        return;
+      }
       SceneManager.showBoardGameScene();
       logger.log(Level.INFO, "Start game btn pressed, showBoardGameScene initialized");
     });
@@ -194,16 +217,8 @@ public class PlayerSelectionScene {
   public Scene getScene() {
     return scene;
   }
-  public static void showPlayerSelectionStage(){
-    List<Integer> choices = new ArrayList<>();
-    IntStream.range(1,6).forEach(choices::add);
 
-    ChoiceDialog<Integer> dialog = new ChoiceDialog<>(5, choices);
-    dialog.setTitle("Total player selection");
-    dialog.setHeaderText("Select total players");
-    dialog.setContentText("Choose your number:");
-
-    Optional<Integer> result = dialog.showAndWait();
-    result.ifPresent(letter -> logger.log(Level.INFO, "The user's choice: " + result));
+  public static Optional<Integer> getPlacerSelectionResult(){
+    return placerSelectionResult;
   }
 }
