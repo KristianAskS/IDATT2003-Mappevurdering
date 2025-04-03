@@ -64,7 +64,7 @@ public class BoardGameSelectionScene {
 
     BorderPane.setAlignment(bottomContainer, Pos.BOTTOM_LEFT);
 
-    logger.log(Level.INFO, "BoardGameSelectionScene created");
+    logger.log(Level.INFO, "BoardGameSelectionScene initialized");
   }
 
   private VBox createSelectionContainer() {
@@ -174,8 +174,6 @@ public class BoardGameSelectionScene {
     });
 
     bottomBox.getChildren().addAll(backBtn, spacer, playBtn);
-    //bottomBox.setStyle("-fx-border-width: 3; -fx-border-color: white;");
-
     return bottomBox;
   }
 

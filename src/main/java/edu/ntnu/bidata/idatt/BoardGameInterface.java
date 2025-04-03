@@ -11,7 +11,7 @@ public class BoardGameInterface {
     this.primaryStage = primaryStage;
   }
 
-  public void init() throws IOException, InterruptedException {
+  public void init() throws IOException {
     new SceneManager(primaryStage);
     SceneManager.showLandingScene();
   }

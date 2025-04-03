@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 public class SceneManager {
   public final static int SCENE_WIDTH = 1000;
   public final static int SCENE_HEIGHT = 700;
+  private static final String BUTTONS_CSS_PATH = "/edu/ntnu/bidata/idatt/styles/ButtonsStyles.css";
   private static Stage primaryStage;
   private static Scene landingScene;
   private static Scene boardGameSelectionScene;
@@ -22,10 +23,10 @@ public class SceneManager {
 
   public SceneManager(Stage primaryStage) throws IOException {
     SceneManager.primaryStage = primaryStage;
-    landingScene = new LandingScene().getScene();
-    boardGameSelectionScene = new BoardGameSelectionScene().getScene();
-    playerSelectionScene = new PlayerSelectionScene().getScene();
-    boardGameScene = new BoardGameScene().getScene();
+    landingScene = loadBtnCss(new LandingScene().getScene());
+    boardGameSelectionScene = loadBtnCss(new BoardGameSelectionScene().getScene());
+    playerSelectionScene = loadBtnCss(new PlayerSelectionScene().getScene());
+    boardGameScene = loadBtnCss(new BoardGameScene().getScene());
   }
 
   public static void showLandingScene() {
@@ -48,5 +49,10 @@ public class SceneManager {
     BorderPane rootPane = new BorderPane();
     rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
     return rootPane;
+  }
+
+  private Scene loadBtnCss(Scene scene) {
+    scene.getStylesheets().add(String.valueOf(getClass().getResource(BUTTONS_CSS_PATH)));
+    return scene;
   }
 }

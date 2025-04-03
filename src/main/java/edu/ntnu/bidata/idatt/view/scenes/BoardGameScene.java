@@ -168,7 +168,7 @@ public class BoardGameScene implements BoardGameObserver {
     container.getChildren().add(pressToRoll);
 
     ImageView imageViewDice = new ImageView(new Image(Objects.requireNonNull(
-        getClass().getResourceAsStream("/edu/ntnu/bidata/idatt/dicePlaceholder.png"))));
+        getClass().getResourceAsStream("/edu/ntnu/bidata/idatt/images/dicePlaceholder.png"))));
     imageViewDice.setFitHeight(100);
     imageViewDice.setFitWidth(100);
     container.getChildren().add(imageViewDice);
@@ -178,7 +178,8 @@ public class BoardGameScene implements BoardGameObserver {
     container.getChildren().add(rollResult);
 
     ImageView imageViewResult = new ImageView(new Image(Objects.requireNonNull(
-        getClass().getResourceAsStream("/edu/ntnu/bidata/idatt/rollResultPlaceholder.png"))));
+        getClass().getResourceAsStream(
+            "/edu/ntnu/bidata/idatt/images/rollResultPlaceholder.png"))));
     imageViewResult.setFitHeight(100);
     imageViewResult.setFitWidth(100);
     container.getChildren().add(imageViewResult);
