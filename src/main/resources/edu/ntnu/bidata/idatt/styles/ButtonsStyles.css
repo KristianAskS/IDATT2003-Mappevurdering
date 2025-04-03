@@ -1,0 +1,95 @@
+.button {
+    -fx-font-family: 'monospace';
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.5, 0, 2);
+}
+
+.back-btn {
+    -fx-font-size: 16px;
+    -fx-background-color: linear-gradient(to right, #42a5f5, #1e88e5);
+    -fx-border-color: #0D47A1;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10 20 10 20;
+}
+
+.back-btn:hover {
+    -fx-background-color: linear-gradient(to right, #64b5f6, #2196f3);
+    -fx-border-color: #1565C0;
+}
+
+.back-btn:pressed {
+    -fx-background-color: linear-gradient(to right, #1e88e5, #1976d2);
+}
+
+.back-btn:focused {
+    -fx-background-color: linear-gradient(to right, #90caf9, #42a5f5);
+}
+
+.exit-btn {
+    -fx-font-size: 16px;
+    -fx-background-color: linear-gradient(to right, #ef5350, #e53935);
+    -fx-border-color: #b71c1c;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10 20 10 20;
+}
+
+.exit-btn:hover {
+    -fx-background-color: linear-gradient(to right, #f44336, #d32f2f);
+}
+
+.exit-btn:pressed {
+    -fx-background-color: linear-gradient(to right, #d32f2f, #c62828);
+}
+
+.exit-btn:focused {
+    -fx-background-color: linear-gradient(to right, #ff8a80, #ff5252);
+}
+
+.primary-btn {
+    -fx-font-size: 26px;
+    -fx-background-color: linear-gradient(to right, #ffeb3b, #fbc02d);
+    -fx-background-radius: 100;
+    -fx-padding: 15 30 15 30;
+}
+
+.primary-btn:hover {
+    -fx-font-size: 30px;
+    -fx-background-color: linear-gradient(to right, #fff176, #fdd835);
+}
+
+.primary-btn:pressed {
+    -fx-font-size: 28px;
+    -fx-background-color: linear-gradient(to right, #fbc02d, #f9a825);
+}
+
+.primary-btn:focused {
+    -fx-font-size: 28px;
+    -fx-background-color: linear-gradient(to right, #ffe082, #ffca28);
+}
+
+.secondary-btn {
+    -fx-font-size: 20px;
+    -fx-background-color: linear-gradient(to right, #ab47bc, #8e24aa);
+    -fx-background-radius: 50;
+    -fx-padding: 10 20 10 20;
+}
+
+.secondary-btn:hover {
+    -fx-font-size: 22px;
+    -fx-background-color: linear-gradient(to right, #ba68c8, #9c27b0);
+}
+
+.secondary-btn:pressed {
+    -fx-font-size: 21px;
+    -fx-background-color: linear-gradient(to right, #8e24aa, #7b1fa2);
+}
+
+.secondary-btn:focused {
+    -fx-font-size: 21px;
+    -fx-background-color: linear-gradient(to right, #ce93d8, #ab47bc);
+}

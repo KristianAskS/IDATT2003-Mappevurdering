@@ -56,7 +56,7 @@ public class PlayerSelectionScene {
       logger.log(Level.SEVERE, "Error reading players from CSV: " + ex.getMessage());
     }
 
-    promptNumberOfPlayers();
+    //promptNumberOfPlayers();
 
     ListView<String> playerListView = new ListView<>(players);
     playerListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

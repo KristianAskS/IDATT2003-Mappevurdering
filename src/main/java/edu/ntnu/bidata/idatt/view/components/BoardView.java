@@ -5,10 +5,18 @@ import edu.ntnu.bidata.idatt.model.entity.Tile;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 
+/**
+ * @author Tri Le
+ */
 public class BoardView {
   private BoardView() {
   }
 
+  /**
+   * See the Excel sheet I made Kristian (Teams)
+   * @param board Collections of tiles
+   * @return visual of the board filled with tiles
+   */
   public static GridPane createBoardGUI(Board board) {
     GridPane grid = new GridPane();
     grid.setAlignment(Pos.CENTER);
@@ -22,21 +30,21 @@ public class BoardView {
       TileView tileView = new TileView(tile, TileView.TILE_SIZE);
 
       if (tileId % 2 == 0) {
-        //tileView.setStyle("-fx-background-color: #004DFF"); //1
         tileView.setStyle("-fx-background-color: #1E90FF");
       } else {
-        //tileView.setStyle("-fx-background-color: #FF00D4"); //1
         tileView.setStyle("-fx-background-color: #FFA500");
       }
-
-      int bottomRow = (tileId - 1) / columns;
+      // Which row the tile belong too from the bottom
+      int rowFromBottom = (tileId - 1) / columns;
+      // Column position
       int col = (tileId - 1) % columns;
-
-      if (bottomRow % 2 == 1) {
+      // Reversing column for odd rows
+      if (rowFromBottom % 2 == 1) {
         col = columns - 1 - col;
       }
 
-      int gridRow = rows - 1 - bottomRow;
+      // Flipping vertical ordering
+      int gridRow = rows - 1 - rowFromBottom;
 
       grid.add(tileView, col, gridRow);
     }

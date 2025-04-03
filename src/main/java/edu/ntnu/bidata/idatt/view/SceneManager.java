@@ -19,13 +19,14 @@ public class SceneManager {
   private static Scene boardGameSelectionScene;
   private static Scene playerSelectionScene;
   private static Scene boardGameScene;
+  private static final String BUTTONS_CSS_PATH ="/edu/ntnu/bidata/idatt/styles/ButtonsStyles.css";
 
   public SceneManager(Stage primaryStage) throws IOException {
     SceneManager.primaryStage = primaryStage;
-    landingScene = new LandingScene().getScene();
-    boardGameSelectionScene = new BoardGameSelectionScene().getScene();
-    playerSelectionScene = new PlayerSelectionScene().getScene();
-    boardGameScene = new BoardGameScene().getScene();
+    landingScene = loadBtnCss(new LandingScene().getScene());
+    boardGameSelectionScene = loadBtnCss(new BoardGameSelectionScene().getScene());
+    playerSelectionScene = loadBtnCss(new PlayerSelectionScene().getScene());
+    boardGameScene = loadBtnCss(new BoardGameScene().getScene());
   }
 
   public static void showLandingScene() {
@@ -48,5 +49,10 @@ public class SceneManager {
     BorderPane rootPane = new BorderPane();
     rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
     return rootPane;
+  }
+
+  private Scene loadBtnCss(Scene scene){
+    scene.getStylesheets().add(String.valueOf(getClass().getResource(BUTTONS_CSS_PATH)));
+    return scene;
   }
 }
