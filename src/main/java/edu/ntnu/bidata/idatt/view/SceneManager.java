@@ -39,6 +39,7 @@ public class SceneManager {
 
   public static void showPlayerSelectionScene() {
     primaryStage.setScene(playerSelectionScene);
+    PlayerSelectionScene.showPlayerSelectionStage();
   }
 
   public static void showBoardGameScene() {

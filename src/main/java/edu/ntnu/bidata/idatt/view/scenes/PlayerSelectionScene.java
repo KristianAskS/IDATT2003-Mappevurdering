@@ -7,15 +7,19 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -189,5 +193,17 @@ public class PlayerSelectionScene {
 
   public Scene getScene() {
     return scene;
+  }
+  public static void showPlayerSelectionStage(){
+    List<Integer> choices = new ArrayList<>();
+    IntStream.range(1,6).forEach(choices::add);
+
+    ChoiceDialog<Integer> dialog = new ChoiceDialog<>(5, choices);
+    dialog.setTitle("Total player selection");
+    dialog.setHeaderText("Select total players");
+    dialog.setContentText("Choose your number:");
+
+    Optional<Integer> result = dialog.showAndWait();
+    result.ifPresent(letter -> logger.log(Level.INFO, "The user's choice: " + result));
   }
 }
