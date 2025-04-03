@@ -1,16 +1,18 @@
 package edu.ntnu.bidata.idatt.model.entity;
 
 import edu.ntnu.bidata.idatt.view.components.TokenView;
-import java.util.logging.Logger;
 
 /**
  * The type Player.
  */
 public class Player {
-  private static final Logger logger = Logger.getLogger(Player.class.getName());
   private final String name;
-  private final TokenView token;
+  private TokenView token;
   private int currentTileId;
+
+  public Player(String name) {
+    this.name = name;
+  }
 
   public Player(String name, TokenView token) {
     this.name = name;
@@ -23,6 +25,10 @@ public class Player {
 
   public TokenView getToken() {
     return token;
+  }
+
+  public void setTokenView(TokenView token) {
+    this.token = token;
   }
 
   public int getCurrentTileId() {

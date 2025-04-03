@@ -7,17 +7,17 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ColorPicker;
@@ -38,10 +38,15 @@ import javafx.scene.text.FontWeight;
 
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
+  private static Optional<Integer> placerSelectionResult;
   private final Scene scene;
   private final PlayerService playerService = new PlayerService();
   private final int VBOX_WIDTH = 300;
-  private static Optional<Integer> placerSelectionResult;
+  private final ObservableList<Player> players =
+      javafx.collections.FXCollections.observableArrayList();
+  private ListView<Player> playersListView;
+  private TableView<Player> playersTableView;
+  private static ColorPicker colorPicker;
 
   public PlayerSelectionScene() {
     BorderPane rootPane = SceneManager.getRootPane();
@@ -60,9 +65,9 @@ public class PlayerSelectionScene {
     logger.log(Level.INFO, "PlayerSelectionScene initialized");
   }
 
-  public static void showPlayerSelectionDialog(){
+  public static void showTotalPlayerSelectionDialog() {
     List<Integer> choices = new ArrayList<>();
-    IntStream.range(1,6).forEach(choices::add);
+    IntStream.range(1, 6).forEach(choices::add);
 
     ChoiceDialog<Integer> dialog = new ChoiceDialog<>(5, choices);
     dialog.setTitle("Total player selection");
@@ -70,7 +75,12 @@ public class PlayerSelectionScene {
     dialog.setContentText("Choose your number:");
 
     placerSelectionResult = dialog.showAndWait();
-    placerSelectionResult.ifPresent(letter -> logger.log(Level.INFO, "The user's choice: " + placerSelectionResult));
+    placerSelectionResult.ifPresent(
+        letter -> logger.log(Level.INFO, "The user's choice: " + placerSelectionResult));
+  }
+
+  public static Optional<Integer> getPlacerSelectionResult() {
+    return placerSelectionResult;
   }
 
   private String getVBoxPanelStyles() {
@@ -97,14 +107,14 @@ public class PlayerSelectionScene {
     shapes.getItems().addAll("Circle", "Square", "triangle");
 
     Label colorLabel = new Label("Choose Color");
-    ColorPicker colorPicker = new ColorPicker();
+    colorPicker = new ColorPicker();
 
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
     leftPanel.getChildren()
         .addAll(headingLabel, enterName, inputName, shapeLabel, shapes, colorLabel, colorPicker,
-            spacer, getAddPlayerBtn());
+            spacer, getAddPlayerBtn(inputName, shapes, colorPicker));
     return leftPanel;
   }
 
@@ -119,15 +129,14 @@ public class PlayerSelectionScene {
     headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
     headingLabel.setTextFill(Color.FIREBRICK);
 
-
     TableView<Player> playersTableView = new TableView<>();
     TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
     TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
     playersTableView.getColumns().addAll(List.of(nameColumn, tokenColumn));
 
     Button totalPlayerchoice = Buttons.getEditBtn("Edit total players");
-    totalPlayerchoice.setOnAction(e->{
-      showPlayerSelectionDialog();
+    totalPlayerchoice.setOnAction(e -> {
+      showTotalPlayerSelectionDialog();
     });
 
     middlePanel.getChildren().addAll(headingLabel, playersTableView, totalPlayerchoice);
@@ -176,8 +185,8 @@ public class PlayerSelectionScene {
   private Button getStartGameBtn() {
     Button startGameBtn = Buttons.getSmallPrimaryBtn("Start Game!");
     startGameBtn.setOnAction(p -> {
-      if (getPlacerSelectionResult().isEmpty()){
-        showPlayerSelectionDialog();
+      if (getPlacerSelectionResult().isEmpty()) {
+        showTotalPlayerSelectionDialog();
         return;
       }
       SceneManager.showBoardGameScene();
@@ -204,12 +213,21 @@ public class PlayerSelectionScene {
     return mainPageBtn;
   }
 
-  private Button getAddPlayerBtn() {
+  private Button getAddPlayerBtn(TextField nameInput, ComboBox<String> shapeComboBox,
+                                 ColorPicker colorPicker) {
     Button addPlayerBtn = new Button("Add Player Manually");
     addPlayerBtn.setOnAction(p -> {
-      Alert alert = new Alert(AlertType.INFORMATION);
-      alert.setTitle("Btn works!");
-      alert.show();
+      String name = nameInput.getText();
+      String shape = shapeComboBox.getValue();
+      Color color = colorPicker.getValue();
+      if (name == null || name.isBlank() || shape == null || color == null) {
+        throw new IllegalArgumentException("Please fill out all fields.");
+      }
+      TokenView tokenView = new TokenView(color, shape);
+      Player player = new Player(name, tokenView);
+      player.setTokenView(tokenView);
+
+      logger.log(Level.INFO, "Added player: " + name + " with color and shape");
     });
     return addPlayerBtn;
   }
@@ -218,7 +236,7 @@ public class PlayerSelectionScene {
     return scene;
   }
 
-  public static Optional<Integer> getPlacerSelectionResult(){
-    return placerSelectionResult;
+  public static Color getColorPicker(){
+    return colorPicker.getValue();
   }
 }

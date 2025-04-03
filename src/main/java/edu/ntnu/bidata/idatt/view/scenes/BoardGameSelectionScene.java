@@ -164,7 +164,7 @@ public class BoardGameSelectionScene {
     playBtn.setOnAction(e -> {
       if (selectedBoard != null) {
         SceneManager.showPlayerSelectionScene();
-        PlayerSelectionScene.showPlayerSelectionDialog();
+        PlayerSelectionScene.showTotalPlayerSelectionDialog();
       } else {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("No Board Selected");

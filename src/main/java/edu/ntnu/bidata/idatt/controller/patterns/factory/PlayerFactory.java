@@ -1,13 +1,15 @@
 package edu.ntnu.bidata.idatt.controller.patterns.factory;
 
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.TokenType;
 import edu.ntnu.bidata.idatt.utils.io.CsvPlayerFileHandler;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
 
 public class PlayerFactory {
   private PlayerFactory() {
@@ -31,11 +33,11 @@ public class PlayerFactory {
 
   public static List<Player> createPlayersDummies() {
     List<Player> players = new ArrayList<>();
-    players.add(PlayerFactory.createPlayer("Player 1", new TokenView(TokenType.RED)));
-    players.add(PlayerFactory.createPlayer("Player 2", new TokenView(TokenType.GREEN)));
-    players.add(PlayerFactory.createPlayer("Player 3", new TokenView(TokenType.YELLOW)));
-    players.add(PlayerFactory.createPlayer("Player 4", new TokenView(TokenType.BLUE)));
-    players.add(PlayerFactory.createPlayer("Player 5", new TokenView(TokenType.PINK)));
+    players.add(PlayerFactory.createPlayer("Player 1", new TokenView(Color.DARKCYAN,"circle")));
+    players.add(PlayerFactory.createPlayer("Player 2", new TokenView(Color.GAINSBORO, "circle")));
+    players.add(PlayerFactory.createPlayer("Player 3", new TokenView(Color.SPRINGGREEN, "triangle")));
+    players.add(PlayerFactory.createPlayer("Player 4", new TokenView(Color.HOTPINK, "square")));
+    players.add(PlayerFactory.createPlayer("Player 5",new TokenView(Color.MAGENTA, "triangle")));
     return players;
   }
 }
