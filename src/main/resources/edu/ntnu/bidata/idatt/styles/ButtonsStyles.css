@@ -2,7 +2,7 @@
     -fx-font-family: 'monospace';
     -fx-font-weight: bold;
     -fx-text-fill: #FFFFFF;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.5, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.5, 0, 2);
 }
 
 .back-btn {
@@ -69,6 +69,28 @@
 
 .primary-btn:focused {
     -fx-font-size: 28px;
+    -fx-background-color: linear-gradient(to right, #ffe082, #ffca28);
+}
+
+.small-primary-btn {
+    -fx-font-size: 18px;
+    -fx-background-color: linear-gradient(to right, #ffeb3b, #fbc02d);
+    -fx-background-radius: 100;
+    -fx-padding: 15 30 15 30;
+}
+
+.small-primary-btn:hover {
+    -fx-font-size: 20px;
+    -fx-background-color: linear-gradient(to right, #fff176, #fdd835);
+}
+
+.small-primary-btn:pressed {
+    -fx-font-size: 20px;
+    -fx-background-color: linear-gradient(to right, #fbc02d, #f9a825);
+}
+
+.small-primary-btn:focused {
+    -fx-font-size: 20px;
     -fx-background-color: linear-gradient(to right, #ffe082, #ffca28);
 }
 

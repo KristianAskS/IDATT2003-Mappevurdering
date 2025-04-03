@@ -40,7 +40,8 @@ public class Buttons {
       scaleDown.setToY(0.95);
       scaleDown.play();
 
-      TranslateTransition bounce = new TranslateTransition(Duration.millis(ANIMATION_DURATION), btn);
+      TranslateTransition bounce =
+          new TranslateTransition(Duration.millis(ANIMATION_DURATION), btn);
       bounce.setByY(3);
       bounce.setCycleCount(2);
       bounce.setAutoReverse(true);
@@ -75,6 +76,13 @@ public class Buttons {
     primaryBtn.setPrefSize(400, 120);
     applyButtonEffects(primaryBtn);
     return primaryBtn;
+  }
+
+  public static Button getSmallPrimaryBtn(String text) {
+    Button smallPrimaryBtn = new Button(text);
+    smallPrimaryBtn.getStyleClass().addAll("button", "small-primary-btn");
+    applyButtonEffects(smallPrimaryBtn);
+    return smallPrimaryBtn;
   }
 
   public static Button getSecondaryBtn(String text) {

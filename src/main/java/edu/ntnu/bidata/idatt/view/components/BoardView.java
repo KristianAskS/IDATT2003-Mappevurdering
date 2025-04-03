@@ -14,6 +14,7 @@ public class BoardView {
 
   /**
    * See the Excel sheet I made Kristian (Teams)
+   *
    * @param board Collections of tiles
    * @return visual of the board filled with tiles
    */

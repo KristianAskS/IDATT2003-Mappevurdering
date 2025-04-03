@@ -1,181 +1,190 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import static edu.ntnu.bidata.idatt.model.service.PlayerService.PLAYER_FILE_PATH;
 import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.TokenType;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
-import edu.ntnu.bidata.idatt.utils.io.CsvPlayerFileHandler;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
-import edu.ntnu.bidata.idatt.view.components.TokenView;
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
   private final Scene scene;
   private final PlayerService playerService = new PlayerService();
-
-  // Observable list for displaying player names from CSV or added manually.
-  private final ObservableList<String> players = FXCollections.observableArrayList();
-  private int maxPlayers = 0;
+  private final int VBOX_WIDTH = 300;
 
   public PlayerSelectionScene() {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTBLUE);
-
-    try {
-      List<Player> csvPlayers = playerService.readPlayersFromFile(PLAYER_FILE_PATH);
-      for (Player p : csvPlayers) {
-        if (!players.contains(p.getName())) {
-          players.add(p.getName());
-        }
-      }
-      logger.log(Level.INFO, "Loaded players from CSV: " + players);
-    } catch (IOException ex) {
-      logger.log(Level.SEVERE, "Error reading players from CSV: " + ex.getMessage());
-    }
-
-    //promptNumberOfPlayers();
-
-    ListView<String> playerListView = new ListView<>(players);
-    playerListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    playerListView.setPrefHeight(200);
-
-    Button addPlayerBtn = new Button("Add Player Manually");
-    Button startGameBtn = Buttons.getPrimaryBtn("Start Game!");
-    Button mainPageBtn = Buttons.getExitBtn("To Main Page");
-    Button backBtn = Buttons.getBackBtn("Back");
-
-    HBox bottomPane = new HBox(10, backBtn, mainPageBtn);
-    bottomPane.setPadding(new Insets(10));
-
-    VBox centerBox = new VBox(10, playerListView, addPlayerBtn, startGameBtn);
+    HBox centerBox = new HBox(20);
     centerBox.setPadding(new Insets(10));
+    centerBox.setAlignment(Pos.CENTER);
 
+    centerBox.getChildren().addAll(createLeftPanel(), createMiddlePanel(), createRightPanel());
     rootPane.setCenter(centerBox);
-    rootPane.setBottom(bottomPane);
 
-    addPlayerBtn.setOnAction(e -> {
-      TextInputDialog nameDialog = new TextInputDialog();
-      nameDialog.setTitle("Add New Player");
-      nameDialog.setHeaderText("Enter new player's name:");
-      nameDialog.setContentText("Name:");
+    HBox bottomContainer = createBottomContainer();
+    rootPane.setBottom(bottomContainer);
+    BorderPane.setAlignment(bottomContainer, Pos.BOTTOM_LEFT);
 
-      Optional<String> resultName = nameDialog.showAndWait();
-      if (resultName.isPresent() && !resultName.get().trim().isEmpty()) {
-        String playerName = resultName.get().trim();
-
-        TextInputDialog colorDialog = new TextInputDialog();
-        colorDialog.setTitle("Player Token Color");
-        colorDialog.setHeaderText("Enter player's token color (e.g., RED, BLUE):");
-        colorDialog.setContentText("Color:");
-
-        Optional<String> resultToken = colorDialog.showAndWait();
-        if (resultToken.isPresent() && !resultToken.get().trim().isEmpty()) {
-          try {
-            TokenType tokenType = TokenType.valueOf(resultToken.get().trim().toUpperCase());
-            TokenView tokenView = new TokenView(tokenType);
-            Player newPlayer = new Player(playerName, tokenView);
-            if (!players.contains(playerName)) {
-              players.add(playerName);
-              playerService.getPlayers().add(newPlayer);
-              playerListView.getSelectionModel().select(playerName);
-              logger.log(Level.INFO, "New player created: " + newPlayer.getName());
-            } else {
-              showAlert("Duplicate Player", "A player with that name already exists.");
-            }
-          } catch (IllegalArgumentException ex) {
-            showAlert("Invalid Color",
-                "Please enter a valid token color (e.g., RED, BLUE, GREEN, YELLOW, PINK).");
-          }
-        }
-      }
-    });
-
-    startGameBtn.setOnAction(e -> {
-      var selectedPlayers = playerListView.getSelectionModel().getSelectedItems();
-      if (selectedPlayers.size() != maxPlayers) {
-        showAlert("Incorrect Number of Players",
-            "You must select exactly " + maxPlayers + " player(s).");
-        logger.log(Level.WARNING,
-            "Expected " + maxPlayers + " players, but got " + selectedPlayers.size());
-      } else {
-        try {
-          CsvPlayerFileHandler csvHandler = new CsvPlayerFileHandler();
-          csvHandler.writeToFile(playerService.getPlayers(), PLAYER_FILE_PATH);
-          logger.log(Level.INFO, "Player data saved to CSV file.");
-        } catch (IOException ex) {
-          logger.log(Level.SEVERE, "Error saving players: " + ex.getMessage());
-        }
-        logger.log(Level.INFO, "Selected players: " + selectedPlayers);
-        SceneManager.showBoardGameScene();
-      }
-    });
-
-    mainPageBtn.setOnAction(e -> SceneManager.showLandingScene());
-    backBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
-
-    logger.log(Level.INFO, "PlayerSelectionScene created");
+    logger.log(Level.INFO, "PlayerSelectionScene initialized");
   }
 
-  private void promptNumberOfPlayers() {
-    TextInputDialog numPlayersDialog = new TextInputDialog("2");
-    numPlayersDialog.setTitle("Select Number of Players");
-    numPlayersDialog.setHeaderText("How many players will be playing? (max 5)");
-    numPlayersDialog.setContentText("Enter a number (1-5):");
-
-    Optional<String> numPlayersResult = numPlayersDialog.showAndWait();
-    if (numPlayersResult.isPresent()) {
-      try {
-        int num = Integer.parseInt(numPlayersResult.get().trim());
-        if (num < 1 || num > 5) {
-          showAlert("Invalid Number",
-              "Please enter a number between 1 and 5. Defaulting to 2 players.");
-          maxPlayers = 2;
-        } else {
-          maxPlayers = num;
-        }
-      } catch (NumberFormatException ex) {
-        showAlert("Invalid Input", "Please enter a valid number. Defaulting to 2 players.");
-        maxPlayers = 2;
-      }
-    } else {
-      // if closed the dialog, the default is 2 players
-      maxPlayers = 2;
-    }
-    logger.log(Level.INFO, "Max players set to: " + maxPlayers);
+  private String getVBoxPanelStyles() {
+    return ("-fx-background-color: #C4ADAD ; -fx-border-width: 1;-fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, gray, 0,5, 0.1, 0, 2);");
   }
 
-  /**
-   * Utility method to show an alert dialog with the specified title and message.
-   */
-  private void showAlert(String title, String message) {
-    Alert alert = new Alert(AlertType.WARNING);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
+  private VBox createLeftPanel() {
+    VBox leftPanel = new VBox(10);
+    leftPanel.setPadding(new Insets(10));
+    leftPanel.setMaxWidth(VBOX_WIDTH);
+    leftPanel.setAlignment(Pos.TOP_CENTER);
+    leftPanel.setStyle(getVBoxPanelStyles());
+
+    Label headingLabel = new Label("Add players manually");
+    headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 25));
+    headingLabel.setStyle("-fx-text-overrun: ellipsis");
+    headingLabel.setTextFill(Color.FIREBRICK);
+
+    Label enterName = new Label("Enter Name");
+    TextField inputName = new TextField();
+
+    Label shapeLabel = new Label("Chose shape");
+    ComboBox<String> shapes = new ComboBox<>();
+    shapes.getItems().addAll("Circle", "Square", "triangle");
+
+    Label colorLabel = new Label("Choose Color");
+    ColorPicker colorPicker = new ColorPicker();
+
+    Region spacer = new Region();
+    VBox.setVgrow(spacer, Priority.ALWAYS);
+
+    leftPanel.getChildren()
+        .addAll(headingLabel, enterName, inputName, shapeLabel, shapes, colorLabel, colorPicker,
+            spacer, getAddPlayerBtn());
+    return leftPanel;
+  }
+
+  private VBox createMiddlePanel() {
+    VBox middlePanel = new VBox(10);
+    middlePanel.setPadding(new Insets(10));
+    middlePanel.setAlignment(Pos.TOP_CENTER);
+    middlePanel.setPrefWidth(VBOX_WIDTH);
+    middlePanel.setStyle(getVBoxPanelStyles());
+
+    Label headingLabel = new Label("Players added to the game");
+    headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
+    headingLabel.setTextFill(Color.FIREBRICK);
+
+
+    TableView<Player> playersTableView = new TableView<>();
+    TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
+    TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
+    playersTableView.getColumns().addAll(List.of(nameColumn, tokenColumn));
+
+    middlePanel.getChildren().addAll(headingLabel, playersTableView);
+    return middlePanel;
+  }
+
+  private VBox createRightPanel() {
+    VBox rightPanel = new VBox(10);
+    rightPanel.setPadding(new Insets(10));
+    rightPanel.setPrefWidth(VBOX_WIDTH);
+    rightPanel.setAlignment(Pos.TOP_CENTER);
+    rightPanel.setStyle(getVBoxPanelStyles());
+
+    Label playersLabel = new Label("Players");
+    playersLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
+    playersLabel.setTextFill(Color.FIREBRICK);
+
+    ListView<Player> playersList = new ListView<>();
+
+    rightPanel.getChildren().addAll(playersLabel, playersList);
+    return rightPanel;
+  }
+
+  private HBox createBottomContainer() {
+    HBox bottomBtns = new HBox();
+    bottomBtns.setAlignment(Pos.CENTER);
+
+    Region leftSpacer = new Region();
+    Region rightSpacer = new Region();
+    HBox.setHgrow(leftSpacer, Priority.ALWAYS);
+    HBox.setHgrow(rightSpacer, Priority.ALWAYS);
+
+    Button backBtn = getBackBtn();
+    Button startGameBtn = getStartGameBtn();
+    Button toMainBtn = getLandingPageBtn();
+    HBox.setMargin(backBtn, new Insets(10));
+    HBox.setMargin(startGameBtn, new Insets(10));
+    HBox.setMargin(toMainBtn, new Insets(10));
+
+    bottomBtns.getChildren().addAll(backBtn, leftSpacer, startGameBtn, rightSpacer, toMainBtn);
+    bottomBtns.setAlignment(Pos.CENTER);
+
+    return bottomBtns;
+  }
+
+  private Button getStartGameBtn() {
+    Button startGameBtn = Buttons.getSmallPrimaryBtn("Start Game!");
+    startGameBtn.setOnAction(p -> {
+      SceneManager.showBoardGameScene();
+      logger.log(Level.INFO, "Start game btn pressed, showBoardGameScene initialized");
+    });
+    return startGameBtn;
+  }
+
+  private Button getBackBtn() {
+    Button backBtn = Buttons.getBackBtn("Back");
+    backBtn.setOnAction(p -> {
+      SceneManager.showBoardGameSelectionScene();
+      logger.log(Level.INFO, "Back btn pressed, showBoardGameSelectionScene initialized");
+    });
+    return backBtn;
+  }
+
+  private Button getLandingPageBtn() {
+    Button mainPageBtn = Buttons.getExitBtn("To Main Page");
+    mainPageBtn.setOnAction(p -> {
+      SceneManager.showLandingScene();
+      logger.log(Level.INFO, "main page btn pressed, showLandingScene initialized");
+    });
+    return mainPageBtn;
+  }
+
+  private Button getAddPlayerBtn() {
+    Button addPlayerBtn = new Button("Add Player Manually");
+    addPlayerBtn.setOnAction(p -> {
+      Alert alert = new Alert(AlertType.INFORMATION);
+      alert.setTitle("Btn works!");
+      alert.show();
+    });
+    return addPlayerBtn;
   }
 
   public Scene getScene() {
