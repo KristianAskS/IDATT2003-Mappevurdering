@@ -14,6 +14,15 @@ public class PlayerService {
   private final FileHandler<Player> playerFileHandler = new CsvPlayerFileHandler();
   private List<Player> players = new ArrayList<>();
 
+  /**
+   * for loose coupling
+   *
+   * @return
+   */
+  public static Color getSelectedColor() {
+    return PlayerSelectionScene.getSelectedColor();
+  }
+
   public void writePlayersToFile(String filePath) throws IOException {
     playerFileHandler.writeToFile(players, filePath);
   }
@@ -34,14 +43,6 @@ public class PlayerService {
   }
 
   public void addPlayer(Player newPlayer) {
-  }
-
-  /**
-   * for loose coupling
-   * @return
-   */
-  public static Color getSelectedColor(){
-    return PlayerSelectionScene.getSelectedColor();
   }
 }
 
