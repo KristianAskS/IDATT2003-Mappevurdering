@@ -20,7 +20,6 @@ public class PlayerService {
     List<Player> readPlayers = playerFileHandler.readFromFile(filePath);
     this.players.clear();
     this.players.addAll(readPlayers);
-    readPlayers.forEach(Player::toString);
     return readPlayers;
   }
 

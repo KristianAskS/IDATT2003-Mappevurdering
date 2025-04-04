@@ -75,6 +75,10 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
   }
 
   private String toRgbString(Color color) {
-    return color.toString();
+    int red = (int) (color.getRed() * 255);
+    int green = (int) (color.getGreen() * 255);
+    int blue = (int) (color.getBlue() * 255);
+    int alpha = (int) (color.getOpacity() * 255);
+    return String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
   }
 }
