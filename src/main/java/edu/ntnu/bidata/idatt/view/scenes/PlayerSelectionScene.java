@@ -8,21 +8,25 @@ import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -33,22 +37,19 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
   private static Optional<Integer> placerSelectionResult;
+  private static ColorPicker colorPicker;
   private final Scene scene;
   private final PlayerService playerService = new PlayerService();
   private final int VBOX_WIDTH = 300;
-  private final ObservableList<Player> players =
-      javafx.collections.FXCollections.observableArrayList();
-  private ListView<Player> playersListView;
-  private TableView<Player> playersTableView;
-  private static ColorPicker colorPicker;
 
-  public PlayerSelectionScene() {
+  public PlayerSelectionScene() throws IOException {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTBLUE);
     HBox centerBox = new HBox(20);
@@ -83,6 +84,10 @@ public class PlayerSelectionScene {
     return placerSelectionResult;
   }
 
+  public static Color getColorPicker() {
+    return colorPicker.getValue();
+  }
+
   private String getVBoxPanelStyles() {
     return ("-fx-background-color: #C4ADAD ; -fx-border-width: 1;-fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, gray, 0,5, 0.1, 0, 2);");
   }
@@ -95,12 +100,13 @@ public class PlayerSelectionScene {
     leftPanel.setStyle(getVBoxPanelStyles());
 
     Label headingLabel = new Label("Add players manually");
-    headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 25));
+    headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
     headingLabel.setStyle("-fx-text-overrun: ellipsis");
     headingLabel.setTextFill(Color.FIREBRICK);
 
     Label enterName = new Label("Enter Name");
     TextField inputName = new TextField();
+    Button confirmNameBtn = Buttons.getEditBtn("Enter");
 
     Label shapeLabel = new Label("Chose shape");
     ComboBox<String> shapes = new ComboBox<>();
@@ -113,7 +119,7 @@ public class PlayerSelectionScene {
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
     leftPanel.getChildren()
-        .addAll(headingLabel, enterName, inputName, shapeLabel, shapes, colorLabel, colorPicker,
+        .addAll(headingLabel, enterName, inputName, confirmNameBtn, shapeLabel, shapes, colorLabel, colorPicker,
             spacer, getAddPlayerBtn(inputName, shapes, colorPicker));
     return leftPanel;
   }
@@ -143,7 +149,7 @@ public class PlayerSelectionScene {
     return middlePanel;
   }
 
-  private VBox createRightPanel() {
+  private VBox createRightPanel() throws IOException {
     VBox rightPanel = new VBox(10);
     rightPanel.setPadding(new Insets(10));
     rightPanel.setPrefWidth(VBOX_WIDTH);
@@ -153,11 +159,47 @@ public class PlayerSelectionScene {
     Label playersLabel = new Label("Players");
     playersLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
     playersLabel.setTextFill(Color.FIREBRICK);
+    ObservableList<Player> players = FXCollections.observableArrayList(
+        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH));
 
-    ListView<Player> playersList = new ListView<>();
+    final ListView<Player> playerListView =
+        getPlayerListView(players);
 
-    rightPanel.getChildren().addAll(playersLabel, playersList);
+    rightPanel.getChildren().addAll(playersLabel, playerListView);
     return rightPanel;
+  }
+
+  private static ListView<Player> getPlayerListView(ObservableList<Player> players) {
+    ListView<Player> playerListView = new ListView<>(players);
+    playerListView.setCellFactory(listView -> new ListCell<>(){
+      protected void updateItem(Player player, boolean empty){
+        super.updateItem(player, empty);
+        if (empty || player == null) {
+          setText(null);
+          setGraphic(null);
+        } else {
+          HBox cellLayout = new HBox(10);
+          cellLayout.setAlignment(Pos.CENTER_LEFT);
+
+          Label nameLabel = new Label(player.getName());
+          nameLabel.setPrefWidth(100);
+
+          Rectangle colorBox = new Rectangle(15, 15, player.getToken().getTokenColor());
+          colorBox.setStroke(Color.BLACK);
+
+          String shapeText = capitalizeFirstLetter(player.getToken().getTokenShape());
+          Label shapeLabel = new Label(shapeText);
+
+          cellLayout.getChildren().addAll(nameLabel, colorBox, shapeLabel);
+          setGraphic(cellLayout);
+        }
+      }
+    });
+    return playerListView;
+  }
+
+  private static String capitalizeFirstLetter(String input){
+    return input == null || input.isBlank() ? input : input.substring(0,1).toUpperCase() + input.substring(1).toLowerCase();
   }
 
   private HBox createBottomContainer() {
@@ -234,9 +276,5 @@ public class PlayerSelectionScene {
 
   public Scene getScene() {
     return scene;
-  }
-
-  public static Color getColorPicker(){
-    return colorPicker.getValue();
   }
 }

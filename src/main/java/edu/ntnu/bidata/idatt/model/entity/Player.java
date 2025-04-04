@@ -38,4 +38,9 @@ public class Player {
   public void setCurrentTileId(int currentTileId) {
     this.currentTileId = currentTileId;
   }
+
+  @Override
+  public String toString() {
+    return name + " " + token.toString();
+  }
 }

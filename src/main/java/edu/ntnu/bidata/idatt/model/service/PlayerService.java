@@ -6,6 +6,7 @@ import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class PlayerService {
   public static final String PLAYER_FILE_PATH = "data/players.csv";
@@ -20,8 +21,8 @@ public class PlayerService {
     List<Player> readPlayers = playerFileHandler.readFromFile(filePath);
     this.players.clear();
     this.players.addAll(readPlayers);
-    players = playerFileHandler.readFromFile(filePath);
-    return players;
+    readPlayers.forEach(Player::toString);
+    return readPlayers;
   }
 
   public List<Player> getPlayers() {
