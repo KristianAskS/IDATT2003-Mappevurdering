@@ -6,7 +6,6 @@ import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class PlayerService {
   public static final String PLAYER_FILE_PATH = "data/players.csv";

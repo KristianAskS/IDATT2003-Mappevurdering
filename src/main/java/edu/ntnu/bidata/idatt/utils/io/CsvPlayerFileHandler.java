@@ -34,7 +34,8 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
         TokenView token = player.getToken();
-        String writeLine = player.getName() + "," + toRgbString(token.getTokenColor()) + "," + token.getTokenShape();
+        String writeLine = player.getName() + "," + toRgbString(token.getTokenColor()) + "," +
+            token.getTokenShape();
         bufferedWriter.write(writeLine);
         bufferedWriter.newLine();
         logger.log(Level.INFO, "Player: " + player.getName() + " has been written to the file");
@@ -62,7 +63,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
           String name = playerData[0].trim();
           Color color = Color.web(playerData[1].trim());
           String tokenShape = playerData[2].trim();
-          TokenView token = new TokenView(color,tokenShape);
+          TokenView token = new TokenView(color, tokenShape);
           Player player = new Player(name, token);
           players.add(player);
         }
@@ -73,7 +74,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     return players;
   }
 
-  private String toRgbString(Color color){
+  private String toRgbString(Color color) {
     return color.toString();
   }
 }

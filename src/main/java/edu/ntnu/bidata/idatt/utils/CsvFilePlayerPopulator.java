@@ -4,17 +4,16 @@ import edu.ntnu.bidata.idatt.controller.patterns.factory.PlayerFactory;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
+import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.paint.Color;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 public class CsvFilePlayerPopulator {
   private final static Logger logger = Logger.getLogger(CsvFilePlayerPopulator.class.getName());
   private static final PlayerService playerService = new PlayerService();
+
   public static void main(String[] args) {
     List<Player> players = PlayerFactory.createPlayersDummies();
     players.add(new Player("Tri", new TokenView(Color.BLUE, "Circle")));
