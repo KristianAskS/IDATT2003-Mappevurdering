@@ -87,7 +87,7 @@ public class PlayerSelectionScene {
     totalPlayerCount = dialog.showAndWait();
   }
 
-  public static Optional<Integer> getPlacerSelectionResult() {
+  public static Optional<Integer> getTotalPlayerCount() {
     return totalPlayerCount;
   }
 

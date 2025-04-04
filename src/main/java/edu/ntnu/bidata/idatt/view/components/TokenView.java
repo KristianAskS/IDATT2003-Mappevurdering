@@ -13,8 +13,8 @@ import javafx.scene.shape.StrokeType;
 
 public class TokenView extends StackPane {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
-  private Color color;
-  private String shape;
+  private final Color color;
+  private final String shape;
 
   public TokenView() {
     this(PlayerSelectionScene.getColorPicker(), "Circle");
