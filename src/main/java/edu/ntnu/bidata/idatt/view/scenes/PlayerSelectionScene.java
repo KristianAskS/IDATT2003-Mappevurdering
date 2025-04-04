@@ -20,7 +20,9 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
@@ -39,14 +41,20 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
+  static TableView<Player> playersTableView = new TableView<>();
   private static Optional<Integer> placerSelectionResult;
   private static ColorPicker colorPicker;
   private final Scene scene;
   private final PlayerService playerService = new PlayerService();
   private final int VBOX_WIDTH = 300;
+  TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
+  TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
+
 
   public PlayerSelectionScene() throws IOException {
     BorderPane rootPane = SceneManager.getRootPane();
@@ -57,6 +65,13 @@ public class PlayerSelectionScene {
 
     centerBox.getChildren().addAll(createLeftPanel(), createMiddlePanel(), createRightPanel());
     rootPane.setCenter(centerBox);
+
+    nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+    tokenColumn.setCellValueFactory(cellData -> {
+      TokenView tokenView = cellData.getValue().getToken();
+      String tokenInfo = tokenView.getTokenShape() + " " + tokenView.getTokenColor();
+      return new SimpleStringProperty(tokenInfo);
+    });
 
     HBox bottomContainer = createBottomContainer();
     rootPane.setBottom(bottomContainer);
@@ -88,201 +103,220 @@ public class PlayerSelectionScene {
   }
 
   private static ListView<Player> getPlayerListView(ObservableList<Player> players) {
-    ListView<Player> playerListView = new ListView<>(players);
-    playerListView.setCellFactory(listView -> new ListCell<>() {
-      protected void updateItem(Player player, boolean empty) {
-        super.updateItem(player, empty);
-        if (empty || player == null) {
-          setText(null);
-          setGraphic(null);
-        } else {
-          HBox cellLayout = new HBox(10);
-          cellLayout.setAlignment(Pos.CENTER_LEFT);
-
-          Label nameLabel = new Label(player.getName());
-          nameLabel.setPrefWidth(100);
-
-          Rectangle colorBox = new Rectangle(15, 15, player.getToken().getTokenColor());
-          colorBox.setStroke(Color.BLACK);
-
-          String shapeText = capitalizeFirstLetter(player.getToken().getTokenShape());
-          Label shapeLabel = new Label(shapeText);
-
-          cellLayout.getChildren().addAll(nameLabel, colorBox, shapeLabel);
-          setGraphic(cellLayout);
-        }
-      }
-    });
-    playerListView.getSelectionModel().selectedItemProperty().addListener((obs, oldval, newVal) -> {
+    final ListView<Player> playerListView = getListView(players);
+    playerListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
       if (newVal != null) {
         logger.log(Level.INFO,
-            "Player: \"" + newVal.getName() + " " + newVal.getToken().getTokenColor() + " " +
+            "Player: \"" + newVal.getName() + " " +
+                newVal.getToken().getTokenColor() + " " +
                 newVal.getToken().getTokenShape() + "\" clicked");
-        // TODO: add an "add player to the players added panel"
+
+        Alert confirmAddingPlayer = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAddingPlayer.setTitle("Add player");
+        confirmAddingPlayer.setHeaderText("Add player: " + newVal.getName());
+        confirmAddingPlayer.setContentText("Do you want to confirm?");
+
+        Optional<ButtonType> result = confirmAddingPlayer.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+          playersTableView.getItems().addAll(new Player(newVal.getName(),
+              new TokenView(newVal.getToken().getTokenColor(),
+                  newVal.getToken().getTokenShape())
+          ));
+        }
       }
     });
     return playerListView;
   }
 
-  private static String capitalizeFirstLetter(String input) {
-    return input == null || input.isBlank() ? input :
-        input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
-  }
+    private static ListView<Player> getListView (ObservableList < Player > players) {
+      ListView<Player> playerListView = new ListView<>(players);
+      playerListView.setCellFactory(listView -> new ListCell<>() {
+        protected void updateItem(Player player, boolean empty) {
+          super.updateItem(player, empty);
+          if (empty || player == null) {
+            setText(null);
+            setGraphic(null);
+          } else {
+            HBox cellLayout = new HBox(10);
+            cellLayout.setAlignment(Pos.CENTER_LEFT);
 
-  private String getVBoxPanelStyles() {
-    return ("-fx-background-color: #C4ADAD ; -fx-border-width: 1;-fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, gray, 0,5, 0.1, 0, 2);");
-  }
+            Label nameLabel = new Label(player.getName());
+            nameLabel.setPrefWidth(100);
 
-  private VBox createLeftPanel() {
-    VBox leftPanel = new VBox(10);
-    leftPanel.setPadding(new Insets(10));
-    leftPanel.setMaxWidth(VBOX_WIDTH);
-    leftPanel.setAlignment(Pos.TOP_CENTER);
-    leftPanel.setStyle(getVBoxPanelStyles());
+            Rectangle colorBox = new Rectangle(15, 15, player.getToken().getTokenColor());
+            colorBox.setStroke(Color.BLACK);
 
-    Label headingLabel = new Label("Add players manually");
-    headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    headingLabel.setStyle("-fx-text-overrun: ellipsis");
-    headingLabel.setTextFill(Color.FIREBRICK);
+            String shapeText = capitalizeFirstLetter(player.getToken().getTokenShape());
+            Label shapeLabel = new Label(shapeText);
 
-    Label enterName = new Label("Enter Name");
-    TextField inputName = new TextField();
-    Button confirmNameBtn = Buttons.getEditBtn("Enter");
+            cellLayout.getChildren().addAll(nameLabel, colorBox, shapeLabel);
+            setGraphic(cellLayout);
+          }
+        }
+      });
+      return playerListView;
+    }
 
-    Label shapeLabel = new Label("Chose shape");
-    ComboBox<String> shapes = new ComboBox<>();
-    shapes.getItems().addAll("Circle", "Square", "triangle");
+    private static String capitalizeFirstLetter (String input){
+      return input == null || input.isBlank() ? input :
+          input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    }
 
-    Label colorLabel = new Label("Choose Color");
-    colorPicker = new ColorPicker();
+    private String getVBoxPanelStyles () {
+      return ("-fx-background-color: #C4ADAD ; -fx-border-width: 1;-fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, gray, 0,5, 0.1, 0, 2);");
+    }
 
-    Region spacer = new Region();
-    VBox.setVgrow(spacer, Priority.ALWAYS);
+    private VBox createLeftPanel () {
+      VBox leftPanel = new VBox(10);
+      leftPanel.setPadding(new Insets(10));
+      leftPanel.setMaxWidth(VBOX_WIDTH);
+      leftPanel.setAlignment(Pos.TOP_CENTER);
+      leftPanel.setStyle(getVBoxPanelStyles());
 
-    leftPanel.getChildren()
-        .addAll(headingLabel, enterName, inputName, confirmNameBtn, shapeLabel, shapes, colorLabel,
-            colorPicker,
-            spacer, getAddPlayerBtn(inputName, shapes, colorPicker));
-    return leftPanel;
-  }
+      Label headingLabel = new Label("Add players manually");
+      headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
+      headingLabel.setStyle("-fx-text-overrun: ellipsis");
+      headingLabel.setTextFill(Color.FIREBRICK);
 
-  private VBox createMiddlePanel() {
-    VBox middlePanel = new VBox(10);
-    middlePanel.setPadding(new Insets(10));
-    middlePanel.setAlignment(Pos.TOP_CENTER);
-    middlePanel.setPrefWidth(VBOX_WIDTH);
-    middlePanel.setStyle(getVBoxPanelStyles());
+      Label enterName = new Label("Enter Name");
+      TextField inputName = new TextField();
+      Button confirmNameBtn = Buttons.getEditBtn("Enter");
 
-    Label headingLabel = new Label("Players added to the game");
-    headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    headingLabel.setTextFill(Color.FIREBRICK);
+      Label shapeLabel = new Label("Chose shape");
+      ComboBox<String> shapes = new ComboBox<>();
+      shapes.getItems().addAll("Circle", "Square", "triangle");
 
-    TableView<Player> playersTableView = new TableView<>();
-    TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
-    TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
-    playersTableView.getColumns().addAll(List.of(nameColumn, tokenColumn));
+      Label colorLabel = new Label("Choose Color");
+      colorPicker = new ColorPicker();
 
-    Button totalPlayerchoice = Buttons.getEditBtn("Edit total players");
-    totalPlayerchoice.setOnAction(e -> {
-      showTotalPlayerSelectionDialog();
-    });
+      Region spacer = new Region();
+      VBox.setVgrow(spacer, Priority.ALWAYS);
 
-    middlePanel.getChildren().addAll(headingLabel, playersTableView, totalPlayerchoice);
-    return middlePanel;
-  }
+      leftPanel.getChildren()
+          .addAll(headingLabel, enterName, inputName, confirmNameBtn, shapeLabel, shapes,
+              colorLabel,
+              colorPicker,
+              spacer, getAddPlayerBtn(inputName, shapes, colorPicker));
+      return leftPanel;
+    }
 
-  private VBox createRightPanel() throws IOException {
-    VBox rightPanel = new VBox(10);
-    rightPanel.setPadding(new Insets(10));
-    rightPanel.setPrefWidth(VBOX_WIDTH);
-    rightPanel.setAlignment(Pos.TOP_CENTER);
-    rightPanel.setStyle(getVBoxPanelStyles());
+    private VBox createMiddlePanel () {
+      VBox middlePanel = new VBox(10);
+      middlePanel.setPadding(new Insets(10));
+      middlePanel.setAlignment(Pos.TOP_CENTER);
+      middlePanel.setPrefWidth(VBOX_WIDTH);
+      middlePanel.setStyle(getVBoxPanelStyles());
 
-    Label playersLabel = new Label("Players");
-    playersLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    playersLabel.setTextFill(Color.FIREBRICK);
+      Label headingLabel = new Label("Players added to the game");
+      headingLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
+      headingLabel.setTextFill(Color.FIREBRICK);
+      playersTableView.getColumns().addAll(List.of(nameColumn, tokenColumn));
 
-    ObservableList<Player> players = FXCollections.observableArrayList(
-        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH));
-    final ListView<Player> playerListView = getPlayerListView(players);
-
-    rightPanel.getChildren().addAll(playersLabel, playerListView);
-    return rightPanel;
-  }
-
-  private HBox createBottomContainer() {
-    HBox bottomBtns = new HBox();
-    bottomBtns.setAlignment(Pos.CENTER);
-
-    Region leftSpacer = new Region();
-    Region rightSpacer = new Region();
-    HBox.setHgrow(leftSpacer, Priority.ALWAYS);
-    HBox.setHgrow(rightSpacer, Priority.ALWAYS);
-
-    Button backBtn = getBackBtn();
-    Button startGameBtn = getStartGameBtn();
-    Button toMainBtn = getLandingPageBtn();
-    HBox.setMargin(backBtn, new Insets(10));
-    HBox.setMargin(startGameBtn, new Insets(10));
-    HBox.setMargin(toMainBtn, new Insets(10));
-
-    bottomBtns.getChildren().addAll(backBtn, leftSpacer, startGameBtn, rightSpacer, toMainBtn);
-    bottomBtns.setAlignment(Pos.CENTER);
-
-    return bottomBtns;
-  }
-
-  private Button getStartGameBtn() {
-    Button startGameBtn = Buttons.getSmallPrimaryBtn("Start Game!");
-    startGameBtn.setOnAction(p -> {
-      if (getPlacerSelectionResult().isEmpty()) {
+      Button totalPlayerchoice = Buttons.getEditBtn("Edit total players");
+      totalPlayerchoice.setOnAction(e -> {
         showTotalPlayerSelectionDialog();
-        return;
-      }
-      SceneManager.showBoardGameScene();
-      logger.log(Level.INFO, "Start game btn pressed, showBoardGameScene initialized");
-    });
-    return startGameBtn;
-  }
+      });
 
-  private Button getBackBtn() {
-    Button backBtn = Buttons.getBackBtn("Back");
-    backBtn.setOnAction(p -> {
-      SceneManager.showBoardGameSelectionScene();
-      logger.log(Level.INFO, "Back btn pressed, showBoardGameSelectionScene initialized");
-    });
-    return backBtn;
-  }
+      middlePanel.getChildren().addAll(headingLabel, playersTableView, totalPlayerchoice);
+      return middlePanel;
+    }
 
-  private Button getLandingPageBtn() {
-    Button mainPageBtn = Buttons.getExitBtn("To Main Page");
-    mainPageBtn.setOnAction(p -> {
-      SceneManager.showLandingScene();
-      logger.log(Level.INFO, "main page btn pressed, showLandingScene initialized");
-    });
-    return mainPageBtn;
-  }
+    private VBox createRightPanel () throws IOException {
+      VBox rightPanel = new VBox(10);
+      rightPanel.setPadding(new Insets(10));
+      rightPanel.setPrefWidth(VBOX_WIDTH);
+      rightPanel.setAlignment(Pos.TOP_CENTER);
+      rightPanel.setStyle(getVBoxPanelStyles());
 
-  private Button getAddPlayerBtn(TextField nameInput, ComboBox<String> shapeComboBox,
-                                 ColorPicker colorPicker) {
-    Button addPlayerBtn = Buttons.getEditBtn("Add Player");
-    addPlayerBtn.setOnAction(p -> {
-      String name = nameInput.getText();
-      String shape = shapeComboBox.getValue();
-      Color color = colorPicker.getValue();
-      if (name == null || name.isBlank() || shape == null || color == null) {
-        throw new IllegalArgumentException("Please fill out all fields.");
-      }
-      TokenView tokenView = new TokenView(color, shape);
-      Player player = new Player(name, tokenView);
-      player.setTokenView(tokenView);
+      Label playersLabel = new Label("Players");
+      playersLabel.setFont(Font.font("monospace", FontWeight.BOLD, 18));
+      playersLabel.setTextFill(Color.FIREBRICK);
 
-      logger.log(Level.INFO, "Added player: " + name + " with color and shape");
-    });
-    return addPlayerBtn;
-  }
+      ObservableList<Player> players = FXCollections.observableArrayList(
+          playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH));
+      final ListView<Player> playerListView = getPlayerListView(players);
 
-  public Scene getScene() {
-    return scene;
+      rightPanel.getChildren().addAll(playersLabel, playerListView);
+      return rightPanel;
+    }
+
+    private HBox createBottomContainer () {
+      HBox bottomBtns = new HBox();
+      bottomBtns.setAlignment(Pos.CENTER);
+
+      Region leftSpacer = new Region();
+      Region rightSpacer = new Region();
+      HBox.setHgrow(leftSpacer, Priority.ALWAYS);
+      HBox.setHgrow(rightSpacer, Priority.ALWAYS);
+
+      Button backBtn = getBackBtn();
+      Button startGameBtn = getStartGameBtn();
+      Button toMainBtn = getLandingPageBtn();
+      HBox.setMargin(backBtn, new Insets(10));
+      HBox.setMargin(startGameBtn, new Insets(10));
+      HBox.setMargin(toMainBtn, new Insets(10));
+
+      bottomBtns.getChildren().addAll(backBtn, leftSpacer, startGameBtn, rightSpacer, toMainBtn);
+      bottomBtns.setAlignment(Pos.CENTER);
+
+      return bottomBtns;
+    }
+
+    private Button getStartGameBtn () {
+      Button startGameBtn = Buttons.getSmallPrimaryBtn("Start Game!");
+      startGameBtn.setOnAction(p -> {
+        if (getPlacerSelectionResult().isEmpty()) {
+          showTotalPlayerSelectionDialog();
+          return;
+        }
+        SceneManager.showBoardGameScene();
+        logger.log(Level.INFO, "Start game btn pressed, showBoardGameScene initialized");
+      });
+      return startGameBtn;
+    }
+
+    private Button getBackBtn () {
+      Button backBtn = Buttons.getBackBtn("Back");
+      backBtn.setOnAction(p -> {
+        SceneManager.showBoardGameSelectionScene();
+        logger.log(Level.INFO, "Back btn pressed, showBoardGameSelectionScene initialized");
+      });
+      return backBtn;
+    }
+
+    private Button getLandingPageBtn () {
+      Button mainPageBtn = Buttons.getExitBtn("To Main Page");
+      mainPageBtn.setOnAction(p -> {
+        SceneManager.showLandingScene();
+        logger.log(Level.INFO, "main page btn pressed, showLandingScene initialized");
+      });
+      return mainPageBtn;
+    }
+
+    private Button getAddPlayerBtn (TextField nameInput, ComboBox < String > shapeComboBox,
+        ColorPicker colorPicker){
+      Button addPlayerBtn = Buttons.getEditBtn("Add Player");
+      addPlayerBtn.setOnAction(p -> {
+        String name = nameInput.getText();
+        String shape = shapeComboBox.getValue();
+        Color color = colorPicker.getValue();
+        if (name == null || name.isBlank() || shape == null || color == null) {
+          Alert alert = new Alert(Alert.AlertType.ERROR);
+          alert.setTitle("Error adding player");
+          alert.setContentText("Please fill out all fields.");
+          alert.showAndWait();
+        }
+        assert shape != null;
+        TokenView tokenView = new TokenView(color, shape);
+        Player player = new Player(name, tokenView);
+        player.setTokenView(tokenView);
+        playersTableView.getItems().add(player);
+        logger.log(Level.INFO, "Added player: " + name + " with color and shape");
+      });
+      return addPlayerBtn;
+    }
+
+    public Scene getScene () {
+      return scene;
+    }
   }
-}
