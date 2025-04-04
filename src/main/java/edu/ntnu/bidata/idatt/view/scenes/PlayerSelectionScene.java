@@ -113,6 +113,14 @@ public class PlayerSelectionScene {
         }
       }
     });
+    playerListView.getSelectionModel().selectedItemProperty().addListener((obs, oldval, newVal) -> {
+      if (newVal != null) {
+        logger.log(Level.INFO,
+            "Player: \"" + newVal.getName() + " " + newVal.getToken().getTokenColor() + " " +
+                newVal.getToken().getTokenShape() + "\" clicked");
+        // TODO: add an "add player to the players added panel"
+      }
+    });
     return playerListView;
   }
 
