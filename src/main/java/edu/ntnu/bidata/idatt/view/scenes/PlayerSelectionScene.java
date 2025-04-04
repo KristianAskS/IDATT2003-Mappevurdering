@@ -1,4 +1,3 @@
-
 package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
@@ -21,11 +20,25 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.print.Printer;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -62,6 +75,26 @@ public class PlayerSelectionScene {
     logger.log(Level.INFO, "PlayerSelectionScene initialized");
   }
 
+  public static void showTotalPlayerSelectionDialog() {
+    List<Integer> choices = new ArrayList<>();
+    IntStream.range(1, 6).forEach(choices::add);
+
+    ChoiceDialog<Integer> dialog = new ChoiceDialog<>(5, choices);
+    dialog.setTitle("Total player selection");
+    dialog.setHeaderText("Select total players");
+    dialog.setContentText("Choose your number:");
+
+    totalPlayerCount = dialog.showAndWait();
+  }
+
+  public static Optional<Integer> getPlacerSelectionResult() {
+    return totalPlayerCount;
+  }
+
+  public static Color getColorPicker() {
+    return playerColorPicker.getValue();
+  }
+
   private VBox createPlayerInputPanel() {
     VBox inputPanel = new VBox(10);
     inputPanel.setPadding(new Insets(10));
@@ -92,6 +125,7 @@ public class PlayerSelectionScene {
     VBox.setVgrow(inputPanel.getChildren().get(6), Priority.ALWAYS);
     return inputPanel;
   }
+
   private VBox createPlayerTablePanel() {
     VBox tablePanel = new VBox(10);
     tablePanel.setPadding(new Insets(10));
@@ -103,11 +137,11 @@ public class PlayerSelectionScene {
     heading.setFont(Font.font("monospace", FontWeight.BOLD, 18));
     heading.setTextFill(Color.FIREBRICK);
 
-    nameColumn.setCellFactory(col -> new TableCell<>(){
+    nameColumn.setCellFactory(col -> new TableCell<>() {
       @Override
-      protected void updateItem(String item, boolean empty){
+      protected void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-        if(empty || getTableRow().getItem() == null){
+        if (empty || getTableRow().getItem() == null) {
           setText(null);
           setGraphic(null);
           return;
@@ -127,7 +161,9 @@ public class PlayerSelectionScene {
         }
         Player player = getTableRow().getItem();
         TokenView token = player.getToken();
-        if (token == null) return;
+        if (token == null) {
+          return;
+        }
 
         Rectangle colorBox = new Rectangle(15, 15, token.getTokenColor());
         colorBox.setStroke(Color.BLACK);
@@ -182,7 +218,8 @@ public class PlayerSelectionScene {
           if (response == ButtonType.OK) {
             selectedPlayers.add(new Player(
                 selected.getName(),
-                new TokenView(selected.getToken().getTokenColor(), selected.getToken().getTokenShape())
+                new TokenView(selected.getToken().getTokenColor(),
+                    selected.getToken().getTokenShape())
             ));
           }
         });
@@ -265,33 +302,15 @@ public class PlayerSelectionScene {
     return bar;
   }
 
-  public static void showTotalPlayerSelectionDialog() {
-    List<Integer> choices = new ArrayList<>();
-    IntStream.range(1, 6).forEach(choices::add);
-
-    ChoiceDialog<Integer> dialog = new ChoiceDialog<>(5, choices);
-    dialog.setTitle("Total player selection");
-    dialog.setHeaderText("Select total players");
-    dialog.setContentText("Choose your number:");
-
-    totalPlayerCount = dialog.showAndWait();
-  }
-
-  public static Optional<Integer> getPlacerSelectionResult() {
-    return totalPlayerCount;
-  }
-
-  public static Color getColorPicker() {
-    return playerColorPicker.getValue();
-  }
-
   public Scene getScene() {
     return scene;
   }
+
   private String capitalize(String input) {
     return input == null || input.isBlank() ? "" :
         input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
   }
+
   private String getPanelStyle() {
     return "-fx-background-color: #C4ADAD; -fx-border-width: 1; -fx-border-radius: 5; " +
         "-fx-background-radius: 5; -fx-effect: dropshadow(gaussian, gray, 0.5, 0.1, 0, 2);";
