@@ -215,7 +215,7 @@ public class PlayerSelectionScene {
 
   private Button getAddPlayerBtn(TextField nameInput, ComboBox<String> shapeComboBox,
                                  ColorPicker colorPicker) {
-    Button addPlayerBtn = new Button("Add Player Manually");
+    Button addPlayerBtn = Buttons.getEditBtn("Add Player");
     addPlayerBtn.setOnAction(p -> {
       String name = nameInput.getText();
       String shape = shapeComboBox.getValue();
