@@ -91,7 +91,7 @@ public class PlayerSelectionScene {
     return totalPlayerCount;
   }
 
-  public static Color getColorPicker() {
+  public static Color getSelectedColor() {
     return playerColorPicker.getValue();
   }
 

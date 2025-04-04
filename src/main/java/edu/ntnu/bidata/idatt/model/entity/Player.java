@@ -10,10 +10,6 @@ public class Player {
   private TokenView token;
   private int currentTileId;
 
-  public Player(String name) {
-    this.name = name;
-  }
-
   public Player(String name, TokenView token) {
     this.name = name;
     this.token = token;
