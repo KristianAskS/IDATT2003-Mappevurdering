@@ -1,2 +1,8 @@
-Tri,RED
-kristian,BLUE
+Player 1,0x008b8bff,circle
+Player 2,0xdcdcdcff,circle
+Player 3,0x00ff7fff,triangle
+Player 4,0xff69b4ff,square
+Player 5,0xff00ffff,triangle
+Tri,0x0000ffff,Circle
+Kristian,0xff0000ff,Square
+Neymar,0x008000ff,Triangle

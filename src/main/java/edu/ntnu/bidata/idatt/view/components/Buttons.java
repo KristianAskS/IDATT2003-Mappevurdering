@@ -93,7 +93,7 @@ public class Buttons {
     return secondaryBtn;
   }
 
-  public static Button getEditBtn(String text){
+  public static Button getEditBtn(String text) {
     Button editBtn = new Button(text);
     editBtn.getStyleClass().addAll("button", "edit-btn");
     return editBtn;

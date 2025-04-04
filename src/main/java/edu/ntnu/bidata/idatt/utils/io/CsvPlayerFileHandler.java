@@ -1,7 +1,6 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.TokenType;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.paint.Color;
 
 /**
  * Class for handling CSV-files containing players
@@ -33,7 +33,9 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
   public void writeToFile(List<Player> players, String filePath) throws IOException {
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
-        String writeLine = player.getName() + "," + player.getToken().getTokenType();
+        TokenView token = player.getToken();
+        String writeLine = player.getName() + "," + toRgbString(token.getTokenColor()) + "," +
+            token.getTokenShape();
         bufferedWriter.write(writeLine);
         bufferedWriter.newLine();
         logger.log(Level.INFO, "Player: " + player.getName() + " has been written to the file");
@@ -57,12 +59,11 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
       String line;
       while ((line = bufferedReader.readLine()) != null) {
         String[] playerData = line.split(",");
-        if (playerData.length >= 1 && playerData.length <= 2) {
+        if (playerData.length == 3) {
           String name = playerData[0].trim();
-
-          String tokenTypeString = playerData[1].trim();
-          TokenType tokenType = TokenType.valueOf(tokenTypeString);
-          TokenView token = new TokenView(tokenType);
+          Color color = Color.web(playerData[1].trim());
+          String tokenShape = playerData[2].trim();
+          TokenView token = new TokenView(color, tokenShape);
           Player player = new Player(name, token);
           players.add(player);
         }
@@ -71,5 +72,13 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
       logger.log(Level.SEVERE, "Error reading from the file: " + e.getMessage());
     }
     return players;
+  }
+
+  private String toRgbString(Color color) {
+    int red = (int) (color.getRed() * 255);
+    int green = (int) (color.getGreen() * 255);
+    int blue = (int) (color.getBlue() * 255);
+    int alpha = (int) (color.getOpacity() * 255);
+    return String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
   }
 }
