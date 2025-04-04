@@ -3,6 +3,8 @@ package edu.ntnu.bidata.idatt.view.components;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
+import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.scenes.PlayerSelectionScene;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +19,7 @@ public class TokenView extends StackPane {
   private final String shape;
 
   public TokenView() {
-    this(PlayerSelectionScene.getColorPicker(), "Circle");
+    this(PlayerService.getSelectedColor(), "Circle");
   }
 
   public TokenView(Color color, String shape) {
