@@ -19,7 +19,11 @@ public class Die {
     return lastRolledValue;
   }
 
-  public int getValue() {
+  public int getLastRolledValue() {
     return lastRolledValue;
+  }
+
+  public void setLastRolledValue(int value) {
+    this.lastRolledValue = value;
   }
 }

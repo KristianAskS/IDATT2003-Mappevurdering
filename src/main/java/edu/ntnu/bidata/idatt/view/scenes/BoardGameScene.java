@@ -16,12 +16,12 @@ import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import edu.ntnu.bidata.idatt.view.components.DiceView;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -32,8 +32,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -50,14 +48,18 @@ public class BoardGameScene implements BoardGameObserver {
   private final Label statusLabel = new Label();
   private final PlayerService playerService = new PlayerService();
   private final BoardGameController boardGameController;
+  private final DiceView diceView;
 
   public BoardGameScene() throws IOException {
+    diceView = new DiceView();
     BorderPane rootPane = createRootPane();
     rootPane.setLeft(createIOContainer());
 
     BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
 
+    //Denne må hentes fra forrige scene brukeren velger antall terninger
+    int numbOfDice = 5;
 
     //denne skal ikke brukes da UI ikke skal kommunisere med forettningslogikken
     //Board board = BoardGameFactory.createClassicBoard();
@@ -67,7 +69,9 @@ public class BoardGameScene implements BoardGameObserver {
     boardService.setBoard(board);
     boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
 
-    boardGameController = new BoardGameController(this, boardService, playerService, board);
+    boardGameController =
+        new BoardGameController(this, boardService, playerService, board, numbOfDice);
+
 
     GridPane boardPane = BoardView.createBoardGUI(board);
     rootPane.setCenter(boardPane);
@@ -117,7 +121,7 @@ public class BoardGameScene implements BoardGameObserver {
       setTokenPositionOnTile(startTile);
 
       // Eksempel: Flytt spiller 3 med 4 steg
-      boardGameController.movePlayer(players.get(2), 4);
+      boardGameController.movePlayer(players.get(2), diceView.getRollResult());
     }
   }
 
@@ -163,6 +167,18 @@ public class BoardGameScene implements BoardGameObserver {
     dropShadow.setColor(Color.color(0, 0, 0, 0.3));
     container.setEffect(dropShadow);
 
+    assert diceView != null;
+    container.getChildren().add(diceView.getDiceImageView());
+
+    Button rollDiceBtn = diceView.getRollDiceBtn();
+    container.getChildren().add(rollDiceBtn);
+
+    Label rollResultLabel = new Label();
+    rollResultLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    rollResultLabel.textProperty().bind(diceView.rollResultProperty().asString("Roll result: %d"));
+    container.getChildren().add(rollResultLabel);
+
+    /*
     Label pressToRoll = new Label("Press to Roll");
     pressToRoll.setFont(Font.font("monospace", FontWeight.BOLD, 16));
     pressToRoll.setWrapText(true);
@@ -173,6 +189,7 @@ public class BoardGameScene implements BoardGameObserver {
     imageViewDice.setFitHeight(100);
     imageViewDice.setFitWidth(100);
     container.getChildren().add(imageViewDice);
+    //------
 
     Label rollResult = new Label("Roll result:");
     rollResult.setFont(Font.font("monospace", FontWeight.BOLD, 16));
@@ -180,10 +197,12 @@ public class BoardGameScene implements BoardGameObserver {
 
     ImageView imageViewResult = new ImageView(new Image(Objects.requireNonNull(
         getClass().getResourceAsStream(
-            "/edu/ntnu/bidata/idatt/images/rollResultPlaceholder.png"))));
+            "/edu/ntnu/bidata/idatt/images/dicePlaceholder.png"))));
     imageViewResult.setFitHeight(100);
     imageViewResult.setFitWidth(100);
     container.getChildren().add(imageViewResult);
+
+     */
 
     Label outputLabel = new Label("Output");
     outputLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));

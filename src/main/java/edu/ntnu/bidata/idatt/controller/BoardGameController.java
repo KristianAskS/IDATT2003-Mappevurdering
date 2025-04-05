@@ -1,6 +1,8 @@
 package edu.ntnu.bidata.idatt.controller;
 
 import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Dice;
+import edu.ntnu.bidata.idatt.model.entity.Die;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
@@ -17,6 +19,8 @@ import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
  * @since 1.0
  */
 public class BoardGameController {
+  private static Dice dice = null;
+  private static Die die = null;
   private final BoardGameScene view;
   private final BoardService boardService;
   private final PlayerService playerService;
@@ -24,12 +28,26 @@ public class BoardGameController {
 
   //Konstruktør. Controlleren får referanser til viewet og de nødvendige modell-tjenestene.
   public BoardGameController(BoardGameScene view, BoardService boardService,
-                             PlayerService playerService, Board board) {
+                             PlayerService playerService, Board board, int numbOfdices) {
     this.view = view;
     this.boardService = boardService;
     this.playerService = playerService;
     this.board = board;
+    dice = new Dice(numbOfdices);
+    die = new Die();
+
     initController();
+  }
+
+  /**
+   * @return the roll value of a single dice
+   */
+  public static int getLastRolledValue() {
+    return die.getLastRolledValue();
+  }
+
+  public static void setRolledValue(int rollResult) {
+    dice.setRollResult(rollResult);
   }
 
   /**
@@ -45,7 +63,6 @@ public class BoardGameController {
    * Controlleren oppdaterer spillerens posisjon i modellen og deretter viewet.
    *
    * @param player Spilleren som skal flyttes
-   * @param steps  Antall steg spilleren skal flyttes
    */
   public void movePlayer(Player player, int steps) {
     int nextTileId = player.getCurrentTileId() + steps;
