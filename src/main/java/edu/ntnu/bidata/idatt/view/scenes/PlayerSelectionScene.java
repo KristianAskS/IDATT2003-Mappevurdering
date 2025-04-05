@@ -11,6 +11,7 @@ import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +48,6 @@ import javafx.util.Duration;
 
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
-
   private static final TableView<Player> playerTable = new TableView<>();
   private static final ObservableList<Player> selectedPlayers = FXCollections.observableArrayList();
   private static final Label playersCountLabel = new Label("Players: 0/0");
@@ -62,9 +62,9 @@ public class PlayerSelectionScene {
   public PlayerSelectionScene() throws IOException {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTBLUE);
-
     scene.getStylesheets().add(
-        getClass().getResource("/edu/ntnu/bidata/idatt/styles/PlayerSelectionSceneStyles.css")
+        Objects.requireNonNull(
+                getClass().getResource("/edu/ntnu/bidata/idatt/styles/PlayerSelectionSceneStyles.css"))
             .toExternalForm()
     );
 
@@ -84,24 +84,7 @@ public class PlayerSelectionScene {
     rootPane.setBottom(bottomContainer);
 
     playersCountLabel.getStyleClass().add("label-count");
-    playersCountLabel.setOnMouseEntered(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(playersCountLabel.scaleXProperty(), 1.1),
-              new KeyValue(playersCountLabel.scaleYProperty(), 1.1)
-          )
-      );
-      anim.play();
-    });
-    playersCountLabel.setOnMouseExited(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(playersCountLabel.scaleXProperty(), 1.0),
-              new KeyValue(playersCountLabel.scaleYProperty(), 1.0)
-          )
-      );
-      anim.play();
-    });
+    addScaleAnimation(playersCountLabel, 1.1, 1.0, Duration.millis(300), true);
 
     logger.log(Level.INFO, "PlayerSelectionScene initialized");
   }
@@ -116,8 +99,7 @@ public class PlayerSelectionScene {
     dialog.setContentText("Choose your number:");
 
     totalPlayerCount = dialog.showAndWait();
-    playersCountLabel.setText(
-        "Players: " + selectedPlayers.size() + "/" + totalPlayerCount.orElse(0));
+    updatePlayersCountLabel();
   }
 
   public static int getTotalPlayerCount() {
@@ -128,78 +110,33 @@ public class PlayerSelectionScene {
     return playerColorPicker.getValue();
   }
 
-  private void addPanelHoverAnimation(VBox panel) {
-    panel.setOnMouseEntered(e -> {
-      Timeline enterAnim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(panel.scaleXProperty(), 1.05),
-              new KeyValue(panel.scaleYProperty(), 1.05),
-              new KeyValue(panel.opacityProperty(), 0.95)
-          )
-      );
-      enterAnim.play();
-    });
-    panel.setOnMouseExited(e -> {
-      Timeline exitAnim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(panel.scaleXProperty(), 1.0),
-              new KeyValue(panel.scaleYProperty(), 1.0),
-              new KeyValue(panel.opacityProperty(), 1.0)
-          )
-      );
-      exitAnim.play();
-    });
+  private static void updatePlayersCountLabel() {
+    playersCountLabel.setText(
+        "Players: " + selectedPlayers.size() + "/" + getTotalPlayerCount());
   }
 
   private VBox createPlayerInputPanel() {
-    VBox inputPanel = new VBox(10);
-    inputPanel.setPadding(new Insets(10));
+    VBox inputPanel = createPanel("Add players manually");
     inputPanel.setMaxWidth(PANEL_WIDTH);
-    inputPanel.setAlignment(Pos.TOP_CENTER);
-    inputPanel.getStyleClass().add("vbox-panel");
-
-    addPanelHoverAnimation(inputPanel);
-
-    Label heading = new Label("Add players manually");
-    heading.setWrapText(true);
-    heading.getStyleClass().add("label-heading");
-    heading.setOnMouseEntered(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(heading.translateXProperty(), 5),
-              new KeyValue(heading.opacityProperty(), 0.9)
-          )
-      );
-      anim.play();
-    });
-    heading.setOnMouseExited(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(heading.translateXProperty(), 0),
-              new KeyValue(heading.opacityProperty(), 1.0)
-          )
-      );
-      anim.play();
-    });
 
     Label nameLabel = new Label("Enter Name");
     nameLabel.getStyleClass().add("label-sublabel");
     TextField nameInput = new TextField();
     nameInput.getStyleClass().add("text-field-combobox");
-    addHoverAnimation(nameInput);
+    addScaleAnimation(nameInput, 1.02, 1.0, Duration.millis(200), false);
 
     Label shapeLabel = new Label("Choose Shape");
     shapeLabel.getStyleClass().add("label-sublabel");
     ComboBox<String> shapeComboBox = new ComboBox<>();
     shapeComboBox.getItems().addAll("Circle", "Square", "Triangle");
     shapeComboBox.getStyleClass().add("text-field-combobox");
-    addHoverAnimation(shapeComboBox);
+    addScaleAnimation(shapeComboBox, 1.02, 1.0, Duration.millis(200), false);
 
     Label colorLabel = new Label("Choose Color");
     colorLabel.getStyleClass().add("label-sublabel");
     playerColorPicker = new ColorPicker();
     playerColorPicker.getStyleClass().add("colorpicker");
-    addHoverAnimation(playerColorPicker);
+    addScaleAnimation(playerColorPicker, 1.02, 1.0, Duration.millis(200), false);
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
     addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox));
@@ -208,46 +145,18 @@ public class PlayerSelectionScene {
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
     inputPanel.getChildren().addAll(
-        heading,
         nameLabel, nameInput,
         shapeLabel, shapeComboBox,
         colorLabel, playerColorPicker,
         spacer,
         addPlayerBtn
     );
-
     return inputPanel;
   }
 
   private VBox createPlayerTablePanel() {
-    VBox tablePanel = new VBox(10);
-    tablePanel.setPadding(new Insets(10));
-    tablePanel.setAlignment(Pos.TOP_CENTER);
+    VBox tablePanel = createPanel("Players added to the game");
     tablePanel.setPrefWidth(PANEL_WIDTH + 50);
-    tablePanel.getStyleClass().add("vbox-panel");
-    addPanelHoverAnimation(tablePanel);
-
-    Label heading = new Label("Players added to the game");
-    heading.setWrapText(true);
-    heading.getStyleClass().add("label-heading");
-    heading.setOnMouseEntered(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(heading.translateXProperty(), 5),
-              new KeyValue(heading.opacityProperty(), 0.9)
-          )
-      );
-      anim.play();
-    });
-    heading.setOnMouseExited(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(heading.translateXProperty(), 0),
-              new KeyValue(heading.opacityProperty(), 1.0)
-          )
-      );
-      anim.play();
-    });
 
     nameColumn.setCellFactory(col -> new TableCell<>() {
       @Override
@@ -287,43 +196,17 @@ public class PlayerSelectionScene {
     });
 
     playerTable.setItems(selectedPlayers);
-    playerTable.getColumns().setAll(nameColumn, tokenColumn);
+    playerTable.getColumns().setAll(List.of(nameColumn, tokenColumn));
 
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
     editCountBtn.setOnAction(e -> showTotalPlayerSelectionDialog());
 
-    tablePanel.getChildren().addAll(heading, playerTable, playersCountLabel, editCountBtn);
+    tablePanel.getChildren().addAll(playerTable, playersCountLabel, editCountBtn);
     return tablePanel;
   }
 
   private VBox createAvailablePlayersPanel() throws IOException {
-    VBox rightPanel = new VBox(10);
-    rightPanel.setPadding(new Insets(10));
-    rightPanel.setPrefWidth(PANEL_WIDTH);
-    rightPanel.setAlignment(Pos.TOP_CENTER);
-    rightPanel.getStyleClass().add("vbox-panel");
-    addPanelHoverAnimation(rightPanel);
-
-    Label heading = new Label("Players");
-    heading.getStyleClass().add("label-heading");
-    heading.setOnMouseEntered(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(heading.translateXProperty(), 5),
-              new KeyValue(heading.opacityProperty(), 0.9)
-          )
-      );
-      anim.play();
-    });
-    heading.setOnMouseExited(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(heading.translateXProperty(), 0),
-              new KeyValue(heading.opacityProperty(), 1.0)
-          )
-      );
-      anim.play();
-    });
+    VBox availablePanel = createPanel("Players");
 
     ObservableList<Player> availablePlayers = FXCollections.observableArrayList(
         playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
@@ -331,15 +214,15 @@ public class PlayerSelectionScene {
 
     ListView<Player> playerListView = createAvailablePlayersList(availablePlayers);
     VBox.setVgrow(playerListView, Priority.ALWAYS);
-    rightPanel.getChildren().addAll(heading, playerListView);
-    return rightPanel;
+    availablePanel.getChildren().add(playerListView);
+    return availablePanel;
   }
 
   private ListView<Player> createAvailablePlayersList(ObservableList<Player> players) {
-    ListView<Player> listView = getPlayerListView(players);
+    ListView<Player> listView = createPlayerListView(players);
     listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selected) -> {
       if (selected != null) {
-        if (selectedPlayers.size() >= getTotalPlayerCount()) {
+        if (isAtMaxPlayers()) {
           showAlert(Alert.AlertType.WARNING, "Maximum of players",
               "Exceeded maximum players: " + getTotalPlayerCount());
         } else {
@@ -354,8 +237,7 @@ public class PlayerSelectionScene {
                   new TokenView(selected.getToken().getTokenColor(),
                       selected.getToken().getTokenShape())
               ));
-              playersCountLabel.setText(
-                  "Players: " + selectedPlayers.size() + "/" + totalPlayerCount.orElse(0));
+              updatePlayersCountLabel();
             }
           });
         }
@@ -364,7 +246,7 @@ public class PlayerSelectionScene {
     return listView;
   }
 
-  private ListView<Player> getPlayerListView(ObservableList<Player> players) {
+  private ListView<Player> createPlayerListView(ObservableList<Player> players) {
     ListView<Player> listView = new ListView<>(players);
     listView.setCellFactory(list -> new ListCell<>() {
       @Override
@@ -399,7 +281,7 @@ public class PlayerSelectionScene {
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
 
-    if (selectedPlayers.size() >= getTotalPlayerCount()) {
+    if (isAtMaxPlayers()) {
       showAlert(Alert.AlertType.WARNING, "Maximum of players",
           "Exceeded maximum players: " + getTotalPlayerCount());
       resetInputs(nameField, shapeComboBox);
@@ -409,8 +291,7 @@ public class PlayerSelectionScene {
       TokenView token = new TokenView(color, shape);
       Player newPlayer = new Player(name, token);
       selectedPlayers.add(newPlayer);
-      playersCountLabel.setText(
-          "Players: " + selectedPlayers.size() + "/" + totalPlayerCount.orElse(0));
+      updatePlayersCountLabel();
       resetInputs(nameField, shapeComboBox);
       logger.log(Level.INFO, "Added player: " + name + " with color and shape");
     }
@@ -455,6 +336,96 @@ public class PlayerSelectionScene {
     return scene;
   }
 
+  private VBox createPanel(String headingText) {
+    VBox panel = new VBox(10);
+    panel.setPadding(new Insets(10));
+    panel.setAlignment(Pos.TOP_CENTER);
+    panel.getStyleClass().add("vbox-panel");
+    addPanelHoverAnimation(panel);
+
+    Label heading = createHeadingLabel(headingText);
+    panel.getChildren().add(heading);
+    return panel;
+  }
+
+  private Label createHeadingLabel(String text) {
+    Label heading = new Label(text);
+    heading.setWrapText(true);
+    heading.getStyleClass().add("label-heading");
+    addHeadingAnimation(heading);
+    return heading;
+  }
+
+  private void addHeadingAnimation(Label label) {
+    label.setOnMouseEntered(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(label.translateXProperty(), 5),
+              new KeyValue(label.opacityProperty(), 0.9)
+          )
+      );
+      anim.play();
+    });
+    label.setOnMouseExited(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(label.translateXProperty(), 0),
+              new KeyValue(label.opacityProperty(), 1.0)
+          )
+      );
+      anim.play();
+    });
+  }
+
+  private void addPanelHoverAnimation(VBox panel) {
+    panel.setOnMouseEntered(e -> {
+      Timeline enterAnim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(panel.scaleXProperty(), 1.02),
+              new KeyValue(panel.scaleYProperty(), 1.02),
+              new KeyValue(panel.opacityProperty(), 0.90)
+          )
+      );
+      enterAnim.play();
+    });
+    panel.setOnMouseExited(e -> {
+      Timeline exitAnim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(panel.scaleXProperty(), 1.0),
+              new KeyValue(panel.scaleYProperty(), 1.0),
+              new KeyValue(panel.opacityProperty(), 1.0)
+          )
+      );
+      exitAnim.play();
+    });
+  }
+
+  private void addScaleAnimation(javafx.scene.Node node, double targetScale, double normalScale,
+                                 Duration duration, boolean useScaleOnly) {
+    node.setOnMouseEntered(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(duration,
+              new KeyValue(node.scaleXProperty(), targetScale),
+              new KeyValue(node.scaleYProperty(), targetScale)
+          )
+      );
+      anim.play();
+    });
+    node.setOnMouseExited(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(duration,
+              new KeyValue(node.scaleXProperty(), normalScale),
+              new KeyValue(node.scaleYProperty(), normalScale)
+          )
+      );
+      anim.play();
+    });
+  }
+
+  private boolean isAtMaxPlayers() {
+    return selectedPlayers.size() >= getTotalPlayerCount();
+  }
+
   private String capitalize(String input) {
     if (input == null || input.isBlank()) {
       return "";
@@ -467,26 +438,5 @@ public class PlayerSelectionScene {
     alert.setTitle(title);
     alert.setContentText(message);
     alert.showAndWait();
-  }
-
-  private void addHoverAnimation(javafx.scene.Node node) {
-    node.setOnMouseEntered(e -> {
-      Timeline hoverAnim = new Timeline(
-          new KeyFrame(Duration.millis(200),
-              new KeyValue(node.scaleXProperty(), 1.02),
-              new KeyValue(node.scaleYProperty(), 1.02)
-          )
-      );
-      hoverAnim.play();
-    });
-    node.setOnMouseExited(e -> {
-      Timeline exitAnim = new Timeline(
-          new KeyFrame(Duration.millis(200),
-              new KeyValue(node.scaleXProperty(), 1.0),
-              new KeyValue(node.scaleYProperty(), 1.0)
-          )
-      );
-      exitAnim.play();
-    });
   }
 }

@@ -60,7 +60,7 @@ public class BoardGameSelectionScene {
     rootPane.setCenter(mainWrapper);
 
     HBox bottomContainer = createBottomContainer();
-    ;
+
     rootPane.setBottom(bottomContainer);
     BorderPane.setMargin(bottomContainer, new Insets(10));
 
