@@ -56,8 +56,6 @@ public class PlayerSelectionScene {
   private final PlayerService playerService = new PlayerService();
   private final Scene scene;
   private final int PANEL_WIDTH = 300;
-  private final TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
-  private final TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
 
   public PlayerSelectionScene() throws IOException {
     BorderPane rootPane = SceneManager.getRootPane();
@@ -104,7 +102,7 @@ public class PlayerSelectionScene {
     } while (result.isEmpty());
     totalPlayerCount = result.get();
 
-    while (selectedPlayers.size() > totalPlayerCount){
+    while (selectedPlayers.size() > totalPlayerCount) {
       selectedPlayers.removeLast();
     }
 
@@ -166,6 +164,9 @@ public class PlayerSelectionScene {
   private VBox createPlayerTablePanel() {
     VBox tablePanel = createPanel("Players added to the game");
     tablePanel.setPrefWidth(PANEL_WIDTH + 50);
+    TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
+    TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
+    TableColumn<Player, Void> deleteColumn = new TableColumn<>("Delete");
 
     nameColumn.setCellFactory(col -> new TableCell<>() {
       @Override
@@ -178,6 +179,7 @@ public class PlayerSelectionScene {
         }
         Player player = getTableRow().getItem();
         setText(player.getName());
+        setAlignment(Pos.CENTER);
       }
     });
 
@@ -199,13 +201,44 @@ public class PlayerSelectionScene {
         colorBox.setStroke(Color.BLACK);
         Label shapeLabel = new Label(capitalize(token.getTokenShape()));
         HBox layout = new HBox(10, colorBox, shapeLabel);
-        layout.setAlignment(Pos.CENTER_LEFT);
+        layout.setAlignment(Pos.CENTER);
         setGraphic(layout);
       }
     });
+    deleteColumn.setCellFactory(col -> new TableCell<>() {
+      private final Button deleteBtn = new Button("❌");
+
+      {
+        deleteBtn.setOnAction(e -> {
+          Player player = getTableView().getItems().get(getIndex());
+          Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+          confirm.setTitle("Remove player");
+          confirm.setHeaderText("Remove " + player.getName() + "?");
+          confirm.setContentText("Do you want to remove this player?");
+          confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+              selectedPlayers.remove(player);
+              updatePlayersCountLabel();
+            }
+          });
+        });
+      }
+
+      @Override
+      protected void updateItem(Void item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty) {
+          setGraphic(null);
+        } else {
+          setAlignment(Pos.CENTER);
+          setGraphic(deleteBtn);
+        }
+      }
+    });
+
 
     playerTable.setItems(selectedPlayers);
-    playerTable.getColumns().setAll(List.of(nameColumn, tokenColumn));
+    playerTable.getColumns().setAll(List.of(nameColumn, tokenColumn, deleteColumn));
 
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
     editCountBtn.setOnAction(e -> showTotalPlayerSelectionDialog());
@@ -236,7 +269,7 @@ public class PlayerSelectionScene {
               "Exceeded maximum players: " + getTotalPlayerCount());
         } else {
           Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-          confirm.setTitle("Add Player");
+          confirm.setTitle("Add player");
           confirm.setHeaderText("Add " + selected.getName() + "?");
           confirm.setContentText("Do you want to add this player to the game?");
           confirm.showAndWait().ifPresent(response -> {
