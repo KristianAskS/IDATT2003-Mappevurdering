@@ -103,6 +103,11 @@ public class PlayerSelectionScene {
       result = dialog.showAndWait();
     } while (result.isEmpty());
     totalPlayerCount = result.get();
+
+    while (selectedPlayers.size() > totalPlayerCount){
+      selectedPlayers.removeLast();
+    }
+
     updatePlayersCountLabel();
   }
 
