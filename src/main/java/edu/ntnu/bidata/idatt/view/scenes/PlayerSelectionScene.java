@@ -10,12 +10,15 @@ import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -41,36 +44,45 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
 
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
   private static final TableView<Player> playerTable = new TableView<>();
   private static final ObservableList<Player> selectedPlayers = FXCollections.observableArrayList();
-  private static Optional<Integer> totalPlayerCount = Optional.empty();
+  private static final Label playersCountLabel = new Label("Players: 0/0");
+  private static Integer totalPlayerCount = null;
   private static ColorPicker playerColorPicker;
-  private final Scene scene;
   private final PlayerService playerService = new PlayerService();
+  private final Scene scene;
   private final int PANEL_WIDTH = 300;
-  private final TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
-  private final TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
 
   public PlayerSelectionScene() throws IOException {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTBLUE);
+    scene.getStylesheets().add(
+        Objects.requireNonNull(
+                getClass().getResource("/edu/ntnu/bidata/idatt/styles/PlayerSelectionSceneStyles.css"))
+            .toExternalForm()
+    );
 
     HBox centerLayout = new HBox(20);
     centerLayout.setPadding(new Insets(10));
     centerLayout.setAlignment(Pos.CENTER);
 
-    centerLayout.getChildren().addAll(
-        createPlayerInputPanel(),
-        createPlayerTablePanel(),
-        createAvailablePlayersPanel()
-    );
+    VBox inputPanel = createPlayerInputPanel();
+    VBox tablePanel = createPlayerTablePanel();
+    VBox availablePanel = createAvailablePlayersPanel();
+
+    centerLayout.getChildren().addAll(inputPanel, tablePanel, availablePanel);
     rootPane.setCenter(centerLayout);
-    rootPane.setBottom(createBottomButtonBar());
+
+    HBox bottomContainer = createBottomButtonContainer();
+    BorderPane.setMargin(bottomContainer, new Insets(10));
+    rootPane.setBottom(bottomContainer);
+
+    playersCountLabel.getStyleClass().add("label-count");
+    addScaleAnimation(playersCountLabel, 1.1, Duration.millis(300));
 
     logger.log(Level.INFO, "PlayerSelectionScene initialized");
   }
@@ -84,58 +96,77 @@ public class PlayerSelectionScene {
     dialog.setHeaderText("Select total players");
     dialog.setContentText("Choose your number:");
 
-    totalPlayerCount = dialog.showAndWait();
+    Optional<Integer> result;
+    do {
+      result = dialog.showAndWait();
+    } while (result.isEmpty());
+    totalPlayerCount = result.get();
+
+    while (selectedPlayers.size() > totalPlayerCount) {
+      selectedPlayers.removeLast();
+    }
+
+    updatePlayersCountLabel();
   }
 
-  public static Optional<Integer> getTotalPlayerCount() {
-    return totalPlayerCount;
+  public static int getTotalPlayerCount() {
+    return totalPlayerCount == null ? 0 : totalPlayerCount;
   }
 
   public static Color getSelectedColor() {
     return playerColorPicker.getValue();
   }
 
+  private static void updatePlayersCountLabel() {
+    playersCountLabel.setText(
+        "Players: " + selectedPlayers.size() + "/" + getTotalPlayerCount());
+  }
+
   private VBox createPlayerInputPanel() {
-    VBox inputPanel = new VBox(10);
-    inputPanel.setPadding(new Insets(10));
+    VBox inputPanel = createPanel("Add players manually");
     inputPanel.setMaxWidth(PANEL_WIDTH);
-    inputPanel.setAlignment(Pos.TOP_CENTER);
-    inputPanel.setStyle(getPanelStyle());
 
-    Label heading = new Label("Add players manually");
-    heading.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    heading.setTextFill(Color.FIREBRICK);
-
+    Label nameLabel = new Label("Enter Name");
+    nameLabel.getStyleClass().add("label-sublabel");
     TextField nameInput = new TextField();
+    nameInput.getStyleClass().add("text-field-combobox");
+    addScaleAnimation(nameInput, 1.02, Duration.millis(200));
+
+    Label shapeLabel = new Label("Choose Shape");
+    shapeLabel.getStyleClass().add("label-sublabel");
     ComboBox<String> shapeComboBox = new ComboBox<>();
     shapeComboBox.getItems().addAll("Circle", "Square", "Triangle");
+    shapeComboBox.getStyleClass().add("text-field-combobox");
+    addScaleAnimation(shapeComboBox, 1.02, Duration.millis(200));
 
+    Label colorLabel = new Label("Choose Color");
+    colorLabel.getStyleClass().add("label-sublabel");
     playerColorPicker = new ColorPicker();
+    playerColorPicker.getStyleClass().add("colorpicker");
+    addScaleAnimation(playerColorPicker, 1.02, Duration.millis(200));
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
     addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox));
 
+    Region spacer = new Region();
+    VBox.setVgrow(spacer, Priority.ALWAYS);
+
     inputPanel.getChildren().addAll(
-        heading,
-        new Label("Enter Name"), nameInput,
-        new Label("Choose Shape"), shapeComboBox,
-        new Label("Choose Color"), playerColorPicker,
-        new Region(), addPlayerBtn
+        nameLabel, nameInput,
+        shapeLabel, shapeComboBox,
+        colorLabel, playerColorPicker,
+        spacer,
+        addPlayerBtn
     );
-    VBox.setVgrow(inputPanel.getChildren().get(6), Priority.ALWAYS);
     return inputPanel;
   }
 
   private VBox createPlayerTablePanel() {
-    VBox tablePanel = new VBox(10);
-    tablePanel.setPadding(new Insets(10));
-    tablePanel.setAlignment(Pos.TOP_CENTER);
-    tablePanel.setPrefWidth(PANEL_WIDTH);
-    tablePanel.setStyle(getPanelStyle());
-
-    Label heading = new Label("Players added to the game");
-    heading.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    heading.setTextFill(Color.FIREBRICK);
+    VBox tablePanel = createPanel("Players added to the game");
+    tablePanel.setPrefWidth(PANEL_WIDTH + 50);
+    TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
+    TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
+    TableColumn<Player, Void> deleteColumn = new TableColumn<>("Delete");
 
     nameColumn.setCellFactory(col -> new TableCell<>() {
       @Override
@@ -148,8 +179,10 @@ public class PlayerSelectionScene {
         }
         Player player = getTableRow().getItem();
         setText(player.getName());
+        setAlignment(Pos.CENTER_LEFT);
       }
     });
+
     tokenColumn.setCellFactory(col -> new TableCell<>() {
       @Override
       protected void updateItem(String item, boolean empty) {
@@ -164,71 +197,98 @@ public class PlayerSelectionScene {
         if (token == null) {
           return;
         }
-
         Rectangle colorBox = new Rectangle(15, 15, token.getTokenColor());
         colorBox.setStroke(Color.BLACK);
         Label shapeLabel = new Label(capitalize(token.getTokenShape()));
-
         HBox layout = new HBox(10, colorBox, shapeLabel);
         layout.setAlignment(Pos.CENTER_LEFT);
         setGraphic(layout);
       }
     });
+    deleteColumn.setCellFactory(col -> new TableCell<>() {
+      private final Button deleteBtn = new Button("❌");
+
+      {
+        deleteBtn.setOnAction(e -> {
+          Player player = getTableView().getItems().get(getIndex());
+          Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+          confirm.setTitle("Remove player");
+          confirm.setHeaderText("Remove " + player.getName() + "?");
+          confirm.setContentText("Do you want to remove this player?");
+          confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+              selectedPlayers.remove(player);
+              updatePlayersCountLabel();
+            }
+          });
+        });
+      }
+
+      @Override
+      protected void updateItem(Void item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty) {
+          setGraphic(null);
+        } else {
+          setAlignment(Pos.CENTER);
+          setGraphic(deleteBtn);
+        }
+      }
+    });
+
 
     playerTable.setItems(selectedPlayers);
-    playerTable.getColumns().addAll(Arrays.asList(nameColumn, tokenColumn));
+    playerTable.getColumns().setAll(List.of(nameColumn, tokenColumn, deleteColumn));
 
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
     editCountBtn.setOnAction(e -> showTotalPlayerSelectionDialog());
 
-    tablePanel.getChildren().addAll(heading, playerTable, editCountBtn);
+    tablePanel.getChildren().addAll(playerTable, playersCountLabel, editCountBtn);
     return tablePanel;
   }
 
   private VBox createAvailablePlayersPanel() throws IOException {
-    VBox rightPanel = new VBox(10);
-    rightPanel.setPadding(new Insets(10));
-    rightPanel.setPrefWidth(PANEL_WIDTH);
-    rightPanel.setAlignment(Pos.TOP_CENTER);
-    rightPanel.setStyle(getPanelStyle());
-
-    Label title = new Label("Players");
-    title.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    title.setTextFill(Color.FIREBRICK);
+    VBox availablePanel = createPanel("Players");
 
     ObservableList<Player> availablePlayers = FXCollections.observableArrayList(
-        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH));
-    ListView<Player> playerListView = createAvailablePlayersList(availablePlayers);
+        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
+    );
 
-    rightPanel.getChildren().addAll(title, playerListView);
-    return rightPanel;
+    ListView<Player> playerListView = createAvailablePlayersList(availablePlayers);
+    VBox.setVgrow(playerListView, Priority.ALWAYS);
+    availablePanel.getChildren().add(playerListView);
+    return availablePanel;
   }
 
   private ListView<Player> createAvailablePlayersList(ObservableList<Player> players) {
-    final ListView<Player> listView =
-        getPlayerListView(players);
+    ListView<Player> listView = createPlayerListView(players);
     listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selected) -> {
       if (selected != null) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Add Player");
-        confirm.setHeaderText("Add " + selected.getName() + "?");
-        confirm.setContentText("Do you want to add this player to the game?");
-
-        confirm.showAndWait().ifPresent(response -> {
-          if (response == ButtonType.OK) {
-            selectedPlayers.add(new Player(
-                selected.getName(),
-                new TokenView(selected.getToken().getTokenColor(),
-                    selected.getToken().getTokenShape())
-            ));
-          }
-        });
+        if (isAtMaxPlayers()) {
+          showAlert(Alert.AlertType.WARNING, "Maximum of players",
+              "Exceeded maximum players: " + getTotalPlayerCount());
+        } else {
+          Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+          confirm.setTitle("Add player");
+          confirm.setHeaderText("Add " + selected.getName() + "?");
+          confirm.setContentText("Do you want to add this player to the game?");
+          confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+              selectedPlayers.add(new Player(
+                  selected.getName(),
+                  new TokenView(selected.getToken().getTokenColor(),
+                      selected.getToken().getTokenShape())
+              ));
+              updatePlayersCountLabel();
+            }
+          });
+        }
       }
     });
     return listView;
   }
 
-  private ListView<Player> getPlayerListView(ObservableList<Player> players) {
+  private ListView<Player> createPlayerListView(ObservableList<Player> players) {
     ListView<Player> listView = new ListView<>(players);
     listView.setCellFactory(list -> new ListCell<>() {
       @Override
@@ -239,13 +299,16 @@ public class PlayerSelectionScene {
           return;
         }
         Label name = new Label(player.getName());
+        name.setWrapText(true);
+        name.getStyleClass().add("label-listview");
         name.setPrefWidth(70);
 
         Rectangle colorBox = new Rectangle(15, 15, player.getToken().getTokenColor());
         colorBox.setStroke(Color.BLACK);
-        colorBox.setWidth(70);
+        colorBox.setWidth(60);
 
         Label shape = new Label(capitalize(player.getToken().getTokenShape()));
+        shape.getStyleClass().add("label-listview");
 
         HBox cell = new HBox(10, name, colorBox, shape);
         cell.setAlignment(Pos.CENTER_LEFT);
@@ -260,23 +323,32 @@ public class PlayerSelectionScene {
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
 
-    if (name == null || name.isBlank() || shape == null || color == null) {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Input Error");
-      alert.setContentText("Please fill out all fields.");
-      alert.showAndWait();
-      return;
+    if (isAtMaxPlayers()) {
+      showAlert(Alert.AlertType.WARNING, "Maximum of players",
+          "Exceeded maximum players: " + getTotalPlayerCount());
+      resetInputs(nameField, shapeComboBox);
+    } else if (name == null || name.isBlank() || shape == null || color == null) {
+      showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
+    } else {
+      TokenView token = new TokenView(color, shape);
+      Player newPlayer = new Player(name, token);
+      selectedPlayers.add(newPlayer);
+      updatePlayersCountLabel();
+      resetInputs(nameField, shapeComboBox);
+      logger.log(Level.INFO, "Added player: " + name + " with color and shape");
     }
-
-    TokenView token = new TokenView(color, shape);
-    Player newPlayer = new Player(name, token);
-    selectedPlayers.add(newPlayer);
-    logger.log(Level.INFO, "Added player: " + name + " with color and shape");
   }
 
-  private HBox createBottomButtonBar() {
-    HBox bar = new HBox();
-    bar.setAlignment(Pos.CENTER);
+  private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox) {
+    nameField.clear();
+    shapeComboBox.getSelectionModel().clearSelection();
+    playerColorPicker.setValue(Color.WHITE);
+  }
+
+  private HBox createBottomButtonContainer() {
+    HBox container = new HBox(20);
+    container.setAlignment(Pos.CENTER);
+    container.setPadding(new Insets(10, 20, 10, 20));
 
     Region spacerLeft = new Region();
     Region spacerRight = new Region();
@@ -288,31 +360,131 @@ public class PlayerSelectionScene {
 
     Button startGameBtn = Buttons.getSmallPrimaryBtn("Start Game!");
     startGameBtn.setOnAction(e -> {
-      if (totalPlayerCount.isEmpty()) {
+      if (totalPlayerCount == null) {
         showTotalPlayerSelectionDialog();
-        return;
+      } else if (selectedPlayers.size() < getTotalPlayerCount()) {
+        showAlert(Alert.AlertType.WARNING, "Not enough players", "You need " + getTotalPlayerCount() + " players. You have " + selectedPlayers.size() + " players" );
+      } else {
+        SceneManager.showBoardGameScene();
       }
-      SceneManager.showBoardGameScene();
     });
 
     Button mainPageBtn = Buttons.getExitBtn("To Main Page");
     mainPageBtn.setOnAction(e -> SceneManager.showLandingScene());
 
-    bar.getChildren().addAll(backBtn, spacerLeft, startGameBtn, spacerRight, mainPageBtn);
-    return bar;
+    container.getChildren().addAll(backBtn, spacerLeft, startGameBtn, spacerRight, mainPageBtn);
+    return container;
   }
 
   public Scene getScene() {
     return scene;
   }
 
-  private String capitalize(String input) {
-    return input == null || input.isBlank() ? "" :
-        input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+  private VBox createPanel(String headingText) {
+    VBox panel = new VBox(10);
+    panel.setPadding(new Insets(10));
+    panel.setAlignment(Pos.TOP_CENTER);
+    panel.getStyleClass().add("vbox-panel");
+    addPanelHoverAnimation(panel);
+
+    Label heading = createHeadingLabel(headingText);
+    panel.getChildren().add(heading);
+    return panel;
   }
 
-  private String getPanelStyle() {
-    return "-fx-background-color: #C4ADAD; -fx-border-width: 1; -fx-border-radius: 5; " +
-        "-fx-background-radius: 5; -fx-effect: dropshadow(gaussian, gray, 0.5, 0.1, 0, 2);";
+  private Label createHeadingLabel(String text) {
+    Label heading = new Label(text);
+    heading.setWrapText(true);
+    heading.getStyleClass().add("label-heading");
+    addHeadingAnimation(heading);
+    return heading;
+  }
+
+  private void addHeadingAnimation(Label label) {
+    label.setOnMouseEntered(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(label.translateXProperty(), 5),
+              new KeyValue(label.opacityProperty(), 0.9)
+          )
+      );
+      anim.play();
+    });
+    label.setOnMouseExited(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(label.translateXProperty(), 0),
+              new KeyValue(label.opacityProperty(), 1.0)
+          )
+      );
+      anim.play();
+    });
+  }
+
+  private void addPanelHoverAnimation(VBox panel) {
+    panel.setOnMouseEntered(e -> {
+      Timeline enterAnim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(panel.scaleXProperty(), 1.02),
+              new KeyValue(panel.scaleYProperty(), 1.02),
+              new KeyValue(panel.opacityProperty(), 0.90)
+          )
+      );
+      enterAnim.play();
+    });
+    panel.setOnMouseExited(e -> {
+      Timeline exitAnim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(panel.scaleXProperty(), 1.0),
+              new KeyValue(panel.scaleYProperty(), 1.0),
+              new KeyValue(panel.opacityProperty(), 1.0)
+          )
+      );
+      exitAnim.play();
+    });
+  }
+
+  private void addScaleAnimation(javafx.scene.Node node, double targetScale,
+                                 Duration duration) {
+    node.setOnMouseEntered(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(duration,
+              new KeyValue(node.scaleXProperty(), targetScale),
+              new KeyValue(node.scaleYProperty(), targetScale)
+          )
+      );
+      anim.play();
+    });
+    node.setOnMouseExited(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(duration,
+              new KeyValue(node.scaleXProperty(), 1),
+              new KeyValue(node.scaleYProperty(), 1)
+          )
+      );
+      anim.play();
+    });
+  }
+
+  private boolean isAtMaxPlayers() {
+    return selectedPlayers.size() >= getTotalPlayerCount();
+  }
+
+  private String capitalize(String input) {
+    if (input == null || input.isBlank()) {
+      return "";
+    }
+    return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+  }
+
+  private void showAlert(Alert.AlertType type, String title, String message) {
+    Alert alert = new Alert(type);
+    alert.setTitle(title);
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
+
+  public static ObservableList<Player> getSelectedPlayers(){
+    return selectedPlayers;
   }
 }

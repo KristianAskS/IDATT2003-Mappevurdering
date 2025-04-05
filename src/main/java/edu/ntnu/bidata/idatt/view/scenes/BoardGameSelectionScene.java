@@ -60,7 +60,9 @@ public class BoardGameSelectionScene {
     rootPane.setCenter(mainWrapper);
 
     HBox bottomContainer = createBottomContainer();
+
     rootPane.setBottom(bottomContainer);
+    BorderPane.setMargin(bottomContainer, new Insets(10));
 
     BorderPane.setAlignment(bottomContainer, Pos.BOTTOM_LEFT);
 
@@ -146,9 +148,8 @@ public class BoardGameSelectionScene {
   }
 
   private HBox createBottomContainer() {
-    HBox bottomBox = new HBox(10);
-    bottomBox.setPadding(new Insets(10));
-
+    HBox bottomBox = new HBox(20);
+    bottomBox.setPadding(new Insets(10, 20, 10, 20));
     bottomBox.setAlignment(Pos.BOTTOM_CENTER);
 
     Region spacer = new Region();
