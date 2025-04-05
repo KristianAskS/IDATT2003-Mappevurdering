@@ -10,6 +10,7 @@ import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Insets;
@@ -29,10 +30,9 @@ import javafx.scene.paint.Color;
 
 public class BoardGameSelectionScene {
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
+  private static Board selectedBoard;
   private final Scene scene;
-
   private final BoardService boardService = new BoardService();
-  private Board selectedBoard;
   private Label detailsTitle;
   private Label detailsDescription;
 
@@ -67,6 +67,10 @@ public class BoardGameSelectionScene {
     BorderPane.setAlignment(bottomContainer, Pos.BOTTOM_LEFT);
 
     logger.log(Level.INFO, "BoardGameSelectionScene initialized");
+  }
+
+  public static Board getSelectedBoard() {
+    return selectedBoard;
   }
 
   private VBox createSelectionContainer() {
@@ -164,7 +168,11 @@ public class BoardGameSelectionScene {
     Button playBtn = Buttons.getPrimaryBtn("Play");
     playBtn.setOnAction(e -> {
       if (selectedBoard != null) {
-        SceneManager.showPlayerSelectionScene();
+        try {
+          SceneManager.showPlayerSelectionScene();
+        } catch (IOException ex) {
+          throw new RuntimeException(ex);
+        }
         PlayerSelectionScene.showTotalPlayerSelectionDialog();
       } else {
         Alert alert = new Alert(Alert.AlertType.WARNING);

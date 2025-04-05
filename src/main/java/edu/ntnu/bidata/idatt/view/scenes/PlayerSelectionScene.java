@@ -122,6 +122,10 @@ public class PlayerSelectionScene {
         "Players: " + selectedPlayers.size() + "/" + getTotalPlayerCount());
   }
 
+  public static ObservableList<Player> getSelectedPlayers() {
+    return selectedPlayers;
+  }
+
   private VBox createPlayerInputPanel() {
     VBox inputPanel = createPanel("Add players manually");
     inputPanel.setMaxWidth(PANEL_WIDTH);
@@ -363,9 +367,15 @@ public class PlayerSelectionScene {
       if (totalPlayerCount == null) {
         showTotalPlayerSelectionDialog();
       } else if (selectedPlayers.size() < getTotalPlayerCount()) {
-        showAlert(Alert.AlertType.WARNING, "Not enough players", "You need " + getTotalPlayerCount() + " players. You have " + selectedPlayers.size() + " players" );
+        showAlert(Alert.AlertType.WARNING, "Not enough players",
+            "You need " + getTotalPlayerCount() + " players. You have " + selectedPlayers.size() +
+                " players");
       } else {
-        SceneManager.showBoardGameScene();
+        try {
+          SceneManager.showBoardGameScene();
+        } catch (IOException ex) {
+          throw new RuntimeException(ex);
+        }
       }
     });
 
@@ -482,9 +492,5 @@ public class PlayerSelectionScene {
     alert.setTitle(title);
     alert.setContentText(message);
     alert.showAndWait();
-  }
-
-  public static ObservableList<Player> getSelectedPlayers(){
-    return selectedPlayers;
   }
 }

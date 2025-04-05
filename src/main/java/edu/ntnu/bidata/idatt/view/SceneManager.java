@@ -23,25 +23,25 @@ public class SceneManager {
 
   public SceneManager(Stage primaryStage) throws IOException {
     SceneManager.primaryStage = primaryStage;
-    landingScene = loadBtnCss(new LandingScene().getScene());
-    boardGameSelectionScene = loadBtnCss(new BoardGameSelectionScene().getScene());
-    playerSelectionScene = loadBtnCss(new PlayerSelectionScene().getScene());
-    boardGameScene = loadBtnCss(new BoardGameScene().getScene());
   }
 
   public static void showLandingScene() {
+    landingScene = loadBtnCss(new LandingScene().getScene());
     primaryStage.setScene(landingScene);
   }
 
   public static void showBoardGameSelectionScene() {
+    boardGameSelectionScene = loadBtnCss(new BoardGameSelectionScene().getScene());
     primaryStage.setScene(boardGameSelectionScene);
   }
 
-  public static void showPlayerSelectionScene() {
+  public static void showPlayerSelectionScene() throws IOException {
+    playerSelectionScene = loadBtnCss(new PlayerSelectionScene().getScene());
     primaryStage.setScene(playerSelectionScene);
   }
 
-  public static void showBoardGameScene() {
+  public static void showBoardGameScene() throws IOException {
+    boardGameScene = loadBtnCss(new BoardGameScene().getScene());
     primaryStage.setScene(boardGameScene);
   }
 
@@ -51,8 +51,8 @@ public class SceneManager {
     return rootPane;
   }
 
-  private Scene loadBtnCss(Scene scene) {
-    scene.getStylesheets().add(String.valueOf(getClass().getResource(BUTTONS_CSS_PATH)));
+  private static Scene loadBtnCss(Scene scene) {
+    scene.getStylesheets().add(String.valueOf(SceneManager.class.getResource(BUTTONS_CSS_PATH)));
     return scene;
   }
 }

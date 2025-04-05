@@ -6,7 +6,6 @@ import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
-import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.PlayerFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
@@ -59,9 +58,11 @@ public class BoardGameScene implements BoardGameObserver {
     BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
 
-    Board board = BoardGameFactory.createClassicBoard();
-    //Board board = boardService.readBoardFromFile("data/games/laddersAndSnakes.json").get(0);
 
+    //denne skal ikke brukes da UI ikke skal kommunisere med forettningslogikken
+    //Board board = BoardGameFactory.createClassicBoard();
+    //Board board = boardService.readBoardFromFile("data/games/laddersAndSnakes.json").get(0);
+    Board board = BoardGameSelectionScene.getSelectedBoard();
     boards.add(board);
     boardService.setBoard(board);
     boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
@@ -197,7 +198,13 @@ public class BoardGameScene implements BoardGameObserver {
 
     Button backBtn = Buttons.getBackBtn("Back");
     container.getChildren().add(backBtn);
-    backBtn.setOnAction(e -> SceneManager.showPlayerSelectionScene());
+    backBtn.setOnAction(e -> {
+      try {
+        SceneManager.showPlayerSelectionScene();
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    });
 
     return container;
   }
