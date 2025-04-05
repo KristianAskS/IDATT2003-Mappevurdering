@@ -10,12 +10,14 @@ import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -41,17 +43,18 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
 
 public class PlayerSelectionScene {
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
+
   private static final TableView<Player> playerTable = new TableView<>();
   private static final ObservableList<Player> selectedPlayers = FXCollections.observableArrayList();
+  private static final Label playersCountLabel = new Label("Players: 0/0");
   private static Optional<Integer> totalPlayerCount = Optional.empty();
   private static ColorPicker playerColorPicker;
-  private final Scene scene;
   private final PlayerService playerService = new PlayerService();
+  private final Scene scene;
   private final int PANEL_WIDTH = 300;
   private final TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
   private final TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
@@ -60,17 +63,45 @@ public class PlayerSelectionScene {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTBLUE);
 
+    scene.getStylesheets().add(
+        getClass().getResource("/edu/ntnu/bidata/idatt/styles/PlayerSelectionSceneStyles.css")
+            .toExternalForm()
+    );
+
     HBox centerLayout = new HBox(20);
     centerLayout.setPadding(new Insets(10));
     centerLayout.setAlignment(Pos.CENTER);
 
-    centerLayout.getChildren().addAll(
-        createPlayerInputPanel(),
-        createPlayerTablePanel(),
-        createAvailablePlayersPanel()
-    );
+    VBox inputPanel = createPlayerInputPanel();
+    VBox tablePanel = createPlayerTablePanel();
+    VBox availablePanel = createAvailablePlayersPanel();
+
+    centerLayout.getChildren().addAll(inputPanel, tablePanel, availablePanel);
     rootPane.setCenter(centerLayout);
-    rootPane.setBottom(createBottomButtonBar());
+
+    HBox bottomContainer = createBottomButtonContainer();
+    BorderPane.setMargin(bottomContainer, new Insets(10));
+    rootPane.setBottom(bottomContainer);
+
+    playersCountLabel.getStyleClass().add("label-count");
+    playersCountLabel.setOnMouseEntered(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(playersCountLabel.scaleXProperty(), 1.1),
+              new KeyValue(playersCountLabel.scaleYProperty(), 1.1)
+          )
+      );
+      anim.play();
+    });
+    playersCountLabel.setOnMouseExited(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(playersCountLabel.scaleXProperty(), 1.0),
+              new KeyValue(playersCountLabel.scaleYProperty(), 1.0)
+          )
+      );
+      anim.play();
+    });
 
     logger.log(Level.INFO, "PlayerSelectionScene initialized");
   }
@@ -85,14 +116,39 @@ public class PlayerSelectionScene {
     dialog.setContentText("Choose your number:");
 
     totalPlayerCount = dialog.showAndWait();
+    playersCountLabel.setText(
+        "Players: " + selectedPlayers.size() + "/" + totalPlayerCount.orElse(0));
   }
 
-  public static Optional<Integer> getTotalPlayerCount() {
-    return totalPlayerCount;
+  public static int getTotalPlayerCount() {
+    return totalPlayerCount.orElse(0);
   }
 
   public static Color getSelectedColor() {
     return playerColorPicker.getValue();
+  }
+
+  private void addPanelHoverAnimation(VBox panel) {
+    panel.setOnMouseEntered(e -> {
+      Timeline enterAnim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(panel.scaleXProperty(), 1.05),
+              new KeyValue(panel.scaleYProperty(), 1.05),
+              new KeyValue(panel.opacityProperty(), 0.95)
+          )
+      );
+      enterAnim.play();
+    });
+    panel.setOnMouseExited(e -> {
+      Timeline exitAnim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(panel.scaleXProperty(), 1.0),
+              new KeyValue(panel.scaleYProperty(), 1.0),
+              new KeyValue(panel.opacityProperty(), 1.0)
+          )
+      );
+      exitAnim.play();
+    });
   }
 
   private VBox createPlayerInputPanel() {
@@ -100,29 +156,66 @@ public class PlayerSelectionScene {
     inputPanel.setPadding(new Insets(10));
     inputPanel.setMaxWidth(PANEL_WIDTH);
     inputPanel.setAlignment(Pos.TOP_CENTER);
-    inputPanel.setStyle(getPanelStyle());
+    inputPanel.getStyleClass().add("vbox-panel");
+
+    addPanelHoverAnimation(inputPanel);
 
     Label heading = new Label("Add players manually");
-    heading.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    heading.setTextFill(Color.FIREBRICK);
+    heading.setWrapText(true);
+    heading.getStyleClass().add("label-heading");
+    heading.setOnMouseEntered(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(heading.translateXProperty(), 5),
+              new KeyValue(heading.opacityProperty(), 0.9)
+          )
+      );
+      anim.play();
+    });
+    heading.setOnMouseExited(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(heading.translateXProperty(), 0),
+              new KeyValue(heading.opacityProperty(), 1.0)
+          )
+      );
+      anim.play();
+    });
 
+    Label nameLabel = new Label("Enter Name");
+    nameLabel.getStyleClass().add("label-sublabel");
     TextField nameInput = new TextField();
+    nameInput.getStyleClass().add("text-field-combobox");
+    addHoverAnimation(nameInput);
+
+    Label shapeLabel = new Label("Choose Shape");
+    shapeLabel.getStyleClass().add("label-sublabel");
     ComboBox<String> shapeComboBox = new ComboBox<>();
     shapeComboBox.getItems().addAll("Circle", "Square", "Triangle");
+    shapeComboBox.getStyleClass().add("text-field-combobox");
+    addHoverAnimation(shapeComboBox);
 
+    Label colorLabel = new Label("Choose Color");
+    colorLabel.getStyleClass().add("label-sublabel");
     playerColorPicker = new ColorPicker();
+    playerColorPicker.getStyleClass().add("colorpicker");
+    addHoverAnimation(playerColorPicker);
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
     addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox));
 
+    Region spacer = new Region();
+    VBox.setVgrow(spacer, Priority.ALWAYS);
+
     inputPanel.getChildren().addAll(
         heading,
-        new Label("Enter Name"), nameInput,
-        new Label("Choose Shape"), shapeComboBox,
-        new Label("Choose Color"), playerColorPicker,
-        new Region(), addPlayerBtn
+        nameLabel, nameInput,
+        shapeLabel, shapeComboBox,
+        colorLabel, playerColorPicker,
+        spacer,
+        addPlayerBtn
     );
-    VBox.setVgrow(inputPanel.getChildren().get(6), Priority.ALWAYS);
+
     return inputPanel;
   }
 
@@ -130,12 +223,31 @@ public class PlayerSelectionScene {
     VBox tablePanel = new VBox(10);
     tablePanel.setPadding(new Insets(10));
     tablePanel.setAlignment(Pos.TOP_CENTER);
-    tablePanel.setPrefWidth(PANEL_WIDTH);
-    tablePanel.setStyle(getPanelStyle());
+    tablePanel.setPrefWidth(PANEL_WIDTH + 50);
+    tablePanel.getStyleClass().add("vbox-panel");
+    addPanelHoverAnimation(tablePanel);
 
     Label heading = new Label("Players added to the game");
-    heading.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    heading.setTextFill(Color.FIREBRICK);
+    heading.setWrapText(true);
+    heading.getStyleClass().add("label-heading");
+    heading.setOnMouseEntered(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(heading.translateXProperty(), 5),
+              new KeyValue(heading.opacityProperty(), 0.9)
+          )
+      );
+      anim.play();
+    });
+    heading.setOnMouseExited(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(heading.translateXProperty(), 0),
+              new KeyValue(heading.opacityProperty(), 1.0)
+          )
+      );
+      anim.play();
+    });
 
     nameColumn.setCellFactory(col -> new TableCell<>() {
       @Override
@@ -150,6 +262,7 @@ public class PlayerSelectionScene {
         setText(player.getName());
       }
     });
+
     tokenColumn.setCellFactory(col -> new TableCell<>() {
       @Override
       protected void updateItem(String item, boolean empty) {
@@ -164,11 +277,9 @@ public class PlayerSelectionScene {
         if (token == null) {
           return;
         }
-
         Rectangle colorBox = new Rectangle(15, 15, token.getTokenColor());
         colorBox.setStroke(Color.BLACK);
         Label shapeLabel = new Label(capitalize(token.getTokenShape()));
-
         HBox layout = new HBox(10, colorBox, shapeLabel);
         layout.setAlignment(Pos.CENTER_LEFT);
         setGraphic(layout);
@@ -176,12 +287,12 @@ public class PlayerSelectionScene {
     });
 
     playerTable.setItems(selectedPlayers);
-    playerTable.getColumns().addAll(Arrays.asList(nameColumn, tokenColumn));
+    playerTable.getColumns().setAll(nameColumn, tokenColumn);
 
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
     editCountBtn.setOnAction(e -> showTotalPlayerSelectionDialog());
 
-    tablePanel.getChildren().addAll(heading, playerTable, editCountBtn);
+    tablePanel.getChildren().addAll(heading, playerTable, playersCountLabel, editCountBtn);
     return tablePanel;
   }
 
@@ -190,39 +301,64 @@ public class PlayerSelectionScene {
     rightPanel.setPadding(new Insets(10));
     rightPanel.setPrefWidth(PANEL_WIDTH);
     rightPanel.setAlignment(Pos.TOP_CENTER);
-    rightPanel.setStyle(getPanelStyle());
+    rightPanel.getStyleClass().add("vbox-panel");
+    addPanelHoverAnimation(rightPanel);
 
-    Label title = new Label("Players");
-    title.setFont(Font.font("monospace", FontWeight.BOLD, 18));
-    title.setTextFill(Color.FIREBRICK);
+    Label heading = new Label("Players");
+    heading.getStyleClass().add("label-heading");
+    heading.setOnMouseEntered(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(heading.translateXProperty(), 5),
+              new KeyValue(heading.opacityProperty(), 0.9)
+          )
+      );
+      anim.play();
+    });
+    heading.setOnMouseExited(e -> {
+      Timeline anim = new Timeline(
+          new KeyFrame(Duration.millis(300),
+              new KeyValue(heading.translateXProperty(), 0),
+              new KeyValue(heading.opacityProperty(), 1.0)
+          )
+      );
+      anim.play();
+    });
 
     ObservableList<Player> availablePlayers = FXCollections.observableArrayList(
-        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH));
-    ListView<Player> playerListView = createAvailablePlayersList(availablePlayers);
+        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
+    );
 
-    rightPanel.getChildren().addAll(title, playerListView);
+    ListView<Player> playerListView = createAvailablePlayersList(availablePlayers);
+    VBox.setVgrow(playerListView, Priority.ALWAYS);
+    rightPanel.getChildren().addAll(heading, playerListView);
     return rightPanel;
   }
 
   private ListView<Player> createAvailablePlayersList(ObservableList<Player> players) {
-    final ListView<Player> listView =
-        getPlayerListView(players);
+    ListView<Player> listView = getPlayerListView(players);
     listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selected) -> {
       if (selected != null) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Add Player");
-        confirm.setHeaderText("Add " + selected.getName() + "?");
-        confirm.setContentText("Do you want to add this player to the game?");
-
-        confirm.showAndWait().ifPresent(response -> {
-          if (response == ButtonType.OK) {
-            selectedPlayers.add(new Player(
-                selected.getName(),
-                new TokenView(selected.getToken().getTokenColor(),
-                    selected.getToken().getTokenShape())
-            ));
-          }
-        });
+        if (selectedPlayers.size() >= getTotalPlayerCount()) {
+          showAlert(Alert.AlertType.WARNING, "Maximum of players",
+              "Exceeded maximum players: " + getTotalPlayerCount());
+        } else {
+          Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+          confirm.setTitle("Add Player");
+          confirm.setHeaderText("Add " + selected.getName() + "?");
+          confirm.setContentText("Do you want to add this player to the game?");
+          confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+              selectedPlayers.add(new Player(
+                  selected.getName(),
+                  new TokenView(selected.getToken().getTokenColor(),
+                      selected.getToken().getTokenShape())
+              ));
+              playersCountLabel.setText(
+                  "Players: " + selectedPlayers.size() + "/" + totalPlayerCount.orElse(0));
+            }
+          });
+        }
       }
     });
     return listView;
@@ -239,13 +375,16 @@ public class PlayerSelectionScene {
           return;
         }
         Label name = new Label(player.getName());
+        name.setWrapText(true);
+        name.getStyleClass().add("label-listview");
         name.setPrefWidth(70);
 
         Rectangle colorBox = new Rectangle(15, 15, player.getToken().getTokenColor());
         colorBox.setStroke(Color.BLACK);
-        colorBox.setWidth(70);
+        colorBox.setWidth(60);
 
         Label shape = new Label(capitalize(player.getToken().getTokenShape()));
+        shape.getStyleClass().add("label-listview");
 
         HBox cell = new HBox(10, name, colorBox, shape);
         cell.setAlignment(Pos.CENTER_LEFT);
@@ -260,23 +399,33 @@ public class PlayerSelectionScene {
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
 
-    if (name == null || name.isBlank() || shape == null || color == null) {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Input Error");
-      alert.setContentText("Please fill out all fields.");
-      alert.showAndWait();
-      return;
+    if (selectedPlayers.size() >= getTotalPlayerCount()) {
+      showAlert(Alert.AlertType.WARNING, "Maximum of players",
+          "Exceeded maximum players: " + getTotalPlayerCount());
+      resetInputs(nameField, shapeComboBox);
+    } else if (name == null || name.isBlank() || shape == null || color == null) {
+      showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
+    } else {
+      TokenView token = new TokenView(color, shape);
+      Player newPlayer = new Player(name, token);
+      selectedPlayers.add(newPlayer);
+      playersCountLabel.setText(
+          "Players: " + selectedPlayers.size() + "/" + totalPlayerCount.orElse(0));
+      resetInputs(nameField, shapeComboBox);
+      logger.log(Level.INFO, "Added player: " + name + " with color and shape");
     }
-
-    TokenView token = new TokenView(color, shape);
-    Player newPlayer = new Player(name, token);
-    selectedPlayers.add(newPlayer);
-    logger.log(Level.INFO, "Added player: " + name + " with color and shape");
   }
 
-  private HBox createBottomButtonBar() {
-    HBox bar = new HBox();
-    bar.setAlignment(Pos.CENTER);
+  private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox) {
+    nameField.clear();
+    shapeComboBox.getSelectionModel().clearSelection();
+    playerColorPicker.setValue(Color.WHITE);
+  }
+
+  private HBox createBottomButtonContainer() {
+    HBox container = new HBox(20);
+    container.setAlignment(Pos.CENTER);
+    container.setPadding(new Insets(10, 20, 10, 20));
 
     Region spacerLeft = new Region();
     Region spacerRight = new Region();
@@ -298,8 +447,8 @@ public class PlayerSelectionScene {
     Button mainPageBtn = Buttons.getExitBtn("To Main Page");
     mainPageBtn.setOnAction(e -> SceneManager.showLandingScene());
 
-    bar.getChildren().addAll(backBtn, spacerLeft, startGameBtn, spacerRight, mainPageBtn);
-    return bar;
+    container.getChildren().addAll(backBtn, spacerLeft, startGameBtn, spacerRight, mainPageBtn);
+    return container;
   }
 
   public Scene getScene() {
@@ -307,12 +456,37 @@ public class PlayerSelectionScene {
   }
 
   private String capitalize(String input) {
-    return input == null || input.isBlank() ? "" :
-        input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    if (input == null || input.isBlank()) {
+      return "";
+    }
+    return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
   }
 
-  private String getPanelStyle() {
-    return "-fx-background-color: #C4ADAD; -fx-border-width: 1; -fx-border-radius: 5; " +
-        "-fx-background-radius: 5; -fx-effect: dropshadow(gaussian, gray, 0.5, 0.1, 0, 2);";
+  private void showAlert(Alert.AlertType type, String title, String message) {
+    Alert alert = new Alert(type);
+    alert.setTitle(title);
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
+
+  private void addHoverAnimation(javafx.scene.Node node) {
+    node.setOnMouseEntered(e -> {
+      Timeline hoverAnim = new Timeline(
+          new KeyFrame(Duration.millis(200),
+              new KeyValue(node.scaleXProperty(), 1.02),
+              new KeyValue(node.scaleYProperty(), 1.02)
+          )
+      );
+      hoverAnim.play();
+    });
+    node.setOnMouseExited(e -> {
+      Timeline exitAnim = new Timeline(
+          new KeyFrame(Duration.millis(200),
+              new KeyValue(node.scaleXProperty(), 1.0),
+              new KeyValue(node.scaleYProperty(), 1.0)
+          )
+      );
+      exitAnim.play();
+    });
   }
 }

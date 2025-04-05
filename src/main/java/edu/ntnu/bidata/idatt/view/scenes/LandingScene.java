@@ -28,10 +28,12 @@ public class LandingScene {
     Button exitBtn = Buttons.getExitBtn("Exit");
     rootPane.setCenter(choseGameBtn);
 
-    HBox exitBox = new HBox(exitBtn);
+    HBox exitBox = new HBox(20);
     exitBox.setAlignment(Pos.CENTER_RIGHT);
-    exitBox.setPadding(new Insets(10));
+    exitBox.setPadding(new Insets(10, 20, 10, 20));
+    exitBox.getChildren().add(exitBtn);
     rootPane.setBottom(exitBox);
+    BorderPane.setMargin(exitBox, new Insets(10));
 
     choseGameBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
     exitBtn.setOnAction(e -> System.exit(0));
