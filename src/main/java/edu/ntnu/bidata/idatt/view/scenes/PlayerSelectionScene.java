@@ -179,7 +179,7 @@ public class PlayerSelectionScene {
         }
         Player player = getTableRow().getItem();
         setText(player.getName());
-        setAlignment(Pos.CENTER);
+        setAlignment(Pos.CENTER_LEFT);
       }
     });
 
@@ -201,7 +201,7 @@ public class PlayerSelectionScene {
         colorBox.setStroke(Color.BLACK);
         Label shapeLabel = new Label(capitalize(token.getTokenShape()));
         HBox layout = new HBox(10, colorBox, shapeLabel);
-        layout.setAlignment(Pos.CENTER);
+        layout.setAlignment(Pos.CENTER_LEFT);
         setGraphic(layout);
       }
     });
@@ -362,9 +362,11 @@ public class PlayerSelectionScene {
     startGameBtn.setOnAction(e -> {
       if (totalPlayerCount == null) {
         showTotalPlayerSelectionDialog();
-        return;
+      } else if (selectedPlayers.size() < getTotalPlayerCount()) {
+        showAlert(Alert.AlertType.WARNING, "Not enough players", "You need " + getTotalPlayerCount() + " players. You have " + selectedPlayers.size() + " players" );
+      } else {
+        SceneManager.showBoardGameScene();
       }
-      SceneManager.showBoardGameScene();
     });
 
     Button mainPageBtn = Buttons.getExitBtn("To Main Page");
