@@ -98,8 +98,11 @@ public class PlayerSelectionScene {
     dialog.setHeaderText("Select total players");
     dialog.setContentText("Choose your number:");
 
-    Optional<Integer> result = dialog.showAndWait();
-    totalPlayerCount = result.orElse(0);
+    Optional<Integer> result;
+    do {
+      result = dialog.showAndWait();
+    } while (result.isEmpty());
+    totalPlayerCount = result.get();
     updatePlayersCountLabel();
   }
 
