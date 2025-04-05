@@ -51,7 +51,7 @@ public class PlayerSelectionScene {
   private static final TableView<Player> playerTable = new TableView<>();
   private static final ObservableList<Player> selectedPlayers = FXCollections.observableArrayList();
   private static final Label playersCountLabel = new Label("Players: 0/0");
-  private static Optional<Integer> totalPlayerCount = Optional.empty();
+  private static Integer totalPlayerCount = null;
   private static ColorPicker playerColorPicker;
   private final PlayerService playerService = new PlayerService();
   private final Scene scene;
@@ -84,7 +84,7 @@ public class PlayerSelectionScene {
     rootPane.setBottom(bottomContainer);
 
     playersCountLabel.getStyleClass().add("label-count");
-    addScaleAnimation(playersCountLabel, 1.1, 1.0, Duration.millis(300), true);
+    addScaleAnimation(playersCountLabel, 1.1, Duration.millis(300));
 
     logger.log(Level.INFO, "PlayerSelectionScene initialized");
   }
@@ -98,12 +98,13 @@ public class PlayerSelectionScene {
     dialog.setHeaderText("Select total players");
     dialog.setContentText("Choose your number:");
 
-    totalPlayerCount = dialog.showAndWait();
+    Optional<Integer> result = dialog.showAndWait();
+    totalPlayerCount = result.orElse(0);
     updatePlayersCountLabel();
   }
 
   public static int getTotalPlayerCount() {
-    return totalPlayerCount.orElse(0);
+    return totalPlayerCount == null ? 0 : totalPlayerCount;
   }
 
   public static Color getSelectedColor() {
@@ -123,20 +124,20 @@ public class PlayerSelectionScene {
     nameLabel.getStyleClass().add("label-sublabel");
     TextField nameInput = new TextField();
     nameInput.getStyleClass().add("text-field-combobox");
-    addScaleAnimation(nameInput, 1.02, 1.0, Duration.millis(200), false);
+    addScaleAnimation(nameInput, 1.02, Duration.millis(200));
 
     Label shapeLabel = new Label("Choose Shape");
     shapeLabel.getStyleClass().add("label-sublabel");
     ComboBox<String> shapeComboBox = new ComboBox<>();
     shapeComboBox.getItems().addAll("Circle", "Square", "Triangle");
     shapeComboBox.getStyleClass().add("text-field-combobox");
-    addScaleAnimation(shapeComboBox, 1.02, 1.0, Duration.millis(200), false);
+    addScaleAnimation(shapeComboBox, 1.02, Duration.millis(200));
 
     Label colorLabel = new Label("Choose Color");
     colorLabel.getStyleClass().add("label-sublabel");
     playerColorPicker = new ColorPicker();
     playerColorPicker.getStyleClass().add("colorpicker");
-    addScaleAnimation(playerColorPicker, 1.02, 1.0, Duration.millis(200), false);
+    addScaleAnimation(playerColorPicker, 1.02, Duration.millis(200));
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
     addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox));
@@ -318,7 +319,7 @@ public class PlayerSelectionScene {
 
     Button startGameBtn = Buttons.getSmallPrimaryBtn("Start Game!");
     startGameBtn.setOnAction(e -> {
-      if (totalPlayerCount.isEmpty()) {
+      if (totalPlayerCount == null) {
         showTotalPlayerSelectionDialog();
         return;
       }
@@ -400,8 +401,8 @@ public class PlayerSelectionScene {
     });
   }
 
-  private void addScaleAnimation(javafx.scene.Node node, double targetScale, double normalScale,
-                                 Duration duration, boolean useScaleOnly) {
+  private void addScaleAnimation(javafx.scene.Node node, double targetScale,
+                                 Duration duration) {
     node.setOnMouseEntered(e -> {
       Timeline anim = new Timeline(
           new KeyFrame(duration,
@@ -414,8 +415,8 @@ public class PlayerSelectionScene {
     node.setOnMouseExited(e -> {
       Timeline anim = new Timeline(
           new KeyFrame(duration,
-              new KeyValue(node.scaleXProperty(), normalScale),
-              new KeyValue(node.scaleYProperty(), normalScale)
+              new KeyValue(node.scaleXProperty(), 1),
+              new KeyValue(node.scaleYProperty(), 1)
           )
       );
       anim.play();
