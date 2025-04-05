@@ -481,4 +481,8 @@ public class PlayerSelectionScene {
     alert.setContentText(message);
     alert.showAndWait();
   }
+
+  public static ObservableList<Player> getSelectedPlayers(){
+    return selectedPlayers;
+  }
 }
