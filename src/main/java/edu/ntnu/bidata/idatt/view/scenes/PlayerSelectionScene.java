@@ -243,11 +243,26 @@ public class PlayerSelectionScene {
 
     playerTable.setItems(selectedPlayers);
     playerTable.getColumns().setAll(List.of(nameColumn, tokenColumn, deleteColumn));
+    playerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+    Label placeholderLabel = new Label("No players added");
+    placeholderLabel.getStyleClass().add("label-sublabel");
+    playerTable.setPlaceholder(placeholderLabel);
+
+    playerTable.setFixedCellSize(40);
+    double numberOfRows = 5;
+    double rowHeight = playerTable.getFixedCellSize();
+    double headerHeight = 28;
+    double tableInsets = playerTable.getInsets().getTop() + playerTable.getInsets().getBottom();
+    playerTable.setPrefHeight(numberOfRows * rowHeight + headerHeight + tableInsets + 20);
+    playerTable.setMaxHeight(playerTable.getPrefHeight());
+
+    Region spacer = new Region();
+    VBox.setVgrow(spacer, Priority.ALWAYS);
 
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
     editCountBtn.setOnAction(e -> showTotalPlayerSelectionDialog());
 
-    tablePanel.getChildren().addAll(playerTable, playersCountLabel, editCountBtn);
+    tablePanel.getChildren().addAll(playerTable, spacer, playersCountLabel, editCountBtn);
     return tablePanel;
   }
 
