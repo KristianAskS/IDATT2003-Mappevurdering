@@ -6,7 +6,6 @@ import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
-import edu.ntnu.bidata.idatt.controller.patterns.factory.PlayerFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
@@ -22,6 +21,7 @@ import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -59,7 +59,7 @@ public class BoardGameScene implements BoardGameObserver {
     List<Board> boards = boardService.getBoards();
 
     //Denne må hentes fra forrige scene brukeren velger antall terninger
-    int numbOfDice = 5;
+    int numbOfDice = 1;
 
     //denne skal ikke brukes da UI ikke skal kommunisere med forettningslogikken
     //Board board = BoardGameFactory.createClassicBoard();
@@ -81,7 +81,7 @@ public class BoardGameScene implements BoardGameObserver {
     scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
     // Initialiser spillere og plasser tokenene på starttilen (midlertidig løsning)
-    initializePlayers(board);
+    initializePlayers();
 
     logger.log(Level.INFO, "BoardGameGUI created");
   }
@@ -105,11 +105,10 @@ public class BoardGameScene implements BoardGameObserver {
     return root;
   }
 
-  private void initializePlayers(Board board) {
-    List<Player> players = PlayerFactory.createPlayersDummies();
+  private void initializePlayers() {
+    List<Player> players = PlayerSelectionScene.getSelectedPlayers();
     playerService.setPlayers(players);
 
-    // Legg alle spilleres token på starttile (midlertidig løsning)
     TileView startTile = (TileView) scene.lookup("#tile1");
     if (startTile != null) {
       List<Node> playerTokens = new ArrayList<>();
@@ -120,8 +119,6 @@ public class BoardGameScene implements BoardGameObserver {
       startTile.getChildren().addAll(playerTokens);
       setTokenPositionOnTile(startTile);
 
-      // Eksempel: Flytt spiller 3 med 4 steg
-      boardGameController.movePlayer(players.get(2), diceView.getRollResult());
     }
   }
 
@@ -177,32 +174,6 @@ public class BoardGameScene implements BoardGameObserver {
     rollResultLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
     rollResultLabel.textProperty().bind(diceView.rollResultProperty().asString("Roll result: %d"));
     container.getChildren().add(rollResultLabel);
-
-    /*
-    Label pressToRoll = new Label("Press to Roll");
-    pressToRoll.setFont(Font.font("monospace", FontWeight.BOLD, 16));
-    pressToRoll.setWrapText(true);
-    container.getChildren().add(pressToRoll);
-
-    ImageView imageViewDice = new ImageView(new Image(Objects.requireNonNull(
-        getClass().getResourceAsStream("/edu/ntnu/bidata/idatt/images/dicePlaceholder.png"))));
-    imageViewDice.setFitHeight(100);
-    imageViewDice.setFitWidth(100);
-    container.getChildren().add(imageViewDice);
-    //------
-
-    Label rollResult = new Label("Roll result:");
-    rollResult.setFont(Font.font("monospace", FontWeight.BOLD, 16));
-    container.getChildren().add(rollResult);
-
-    ImageView imageViewResult = new ImageView(new Image(Objects.requireNonNull(
-        getClass().getResourceAsStream(
-            "/edu/ntnu/bidata/idatt/images/dicePlaceholder.png"))));
-    imageViewResult.setFitHeight(100);
-    imageViewResult.setFitWidth(100);
-    container.getChildren().add(imageViewResult);
-
-     */
 
     Label outputLabel = new Label("Output");
     outputLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));

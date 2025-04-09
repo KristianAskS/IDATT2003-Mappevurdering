@@ -4,6 +4,7 @@ import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Token;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
@@ -295,9 +296,8 @@ public class PlayerSelectionScene {
             if (response == ButtonType.OK) {
               selectedPlayers.add(new Player(
                   selected.getName(),
-                  new TokenView(selected.getToken().getTokenColor(),
-                      selected.getToken().getTokenShape())
-              ));
+                  new TokenView(Token.token(selected.getToken().getTokenColor(),
+                      selected.getToken().getTokenShape()))));
               updatePlayersCountLabel();
             }
           });
@@ -349,7 +349,7 @@ public class PlayerSelectionScene {
     } else if (name == null || name.isBlank() || shape == null || color == null) {
       showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
     } else {
-      TokenView token = new TokenView(color, shape);
+      TokenView token = new TokenView(Token.token(color, shape));
       Player newPlayer = new Player(name, token);
       selectedPlayers.add(newPlayer);
       updatePlayersCountLabel();

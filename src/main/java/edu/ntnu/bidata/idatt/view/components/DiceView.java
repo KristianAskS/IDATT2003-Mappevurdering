@@ -20,7 +20,7 @@ public class DiceView implements BoardGameObserver {
 
   private final ImageView diceImageView;
   private final Dice dice;
-  private final IntegerProperty rollResult;
+  private IntegerProperty rollResult;
 
   public DiceView() {
     diceImageView = new ImageView(new Image(
@@ -29,8 +29,7 @@ public class DiceView implements BoardGameObserver {
     diceImageView.setFitWidth(100);
     diceImageView.setFitHeight(100);
 
-    dice = new Dice(2);
-    Die die = new Die();
+    dice = new Dice(1);
     rollResult = new SimpleIntegerProperty(0);
   }
 
@@ -45,7 +44,7 @@ public class DiceView implements BoardGameObserver {
           event -> {
             int result = dice.roll();
             dice.setRollResult(result);
-            rollResult.set(result); // Update the property.
+            rollResult.set(result);
             String imagePath = DICE_IMAGE_PATH + result + ".png";
             diceImageView.setImage(new Image(
                 Objects.requireNonNull(getClass().getResourceAsStream(imagePath))
@@ -59,11 +58,6 @@ public class DiceView implements BoardGameObserver {
 
   public IntegerProperty rollResultProperty() {
     return rollResult;
-  }
-
-
-  public int getRollResult() {
-    return rollResult.get();
   }
 
   public Button getRollDiceBtn() {

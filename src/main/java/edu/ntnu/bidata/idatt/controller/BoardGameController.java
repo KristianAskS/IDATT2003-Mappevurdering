@@ -6,8 +6,10 @@ import edu.ntnu.bidata.idatt.model.entity.Die;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
+import edu.ntnu.bidata.idatt.view.components.DiceView;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
+import javafx.beans.property.IntegerProperty;
 
 /**
  * BoardGameController er ansvarlig for view-relaterte operasjoner,

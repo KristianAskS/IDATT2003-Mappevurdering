@@ -1,8 +1,16 @@
-Player 1,0x008b8bff,circle
-Player 2,0xdcdcdcff,circle
-Player 3,0x00ff7fff,triangle
-Player 4,0xff69b4ff,square
-Player 5,0xff00ffff,triangle
-Tri,0x0000ffff,Circle
-Kristian,0xff0000ff,Square
-Neymar,0x008000ff,Triangle
+Lionel Messi,#ADD8E6FF,circle
+Cristiano Ronaldo,#DC143CFF,circle
+Kylian Mbappé,#00008BFF,triangle
+Erling Haaland,#FFFF00FF,square
+Kevin De Bruyne,#87CEFAFF,triangle
+Virgil van Dijk,#006400FF,square
+Luka Modrić,#F5F5F5FF,circle
+Neymar Jr,#9932CCFF,triangle
+Robert Lewandowski,#CD5C5CFF,square
+Mohamed Salah,#C71585FF,triangle
+Karim Benzema,#DAA520FF,circle
+Sadio Mané,#228B22FF,square
+Heung-min Son,#6495EDFF,triangle
+Toni Kroos,#C0C0C0FF,circle
+Pedri,#FF69B4FF,square
+Jude Bellingham,#4169E1FF,triangle
