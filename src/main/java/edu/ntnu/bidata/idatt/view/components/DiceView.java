@@ -3,7 +3,6 @@ package edu.ntnu.bidata.idatt.view.components;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
-import edu.ntnu.bidata.idatt.model.entity.Die;
 import java.util.Objects;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -17,10 +16,9 @@ import javafx.util.Duration;
 public class DiceView implements BoardGameObserver {
 
   private static final String DICE_IMAGE_PATH = "/edu/ntnu/bidata/idatt/images/dice/";
-
   private final ImageView diceImageView;
   private final Dice dice;
-  private IntegerProperty rollResult;
+  private final IntegerProperty rollResult;
 
   public DiceView() {
     diceImageView = new ImageView(new Image(
@@ -33,7 +31,7 @@ public class DiceView implements BoardGameObserver {
     rollResult = new SimpleIntegerProperty(0);
   }
 
-  public Timeline createRollDiceAnimation() {
+  public Timeline createRollDiceAnimation(Runnable onFinished) {
     Timeline rollAnimationTimeline = new Timeline();
     final int numberOfFrames = 10;
     final int frameIntervalMillis = 100;
@@ -53,6 +51,11 @@ public class DiceView implements BoardGameObserver {
       );
       rollAnimationTimeline.getKeyFrames().add(keyFrame);
     }
+    rollAnimationTimeline.setOnFinished(event -> {
+      if (onFinished != null) {
+        onFinished.run();
+      }
+    });
     return rollAnimationTimeline;
   }
 
@@ -61,12 +64,7 @@ public class DiceView implements BoardGameObserver {
   }
 
   public Button getRollDiceBtn() {
-    Button rollDiceBtn = Buttons.getSecondaryBtn("Press to roll");
-    rollDiceBtn.setOnAction(e -> {
-      Timeline timeline = createRollDiceAnimation();
-      timeline.play();
-    });
-    return rollDiceBtn;
+    return Buttons.getSecondaryBtn("Press to roll");
   }
 
   public ImageView getDiceImageView() {
@@ -75,6 +73,6 @@ public class DiceView implements BoardGameObserver {
 
   @Override
   public void onEvent(BoardGameEvent eventType) {
-    // TODO: Implement event handling logic if needed.
+    //TODO: add something here
   }
 }

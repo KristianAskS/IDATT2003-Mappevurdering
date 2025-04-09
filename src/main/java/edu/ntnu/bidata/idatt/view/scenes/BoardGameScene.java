@@ -21,10 +21,10 @@ import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -169,6 +169,13 @@ public class BoardGameScene implements BoardGameObserver {
 
     Button rollDiceBtn = diceView.getRollDiceBtn();
     container.getChildren().add(rollDiceBtn);
+    rollDiceBtn.setOnAction(e -> {
+      Timeline timeline = diceView.createRollDiceAnimation(() -> {
+        int result = diceView.rollResultProperty().get();
+        boardGameController.handlePlayerTurn(result);
+      });
+      timeline.play();
+    });
 
     Label rollResultLabel = new Label();
     rollResultLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
