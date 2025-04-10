@@ -184,7 +184,9 @@ public class BoardGameScene implements BoardGameObserver {
     rollDiceBtn.setOnAction(e -> {
       Timeline timeline = diceView.createRollDiceAnimation(() -> {
         int result = diceView.rollResultProperty().get();
+        logger.log(Level.INFO, "Passing to controller: " + result);
         boardGameController.handlePlayerTurn(result);
+        rollDiceBtn.setDisable(false);
       });
       timeline.play();
     });

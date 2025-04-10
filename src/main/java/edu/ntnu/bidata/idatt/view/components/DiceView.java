@@ -4,6 +4,8 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.IntegerProperty;
@@ -14,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 public class DiceView implements BoardGameObserver {
+  private static final Logger logger = Logger.getLogger(DiceView.class.getName());
 
   private static final String DICE_IMAGE_PATH = "/edu/ntnu/bidata/idatt/images/dice/";
   private final ImageView diceImageView;
@@ -40,10 +43,8 @@ public class DiceView implements BoardGameObserver {
       KeyFrame keyFrame = new KeyFrame(
           Duration.millis(frameIntervalMillis * frameIndex),
           event -> {
-            int result = dice.roll();
-            dice.setRollResult(result);
-            rollResult.set(result);
-            String imagePath = DICE_IMAGE_PATH + result + ".png";
+            int rollTempNumb = dice.roll();
+            String imagePath = DICE_IMAGE_PATH + rollTempNumb + ".png";
             diceImageView.setImage(new Image(
                 Objects.requireNonNull(getClass().getResourceAsStream(imagePath))
             ));
@@ -52,7 +53,16 @@ public class DiceView implements BoardGameObserver {
       rollAnimationTimeline.getKeyFrames().add(keyFrame);
     }
     rollAnimationTimeline.setOnFinished(event -> {
+      int rollResultFinal = dice.roll();
+      dice.setRollResult(rollResultFinal);
+      rollResult.set(rollResultFinal);
+      diceImageView.setImage(new Image(
+          Objects.requireNonNull(getClass().getResourceAsStream(
+              DICE_IMAGE_PATH + rollResultFinal + ".png"
+          ))
+      ));
       if (onFinished != null) {
+        logger.log(Level.INFO, "Dice rolled");
         onFinished.run();
       }
     });
