@@ -17,7 +17,7 @@ public class SceneManager {
   private static final String BUTTONS_CSS_PATH = "/edu/ntnu/bidata/idatt/styles/ButtonsStyles.css";
   private static Stage primaryStage;
 
-  public SceneManager(Stage primaryStage) throws IOException {
+  public SceneManager(Stage primaryStage) {
     SceneManager.primaryStage = primaryStage;
   }
 

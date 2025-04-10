@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -45,7 +46,7 @@ import javafx.scene.text.FontWeight;
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
   private final Scene scene;
-  private final Label statusLabel = new Label();
+  private final Label statusLabel = new Label("Game started");
   private final PlayerService playerService = new PlayerService();
   private final BoardGameController boardGameController;
   private final DiceView diceView;
@@ -220,6 +221,9 @@ public class BoardGameScene implements BoardGameObserver {
             + "-fx-padding: 10 20 150 20;"
     );
 
+    statusLabel.setWrapText(true);
+    outputArea.getChildren().add(statusLabel);
+
     Label roundLabel = new Label("Round number 1");
     roundLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
     roundLabel.setTextFill(Color.WHITE);
@@ -240,13 +244,15 @@ public class BoardGameScene implements BoardGameObserver {
 
   @Override
   public void onEvent(BoardGameEvent eventType) {
-    switch (eventType.eventType()) {
-      case PLAYER_MOVED -> statusLabel.setText(
-          eventType.player().getName() + " moved from "
-              + eventType.oldTile().getTileId()
-              + " to " + eventType.newTile().getTileId());
-      case GAME_FINISHED -> statusLabel.setText(eventType.player().getName() + " won the game!");
-      default -> statusLabel.setText("Unknown event type: " + eventType.eventType());
-    }
+    Platform.runLater(() -> {
+      switch (eventType.eventType()) {
+        case PLAYER_MOVED -> statusLabel.setText(
+            eventType.player().getName() + " moved from "
+                + eventType.oldTile().getTileId()
+                + " to " + eventType.newTile().getTileId());
+        case GAME_FINISHED -> statusLabel.setText(eventType.player().getName() + " won the game!");
+        default -> statusLabel.setText("Unknown event type: " + eventType.eventType());
+      }
+    });
   }
 }

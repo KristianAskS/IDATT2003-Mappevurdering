@@ -31,7 +31,7 @@ public class BoardGameController {
   private final BoardService boardService;
   private final PlayerService playerService;
   private final Board board;
-  private BoardGameScene boardGameScene;
+  private final BoardGameScene boardGameScene;
   private int currentPlayerIndex = 0;
 
   //Konstruktør. Controlleren får referanser til viewet og de nødvendige modell-tjenestene.
