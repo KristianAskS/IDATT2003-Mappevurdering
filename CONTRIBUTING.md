@@ -1,54 +1,68 @@
+### Design Resources
+
+
+Refer to our [Figma design file](https://www.figma.com/file/your-project-link) for UI components and visual guidelines.
+
+
 ## 🌲 Branch-konvensjon
+
 
 Vi følger en standard konvensjon for branch-navn insiprert av Angular. Alle nye branches opprettes
 fra `dev`.
 
+
 - **Hotfix-branches:**
-  ```
-  hotfix(<scope>)/<beskrivelse>
-  ```
-  _Example:_
-  ```
-  hotfix(parser)/empty-string-handling
-  ```
+ ```
+ hotfix(<scope>)/<beskrivelse>
+ ```
+_Example:_
+ ```
+ hotfix(parser)/empty-string-handling
+ ```
+
 
 - **Bugfix-branches:**
-  ```
-  fix(<scope>)/<beskrivelse>
-  ```
-  _Example:_
-  ```
-  fix(parser)/end-of-file-handling
-  ```
+ ```
+ fix(<scope>)/<beskrivelse>
+ ```
+_Example:_
+ ```
+ fix(parser)/end-of-file-handling
+ ```
+
 
 - **Refactor-branches:**
-  ```
-  refactor(<scope>)/<beskrivelse>
-  ```
-  _Example:_
-  ```
-  refactor(parser)/refactor-null-values
-  ```
+ ```
+ refactor(<scope>)/<beskrivelse>
+ ```
+_Example:_
+ ```
+ refactor(parser)/refactor-null-values
+ ```
+
 
 - **Dokumentasjonsendringer:**
-  ```
-  docs(<scope>)/<beskrivelse>
-  ```
-  _Example:_
-  ```
-  docs(readme)/update-readme
-  ```
+ ```
+ docs(<scope>)/<beskrivelse>
+ ```
+_Example:_
+ ```
+ docs(readme)/update-readme
+ ```
+
 
 - **Feature-branches:**
-  ```
-  feat(<scope>)/<beskrivelse>
-  ```
-  _Example:_
-  ```
-  feat(parser)/handle-null-values
-  ```
+ ```
+ feat(<scope>)/<beskrivelse>
+ ```
+_Example:_
+ ```
+ feat(parser)/handle-null-values
+ ```
+
 
 ## 📄 Commit-meldinger
+
 
 Vi følger en standardkonvensjon for commit-meldinger.
 Du kan lese mer om det

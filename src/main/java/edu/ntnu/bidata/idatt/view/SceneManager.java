@@ -12,35 +12,32 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class SceneManager {
-  public final static int SCENE_WIDTH = 1000;
-  public final static int SCENE_HEIGHT = 700;
+  public final static int SCENE_WIDTH = 1200;
+  public final static int SCENE_HEIGHT = 800;
+  private static final String BUTTONS_CSS_PATH = "/edu/ntnu/bidata/idatt/styles/ButtonsStyles.css";
   private static Stage primaryStage;
-  private static Scene landingScene;
-  private static Scene boardGameSelectionScene;
-  private static Scene playerSelectionScene;
-  private static Scene boardGameScene;
 
-  public SceneManager(Stage primaryStage) throws IOException {
+  public SceneManager(Stage primaryStage) {
     SceneManager.primaryStage = primaryStage;
-    landingScene = new LandingScene().getScene();
-    boardGameSelectionScene = new BoardGameSelectionScene().getScene();
-    playerSelectionScene = new PlayerSelectionScene().getScene();
-    boardGameScene = new BoardGameScene().getScene();
   }
 
   public static void showLandingScene() {
+    Scene landingScene = loadBtnCss(new LandingScene().getScene());
     primaryStage.setScene(landingScene);
   }
 
   public static void showBoardGameSelectionScene() {
+    Scene boardGameSelectionScene = loadBtnCss(new BoardGameSelectionScene().getScene());
     primaryStage.setScene(boardGameSelectionScene);
   }
 
-  public static void showPlayerSelectionScene() {
+  public static void showPlayerSelectionScene() throws IOException {
+    Scene playerSelectionScene = loadBtnCss(new PlayerSelectionScene().getScene());
     primaryStage.setScene(playerSelectionScene);
   }
 
-  public static void showBoardGameScene() {
+  public static void showBoardGameScene() throws IOException {
+    Scene boardGameScene = loadBtnCss(new BoardGameScene().getScene());
     primaryStage.setScene(boardGameScene);
   }
 
@@ -48,5 +45,10 @@ public class SceneManager {
     BorderPane rootPane = new BorderPane();
     rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
     return rootPane;
+  }
+
+  private static Scene loadBtnCss(Scene scene) {
+    scene.getStylesheets().add(String.valueOf(SceneManager.class.getResource(BUTTONS_CSS_PATH)));
+    return scene;
   }
 }

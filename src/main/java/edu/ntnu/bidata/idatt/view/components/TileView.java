@@ -10,7 +10,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class TileView extends StackPane {
-  public static final int TILE_SIZE = 67;
+  public static final int TILE_SIZE = 73;
 
   public TileView(Tile tile, int TILE_SIZE) {
     this.setId("tile" + tile.getTileId());
@@ -23,7 +23,7 @@ public class TileView extends StackPane {
     rectangle.setStroke(Color.BLACK);
 
     Text numb = new Text(String.valueOf(tileId));
-    numb.setFont(Font.font(10));
+    numb.setFont(Font.font(15));
 
     StackPane.setAlignment(numb, Pos.BOTTOM_RIGHT);
     StackPane.setMargin(numb, new javafx.geometry.Insets(0, 5, 5, 0));
