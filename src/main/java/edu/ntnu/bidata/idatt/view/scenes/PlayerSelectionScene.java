@@ -92,7 +92,11 @@ public class PlayerSelectionScene {
     List<Integer> choices = new ArrayList<>();
     IntStream.range(1, 6).forEach(choices::add);
 
-    ChoiceDialog<Integer> dialog = new ChoiceDialog<>(5, choices);
+    Integer defaultValue =
+        (totalPlayerCount != null && choices.contains(totalPlayerCount)) ? totalPlayerCount :
+            choices.getFirst();
+
+    ChoiceDialog<Integer> dialog = new ChoiceDialog<>(defaultValue, choices);
     dialog.setTitle("Total player selection");
     dialog.setHeaderText("Select total players");
     dialog.setContentText("Choose your number:");
