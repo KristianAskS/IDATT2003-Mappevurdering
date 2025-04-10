@@ -7,6 +7,7 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
@@ -26,12 +27,18 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -46,10 +53,15 @@ import javafx.scene.text.FontWeight;
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
   private final Scene scene;
-  private final Label statusLabel = new Label("Game started");
+  private final TextArea eventLog = new TextArea("Game started! \n");
   private final PlayerService playerService = new PlayerService();
   private final BoardGameController boardGameController;
   private final DiceView diceView;
+  private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
+      FXCollections.observableArrayList();
+  List<Player> players = PlayerSelectionScene.getSelectedPlayers();
+  private int roundCounter = 0;
+
 
   public BoardGameScene() throws IOException {
     diceView = new DiceView();
@@ -107,7 +119,6 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   private void initializePlayers() {
-    List<Player> players = PlayerSelectionScene.getSelectedPlayers();
     playerService.setPlayers(players);
 
     TileView startTile = (TileView) scene.lookup("#tile1");
@@ -207,7 +218,8 @@ public class BoardGameScene implements BoardGameObserver {
     return container;
   }
 
-  private VBox createOutputArea() {
+  private TextArea createOutputArea() {
+    /*
     VBox outputArea = new VBox();
     outputArea.setSpacing(5);
     outputArea.setPadding(new Insets(10));
@@ -221,38 +233,71 @@ public class BoardGameScene implements BoardGameObserver {
             + "-fx-padding: 10 20 150 20;"
     );
 
-    statusLabel.setWrapText(true);
-    outputArea.getChildren().add(statusLabel);
+     */
 
-    Label roundLabel = new Label("Round number 1");
-    roundLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
-    roundLabel.setTextFill(Color.WHITE);
-    outputArea.getChildren().add(roundLabel);
-
-    Label example1 = new Label("Player1 on tile 12");
-    example1.setFont(Font.font("monospace", FontWeight.BOLD, 12));
-    example1.setTextFill(Color.WHITE);
-    outputArea.getChildren().add(example1);
-
-    Label example2 = new Label("Player2 moves to tile 18");
-    example2.setFont(Font.font("monospace", FontWeight.BOLD, 12));
-    example2.setTextFill(Color.WHITE);
-    outputArea.getChildren().add(example2);
-
+    eventLog.setEditable(false);
+    eventLog.setWrapText(true);
+    eventLog.setScrollTop(Double.MAX_VALUE);
+    eventLog.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    eventLog.setStyle("-fx-control-inner-background: black; -fx-text-fill: white;");
+    eventLog.setPrefHeight(200);
+    /*
+    outputArea.getChildren().addAll(eventLog, roundLabel);
     return outputArea;
+
+     */
+    return eventLog;
+  }
+
+  private VBox createPerformanceMeter() {
+    VBox graphContainer = new VBox();
+    //graphContainer.setAlignment(Pos.CENTER_LEFT);
+    graphContainer.setFillWidth(true);
+
+    NumberAxis xAxis = new NumberAxis();
+    xAxis.setLabel("Turn");
+    xAxis.setTickUnit(1);
+    xAxis.setAnimated(true);
+    xAxis.setMinorTickCount(0);
+    xAxis.setForceZeroInRange(false);
+    xAxis.setMinorTickVisible(false);
+    NumberAxis yAxis = new NumberAxis("Dice Number", 0, 7, 1);
+    yAxis.setMinorTickVisible(false);
+    yAxis.setMinorTickCount(0);
+    yAxis.setAnimated(true);
+    LineChart<Number, Number> performanceGraph = new LineChart<Number, Number>(xAxis, yAxis);
+    performanceGraph.setTitle("Performance Meter");
+    performanceGraph.setMaxWidth(300);
+    performanceGraph.setData(dataSeries);
+    performanceGraph.setMaxHeight((double) 550 / 2 - 50);
+    performanceGraph.setAnimated(true);
+    graphContainer.getChildren().add(performanceGraph);
+    return graphContainer;
   }
 
   @Override
   public void onEvent(BoardGameEvent eventType) {
     Platform.runLater(() -> {
-      switch (eventType.eventType()) {
-        case PLAYER_MOVED -> statusLabel.setText(
+      if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
+        String moveText =
             eventType.player().getName() + " moved from "
                 + eventType.oldTile().getTileId()
-                + " to " + eventType.newTile().getTileId());
-        case GAME_FINISHED -> statusLabel.setText(eventType.player().getName() + " won the game!");
-        default -> statusLabel.setText("Unknown event type: " + eventType.eventType());
+                + " to " + eventType.newTile().getTileId() + "\n";
+        eventLog.appendText(moveText + "\n");
+        roundCounter++;
+        eventLog.appendText("Round number: " + roundCounter + "\n");
+
+        /*
+        TODO: handle the graph
+        int playerIndex = boardGameController.getCurrentPlayerIndex();
+        dataSeries.get(playerIndex).getData().add(new XYChart.Data<Number, Number>;
+         */
+      } else if (eventType.eventType() == BoardGameEventType.GAME_FINISHED) {
+        eventLog.appendText(eventType.player().getName() + " won the game!" + "\n");
+      } else {
+        eventLog.setText("Unknown event type: " + eventType.eventType() + "\n");
       }
     });
   }
+
 }

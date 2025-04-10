@@ -114,6 +114,10 @@ public class BoardGameController {
     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
   }
 
+  public int getCurrentPlayerIndex() {
+    return currentPlayerIndex;
+  }
+
   /* TODO:
   Andre metoder for view-relaterte operasjoner kan legges til her:
   ex: metoder for å håndtere btn klikk eller andre events, vise dialoger etc.
