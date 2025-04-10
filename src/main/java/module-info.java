@@ -2,6 +2,7 @@ module edu.ntnu.bidata.idatt {
   requires javafx.controls;
   requires com.google.gson;
   requires java.logging;
+  requires java.desktop;
   opens edu.ntnu.bidata.idatt.utils.io to com.google.gson;
   exports edu.ntnu.bidata.idatt;
   exports edu.ntnu.bidata.idatt.view;

@@ -5,14 +5,13 @@ All notable changes to this project will be documented in this file.
 Format: Task/description
 
 
-## 2025-04-05
+## 2025-04-10
 
-
-## 2025-04-04
-
+- Implemented partial game logic: player have turns, can move, roll dice animation and output textarea.
+- Players added from the playerSelectionScene are being used in the game
+- Populated the csv file with football players for testing
 
 ## 2025-04-03
-
 
 - fix: issue #80
 - Implemented fx non-functional design on player selection scene which includes: panels (players added, players from csv

@@ -1,5 +1,7 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
+import static edu.ntnu.bidata.idatt.model.entity.Token.token;
+
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.BufferedReader;
@@ -38,7 +40,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
             token.getTokenShape();
         bufferedWriter.write(writeLine);
         bufferedWriter.newLine();
-        logger.log(Level.INFO, "Player: " + player.getName() + " has been written to the file");
+        logger.log(Level.FINE, "Player: " + player.getName() + " has been written to the file");
       }
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Error writing to the file: " + e.getMessage());
@@ -62,8 +64,8 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
         if (playerData.length == 3) {
           String name = playerData[0].trim();
           Color color = Color.web(playerData[1].trim());
-          String tokenShape = playerData[2].trim();
-          TokenView token = new TokenView(color, tokenShape);
+          String shape = playerData[2].trim();
+          TokenView token = new TokenView(token(color, shape));
           Player player = new Player(name, token);
           players.add(player);
         }

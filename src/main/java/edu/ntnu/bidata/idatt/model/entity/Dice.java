@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
  */
 public class Dice {
   private final List<Die> dice;
+  private int rollResult;
 
   public Dice(int numberOfDice) {
     dice = IntStream.range(0, numberOfDice)
@@ -21,9 +22,7 @@ public class Dice {
   }
 
   /**
-   * Roll all the dices in the dice array
-   *
-   * @return the sum of the rolled dices
+   * @return the sum of all the rolled values
    */
   public int roll() {
     return dice.stream()
@@ -31,16 +30,7 @@ public class Dice {
         .sum();
   }
 
-  /**
-   * Gets die.
-   *
-   * @param dieNumber the die number
-   * @return the die
-   */
-  public int getDie(int dieNumber) {
-    if (dieNumber < 0 || dieNumber >= dice.size()) {
-      throw new IllegalArgumentException("Die number is out of bounds");
-    }
-    return dice.get(dieNumber).getValue();
+  public void setRollResult(int result) {
+    this.rollResult = result;
   }
 }
