@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import java.awt.Point;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 public class Ladders {
@@ -14,7 +15,15 @@ public class Ladders {
   }
 
   public void drawLadder() {
-
+    Line line = new Line();
+    line.setStartX(200);
+    line.setStartY(200);
+    line.setEndX(500);
+    line.setEndY(200);
+    line.setStrokeWidth(5);
+    line.setStroke(Color.RED);
+    line.setOpacity(0.5);
+    line.setRotate(45);
   }
 
   private Point getTopLadder() {

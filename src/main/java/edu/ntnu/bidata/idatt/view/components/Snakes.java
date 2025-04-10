@@ -5,7 +5,8 @@ import java.awt.Rectangle;
 import javafx.scene.paint.Color;
 
 public class Snakes {
-  private Rectangle topSnake, bottomSnake;
+  private final Rectangle topSnake;
+  private final Rectangle bottomSnake;
   private Color color;
 
   public Snakes(Rectangle topSnake, Rectangle bottomSnake) {
