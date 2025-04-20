@@ -37,6 +37,22 @@ public class SnakesAndLaddersView extends Application {
     return tileIdsWithLadders;
   }
 
+  public static int[] tileToGridPosition(Tile tile, Board board) {
+    int totalTiles = board.getTiles().size();
+    int tileId = tile.getTileId();
+    int columns = 10;
+    int rows = (int) Math.ceil(totalTiles / (double) columns);
+
+    int row = (tileId - 1) / columns;
+    int col = (tileId - 1) % columns;
+    if (row % 2 == 1) {
+      col = columns - col - 1;
+    }
+
+    row = rows - 1 - row;
+    return new int[] {row, col};
+  }
+
   @Override
   public void start(Stage primaryStage) {
     BoardService boardService = new BoardService();
@@ -55,8 +71,8 @@ public class SnakesAndLaddersView extends Application {
     overlayPane.prefHeightProperty().bind(boardGrid.heightProperty());
 
     Platform.runLater(() -> {
-
-      for (int totalLadders = 0; totalLadders < 6; totalLadders++) {
+      int totalLadders = 0; // Starts from 0
+      for (int ladders = 0; ladders <= totalLadders - 1; ladders++) {
         int startId = (int) (Math.random() * 88) + 1;
         int endId = startId + 1 + (int) (Math.random() * (88 - startId) + 1);
         boolean check = true;
@@ -76,12 +92,21 @@ public class SnakesAndLaddersView extends Application {
         }
       }
 
-      int startId = 56;
-      int endId = 5;
-      Tile start = board.getTile(startId);
-      Tile end = board.getTile(endId);
-      Ladder ladder = new Ladder(start, end, board, boardGrid);
-      overlayPane.getChildren().addAll(ladder.getLines());
+      // Testing
+
+      int startId1 = 1;
+      int endId1 = 21;
+      Tile start1 = board.getTile(startId1);
+      Tile end1 = board.getTile(endId1);
+      Ladder ladder1 = new Ladder(start1, end1, board, boardGrid);
+      overlayPane.getChildren().addAll(ladder1.getLines());
+
+      int startId2 = 1;
+      int endId2 = 10;
+      Tile start2 = board.getTile(startId2);
+      Tile end2 = board.getTile(endId2);
+      Ladder ladder2 = new Ladder(start2, end2, board, boardGrid);
+      overlayPane.getChildren().addAll(ladder2.getLines());
     });
 
     StackPane boardWithOverlays = new StackPane(boardGrid, overlayPane);

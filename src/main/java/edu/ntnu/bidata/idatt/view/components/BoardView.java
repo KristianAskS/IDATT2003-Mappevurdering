@@ -4,7 +4,6 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
-import java.util.ArrayList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
@@ -25,8 +24,6 @@ public class BoardView {
   public static GridPane createBoardGUI(Board board) {
     GridPane grid = new GridPane();
     grid.setAlignment(Pos.CENTER);
-
-    ArrayList<Integer> tileIdsWithLadders = SnakesAndLaddersView.getTileIdsWithLadders();
 
     int columns = 10;
     int totalTiles = board.getTiles().size();
