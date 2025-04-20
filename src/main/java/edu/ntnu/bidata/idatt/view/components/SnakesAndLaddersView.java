@@ -71,7 +71,7 @@ public class SnakesAndLaddersView extends Application {
     overlayPane.prefHeightProperty().bind(boardGrid.heightProperty());
 
     Platform.runLater(() -> {
-      int totalLadders = 0; // Starts from 0
+      int totalLadders = 10; // Starts from 0
       for (int ladders = 0; ladders <= totalLadders - 1; ladders++) {
         int startId = (int) (Math.random() * 88) + 1;
         int endId = startId + 1 + (int) (Math.random() * (88 - startId) + 1);
@@ -93,9 +93,9 @@ public class SnakesAndLaddersView extends Application {
       }
 
       // Testing
-
+      /*
       int startId1 = 1;
-      int endId1 = 21;
+      int endId1 = 81;
       Tile start1 = board.getTile(startId1);
       Tile end1 = board.getTile(endId1);
       Ladder ladder1 = new Ladder(start1, end1, board, boardGrid);
@@ -107,6 +107,7 @@ public class SnakesAndLaddersView extends Application {
       Tile end2 = board.getTile(endId2);
       Ladder ladder2 = new Ladder(start2, end2, board, boardGrid);
       overlayPane.getChildren().addAll(ladder2.getLines());
+       */
     });
 
     StackPane boardWithOverlays = new StackPane(boardGrid, overlayPane);

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -21,40 +22,54 @@ public class Ladder {
     // Converts tile id to grid positions
     int[] startPos = SnakesAndLaddersView.tileToGridPosition(startTile, board);
     int[] endPos = SnakesAndLaddersView.tileToGridPosition(endTile, board);
-    logger.log(Level.INFO, "Start pos: " + startPos + " End pos: " + endPos);
+    logger.log(Level.INFO, "Start row: " + startPos[0] + " Start column: " + startPos[0]);
+    logger.log(Level.INFO, "End row: " + endPos[0] + " End column: " + endPos[1]);
 
     Node startNode = BoardView.getTileNodeAt(boardGrid, startPos[0], startPos[1]);
     Node endNode = BoardView.getTileNodeAt(boardGrid, endPos[0], endPos[1]);
-    logger.log(Level.INFO, "Start node: " + startNode + " End node: " + endNode);
+    logger.log(Level.INFO, "Start tile: " + startNode + " End tile: " + endNode);
 
     Bounds startBounds = startNode.localToParent(startNode.getBoundsInLocal());
     Bounds endBounds = endNode.localToParent(endNode.getBoundsInLocal());
+
     logger.log(Level.INFO, "Start bound: " + startBounds + " End bound: " + endBounds);
 
-    double offset = 20;
 
-    // Start and end coords
-    double startX = startBounds.getMinX() + startBounds.getWidth() * 0.5;
+    double visualCorrection = -10; // Because the dropshadow on TileView
+    // Start and end coords, center line
+    double startX = startBounds.getMinX() + startBounds.getWidth() * 0.5 + visualCorrection;
     double startY = startBounds.getMinY() + startBounds.getHeight() * 0.5;
     logger.log(Level.INFO, "startX: " + startX + " startY: " + startY);
-    double endX = endBounds.getMinX() + endBounds.getWidth() * 0.5;
+    double endX = endBounds.getMinX() + endBounds.getWidth() * 0.5 + visualCorrection;
     double endY = endBounds.getMinY() + endBounds.getHeight() * 0.5;
     logger.log(Level.INFO, "endX: " + endX + " endY: " + endY);
+
     // Vector points from start to end
     double dx = endX - startX;
     double dy = endY - startY;
-    logger.log(Level.INFO, "(dx,dy): (" + dx + "," + dy + ")");
+    logger.log(Level.INFO, "(dx,dy): (" + (int)dx + "," + (int)dy + ")");
 
     // Length of vectors above using pytagoras
     double lengthPytagoras = Math.sqrt(dx * dx + dy * dy);
     logger.log(Level.INFO, "length of (dx,dy): " + lengthPytagoras);
     // Make a unit vector perpendicular to the ladders direction (pointing sideways)
-    double unitPerpendicularX = dy / lengthPytagoras;
-    double unitPerpendicularY = -dx / lengthPytagoras;
+    double unitPerpendicularX = -dy / lengthPytagoras;
+    double unitPerpendicularY = dx / lengthPytagoras;
+
+    int row = startPos[0];
+    int totalRows = board.getTiles().size()/10; // 10 rows foreløpig
+    int rowFromBottom = totalRows - 1 - row;
+    if(rowFromBottom % 2 == 1){
+      unitPerpendicularX = -unitPerpendicularX;
+      unitPerpendicularY = -unitPerpendicularY;
+    }
+
     logger.log(Level.INFO,
         "unitPerpendicularX: " + unitPerpendicularX + " unitPerpendicularY: " + unitPerpendicularY);
 
     // Draw parallell lines
+    double offset = 20;
+
     double startLeftX = startX + unitPerpendicularX * offset;
     double startLeftY = startY + unitPerpendicularY * offset;
     logger.log(Level.INFO, "startLeftX: " + startLeftX + " startLeftY: " + startLeftY);
