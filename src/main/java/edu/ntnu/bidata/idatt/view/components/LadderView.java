@@ -24,8 +24,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class SnakesAndLaddersView extends Application {
-  private static final Logger logger = Logger.getLogger(SnakesAndLaddersView.class.getName());
+public class LadderView extends Application {
+  private static final Logger logger = Logger.getLogger(LadderView.class.getName());
   static ArrayList<Integer> tileIdsWithLadders = new ArrayList<>();
 
 
@@ -71,14 +71,23 @@ public class SnakesAndLaddersView extends Application {
     overlayPane.prefHeightProperty().bind(boardGrid.heightProperty());
 
     Platform.runLater(() -> {
-      int totalLadders = 10; // Starts from 0
+      int totalLadders = 5; // Starts from 0
+
       for (int ladders = 0; ladders <= totalLadders - 1; ladders++) {
         int startId = (int) (Math.random() * 88) + 1;
         int endId = startId + 1 + (int) (Math.random() * (88 - startId) + 1);
+
         boolean check = true;
+
+        int firstDigitStart = Integer.parseInt(Integer.toString(startId).substring(0, 1));
+        int firstDigitEnd = Integer.parseInt(Integer.toString(endId).substring(0, 1));
+
         for (Integer tileIdsWithLadder : tileIdsWithLadders) {
-          if (startId == tileIdsWithLadder || endId == tileIdsWithLadder) {
+
+          if (startId == tileIdsWithLadder || endId == tileIdsWithLadder ||
+              firstDigitStart == firstDigitEnd) {
             check = false;
+            ladders--;
             break;
           }
         }
@@ -88,26 +97,11 @@ public class SnakesAndLaddersView extends Application {
           tileIdsWithLadders.add(startId);
           tileIdsWithLadders.add(endId);
           Ladder ladder = new Ladder(start, end, board, boardGrid);
-          overlayPane.getChildren().addAll(ladder.getLines());
+          overlayPane.getChildren().addAll(ladder.getLadders());
         }
       }
 
-      // Testing
-      /*
-      int startId1 = 1;
-      int endId1 = 81;
-      Tile start1 = board.getTile(startId1);
-      Tile end1 = board.getTile(endId1);
-      Ladder ladder1 = new Ladder(start1, end1, board, boardGrid);
-      overlayPane.getChildren().addAll(ladder1.getLines());
 
-      int startId2 = 1;
-      int endId2 = 10;
-      Tile start2 = board.getTile(startId2);
-      Tile end2 = board.getTile(endId2);
-      Ladder ladder2 = new Ladder(start2, end2, board, boardGrid);
-      overlayPane.getChildren().addAll(ladder2.getLines());
-       */
     });
 
     StackPane boardWithOverlays = new StackPane(boardGrid, overlayPane);

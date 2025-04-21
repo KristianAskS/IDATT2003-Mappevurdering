@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.FXCollections;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -16,13 +15,17 @@ import javafx.scene.shape.Line;
 
 public class Ladder {
   private static final Logger logger = Logger.getLogger(Ladder.class.getName());
-  private final List<Line> lines = new ArrayList<>();
+  private final List<Line> ladders = new ArrayList<>();
 
   public Ladder(Tile startTile, Tile endTile, Board board, GridPane boardGrid) {
     // Converts tile id to grid positions
-    int[] startPos = SnakesAndLaddersView.tileToGridPosition(startTile, board);
-    int[] endPos = SnakesAndLaddersView.tileToGridPosition(endTile, board);
-    logger.log(Level.INFO, "Start row: " + startPos[0] + " Start column: " + startPos[0]);
+    drawLadder(boardGrid, startTile, endTile, board);
+  }
+
+  public void drawLadder(GridPane boardGrid, Tile startTile, Tile endTile, Board board) {
+    int[] startPos = LadderView.tileToGridPosition(startTile, board);
+    int[] endPos = LadderView.tileToGridPosition(endTile, board);
+    logger.log(Level.INFO, "Start row: " + startPos[0] + " Start column: " + startPos[1]);
     logger.log(Level.INFO, "End row: " + endPos[0] + " End column: " + endPos[1]);
 
     Node startNode = BoardView.getTileNodeAt(boardGrid, startPos[0], startPos[1]);
@@ -31,9 +34,7 @@ public class Ladder {
 
     Bounds startBounds = startNode.localToParent(startNode.getBoundsInLocal());
     Bounds endBounds = endNode.localToParent(endNode.getBoundsInLocal());
-
     logger.log(Level.INFO, "Start bound: " + startBounds + " End bound: " + endBounds);
-
 
     double visualCorrection = -10; // Because the dropshadow on TileView
     // Start and end coords, center line
@@ -47,26 +48,29 @@ public class Ladder {
     // Vector points from start to end
     double dx = endX - startX;
     double dy = endY - startY;
-    logger.log(Level.INFO, "(dx,dy): (" + (int)dx + "," + (int)dy + ")");
+    logger.log(Level.INFO, "(dx,dy): (" + (int) dx + "," + (int) dy + ")");
 
     // Length of vectors above using pytagoras
     double lengthPytagoras = Math.sqrt(dx * dx + dy * dy);
     logger.log(Level.INFO, "length of (dx,dy): " + lengthPytagoras);
+
+    int rungCount = (int) lengthPytagoras / 15;
+
     // Make a unit vector perpendicular to the ladders direction (pointing sideways)
     double unitPerpendicularX = -dy / lengthPytagoras;
     double unitPerpendicularY = dx / lengthPytagoras;
 
     int row = startPos[0];
-    int totalRows = board.getTiles().size()/10; // 10 rows foreløpig
+    int totalRows = board.getTiles().size() / 10; // 10 rows foreløpig
     int rowFromBottom = totalRows - 1 - row;
-    if(rowFromBottom % 2 == 1){
+    if (rowFromBottom % 2 == 1) {
       unitPerpendicularX = -unitPerpendicularX;
       unitPerpendicularY = -unitPerpendicularY;
     }
 
     logger.log(Level.INFO,
         "unitPerpendicularX: " + unitPerpendicularX + " unitPerpendicularY: " + unitPerpendicularY);
-
+    //--------------------------------------------
     // Draw parallell lines
     double offset = 20;
 
@@ -88,20 +92,22 @@ public class Ladder {
     drawSideLine(startRightX, startRightY, endRightX, endRightY, Color.BROWN);
 
     drawRungs(startLeftX, startLeftY, endLeftX, endLeftY,
-        startRightX, startRightY, endRightX, endRightY);
+        startRightX, startRightY, endRightX, endRightY, rungCount);
   }
 
   private void drawSideLine(double startX, double startY, double endX, double endY, Color color) {
     Line line = new Line(startX, startY, endX, endY);
     line.setStroke(color);
     line.setStrokeWidth(4);
-    lines.add(line);
+    ladders.add(line);
   }
 
   private void drawRungs(double upperStartX, double upperStartY, double upperEndX, double upperEndY,
                          double lowerStartX, double lowerStartY, double lowerEndX,
-                         double lowerEndY) {
-    int rungCount = 7;
+                         double lowerEndY, int rungCount) {
+
+    logger.log(Level.INFO, "");
+
     for (int i = 1; i < rungCount; i++) {
       double t = i / (double) rungCount;
 
@@ -120,11 +126,11 @@ public class Ladder {
       dropShadow.setOffsetY(10.0);
       dropShadow.setColor(Color.color(0, 0, 0.6, 0.9));
       rung.setEffect(dropShadow);
-      lines.add(rung);
+      ladders.add(rung);
     }
   }
 
-  public List<Line> getLines() {
-    return lines;
+  public List<Line> getLadders() {
+    return ladders;
   }
 }
