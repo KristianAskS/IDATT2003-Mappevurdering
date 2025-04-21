@@ -47,4 +47,8 @@ public class Board {
   public void setDescription(String description) {
     this.description = description;
   }
+
+  public Tile getTile(int tileId) {
+    return tiles.get(tileId);
+  }
 }

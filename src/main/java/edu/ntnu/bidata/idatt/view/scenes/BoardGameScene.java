@@ -6,11 +6,14 @@ import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
+import edu.ntnu.bidata.idatt.view.components.Ladder;
+import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.SceneManager;
@@ -42,6 +45,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -87,7 +91,41 @@ public class BoardGameScene implements BoardGameObserver {
 
 
     GridPane boardPane = BoardView.createBoardGUI(board);
-    rootPane.setCenter(boardPane);
+    Pane ladderOverlay = new Pane();
+    ladderOverlay.prefWidthProperty().bind(boardPane.widthProperty());
+    ladderOverlay.prefHeightProperty().bind(boardPane.heightProperty());
+
+    Platform.runLater(() -> {
+      LadderView.getTileIdsWithLadders().clear();
+      int totalLadders = 5;
+
+      for (int i = 0; i < totalLadders; i++) {
+        int startId = (int) (Math.random() * 88) + 1;
+        int endId = startId + 1 + (int) (Math.random() * (88 - startId) + 1);
+
+        boolean isValid = true;
+        for (Integer id : LadderView.getTileIdsWithLadders()) {
+          if (id == startId || id == endId) {
+            isValid = false;
+            break;
+          }
+        }
+        if (isValid && (startId / 10 != endId / 10)) {
+          Tile start = board.getTile(startId);
+          Tile end = board.getTile(endId);
+          LadderView.getTileIdsWithLadders().add(startId);
+          LadderView.getTileIdsWithLadders().add(endId);
+          Ladder ladder = new Ladder(start, end, board, boardPane);
+          ladderOverlay.getChildren().addAll(ladder.getLadders());
+        } else {
+          i--;
+        }
+      }
+    });
+
+    StackPane boardWithOverlay = new StackPane(boardPane, ladderOverlay);
+    rootPane.setCenter(boardWithOverlay);
+
 
     // Pakke inn rootPane i en StackPane slik at vi kan skalere rootPane (for senere)
     StackPane container = new StackPane(rootPane);
@@ -130,7 +168,6 @@ public class BoardGameScene implements BoardGameObserver {
 
       startTile.getChildren().addAll(playerTokens);
       setTokenPositionOnTile(startTile);
-
     }
   }
 
