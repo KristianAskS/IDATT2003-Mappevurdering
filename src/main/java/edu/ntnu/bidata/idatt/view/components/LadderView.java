@@ -24,15 +24,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class LadderView extends Application {
+public class LadderView {
   private static final Logger logger = Logger.getLogger(LadderView.class.getName());
   static ArrayList<Integer> tileIdsWithLadders = new ArrayList<>();
 
+  public LadderView(){
 
-  public static void main(String[] args) {
-    launch(args);
   }
-
   public static ArrayList<Integer> getTileIdsWithLadders() {
     return tileIdsWithLadders;
   }
@@ -53,8 +51,7 @@ public class LadderView extends Application {
     return new int[] {row, col};
   }
 
-  @Override
-  public void start(Stage primaryStage) {
+  public static void generateLadder(){
     BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
     Board board = BoardGameFactory.createClassicBoard();
@@ -64,7 +61,6 @@ public class LadderView extends Application {
     BorderPane borderPane = new BorderPane();
     GridPane boardGrid = BoardView.createBoardGUI(board);
     borderPane.setCenter(boardGrid);
-    borderPane.setLeft(createIOContainer());
 
     Pane overlayPane = new Pane();
     overlayPane.prefWidthProperty().bind(boardGrid.widthProperty());
@@ -100,40 +96,10 @@ public class LadderView extends Application {
           overlayPane.getChildren().addAll(ladder.getLadders());
         }
       }
-
-
     });
-
     StackPane boardWithOverlays = new StackPane(boardGrid, overlayPane);
     borderPane.setCenter(boardWithOverlays);
 
     StackPane container = new StackPane(borderPane);
-    Scene scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTSKYBLUE);
-    primaryStage.setScene(scene);
-    primaryStage.show();
-  }
-
-  private VBox createIOContainer() {
-    VBox container = new VBox();
-    container.setPrefWidth(250);
-    container.setPadding(new Insets(30));
-    container.setSpacing(15);
-    container.setAlignment(Pos.TOP_CENTER);
-    container.setStyle(
-        "-fx-background-color: #7DBED7;" +
-            "-fx-background-radius: 0 40 40 0;" +
-            "-fx-border-radius: 0 40 40 0;" +
-            "-fx-border-color: black;" +
-            "-fx-border-width: 1;"
-    );
-
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setRadius(10.0);
-    dropShadow.setOffsetX(10.0);
-    dropShadow.setOffsetY(10.0);
-    dropShadow.setColor(Color.color(0, 0, 0, 0.3));
-    container.setEffect(dropShadow);
-
-    return container;
   }
 }
