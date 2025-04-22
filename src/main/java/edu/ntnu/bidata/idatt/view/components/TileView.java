@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -46,4 +47,12 @@ public class TileView extends StackPane {
   public void setTileView(TileView tileView) {
     this.tileView = tileView;
   }
+
+  public void addTileActionView(String description, Color color) {
+    Label tileActionView = new Label(description);
+    tileActionView.setTextFill(color);
+    tileActionView.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
+    this.getChildren().add(tileActionView);
+  }
+
 }

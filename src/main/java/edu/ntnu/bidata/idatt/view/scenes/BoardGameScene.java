@@ -12,13 +12,11 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.DiceView;
-import edu.ntnu.bidata.idatt.view.components.Ladder;
 import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
@@ -89,7 +87,7 @@ public class BoardGameScene implements BoardGameObserver {
     ladderOverlay.prefWidthProperty().bind(boardPane.widthProperty());
     ladderOverlay.prefHeightProperty().bind(boardPane.heightProperty());
 
-    Platform.runLater(() -> generateRandomLadders(board, boardPane, ladderOverlay));
+    Platform.runLater(() -> LadderView.generateLadder(board, boardPane, ladderOverlay));
 
     StackPane boardWithOverlay = new StackPane(boardPane, ladderOverlay);
     rootPane.setCenter(boardWithOverlay);
@@ -101,7 +99,7 @@ public class BoardGameScene implements BoardGameObserver {
     logger.log(Level.INFO, "BoardGameGUI created");
   }
 
-  private static double[][] getTokenOffsets(int tokenCount) {
+  private static double[][] getTokenTilePosition(int tokenCount) {
     return switch (tokenCount) {
       case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
       case 3 -> new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
@@ -109,30 +107,6 @@ public class BoardGameScene implements BoardGameObserver {
       case 5 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
       default -> new double[][] {{0.5, 0.5}};
     };
-  }
-
-  private void generateRandomLadders(Board board, GridPane boardPane, Pane ladderOverlay) {
-    LadderView.getTileIdsWithLadders().clear();
-    int totalLadders = 5;
-
-    for (int i = 0; i < totalLadders; i++) {
-      int startId = (int) (Math.random() * 88) + 1;
-      int endId = startId + 1 + (int) (Math.random() * (88 - startId) + 1);
-
-      boolean isValid =
-          LadderView.getTileIdsWithLadders().stream().noneMatch(id -> id == startId || id == endId);
-
-      if (isValid && (startId / 10 != endId / 10)) {
-        Tile start = board.getTile(startId);
-        Tile end = board.getTile(endId);
-        LadderView.getTileIdsWithLadders().add(startId);
-        LadderView.getTileIdsWithLadders().add(endId);
-        Ladder ladder = new Ladder(start, end, board, boardPane);
-        ladderOverlay.getChildren().addAll(ladder.getLadders());
-      } else {
-        i--;
-      }
-    }
   }
 
   private BorderPane createRootPane() {
@@ -156,11 +130,11 @@ public class BoardGameScene implements BoardGameObserver {
   public void setTokenPositionOnTile(TileView tile) {
     List<Node> tokens =
         tile.getChildren().stream().filter(node -> node instanceof TokenView).toList();
-    double[][] offsets = getTokenOffsets(tokens.size());
+    double[][] tokenTilePosition = getTokenTilePosition(tokens.size());
     IntStream.range(0, tokens.size()).forEach(i -> {
       Node token = tokens.get(i);
-      double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
-      double y = (TILE_SIZE - offsets[i][1] * TILE_SIZE * 2) / 2;
+      double x = (TILE_SIZE - tokenTilePosition[i][0] * TILE_SIZE * 2) / 2;
+      double y = (TILE_SIZE - tokenTilePosition[i][1] * TILE_SIZE * 2) / 2;
       token.setTranslateX(x);
       token.setTranslateY(y);
     });
@@ -241,11 +215,14 @@ public class BoardGameScene implements BoardGameObserver {
     Platform.runLater(() -> {
       if (eventType.oldTile() == null || eventType.newTile() == null) {
         eventLog.appendText("Invalid move: on of the tiles is null\n");
+        return;
       }
-      if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
-        assert eventType.oldTile() != null;
-        assert eventType.newTile() != null;
+      if (eventType.newTile().getLandAction() != null) {
+        eventLog.appendText(
+            "Tile action: " + eventType.newTile().getLandAction().getDescription() + "\n");
+      }
 
+      if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
         TokenView tokenView = eventType.player().getToken();
 
         TileView oldTileView = (TileView) scene.lookup("#tile" + eventType.oldTile().getTileId());

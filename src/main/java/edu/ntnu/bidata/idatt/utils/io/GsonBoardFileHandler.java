@@ -122,10 +122,10 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
     for (JsonElement tileJson : jsonArray) {
       JsonObject tileJsonObject = tileJson.getAsJsonObject();
       int tileId = tileJsonObject.get("tileId").getAsInt();
-      Tile tile = board.getTileId(tileId);
+      Tile tile = board.getTile(tileId);
       if (tileJsonObject.has("nextTileId")) {
         int nextTileId = tileJsonObject.get("nextTileId").getAsInt();
-        Tile nextTile = board.getTileId(nextTileId);
+        Tile nextTile = board.getTile(nextTileId);
         tile.setNextTile(nextTile);
       }
     }

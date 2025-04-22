@@ -48,6 +48,13 @@ public class BoardGame {
     currentPlayer.setCurrentTileId(nextTileId);
     Tile newTile = board.getTile(nextTileId);
 
+    if (newTile.getLandAction() != null) {
+      newTile.getLandAction().perform(currentPlayer);
+      int destinationTileId = newTile.getLandAction().getDestinationTileId();
+      newTile = board.getTile(currentPlayer.getCurrentTileId());
+      currentPlayer.setCurrentTileId(destinationTileId);
+    }
+
     notifyObservers(BoardGameEventType.PLAYER_MOVED, currentPlayer, oldTile, newTile);
 
     if (nextTileId >= board.getTiles().size()) {
