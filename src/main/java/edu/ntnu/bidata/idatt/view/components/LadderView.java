@@ -1,8 +1,5 @@
 package edu.ntnu.bidata.idatt.view.components;
 
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
-
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
@@ -10,27 +7,16 @@ import edu.ntnu.bidata.idatt.model.service.BoardService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 public class LadderView {
   private static final Logger logger = Logger.getLogger(LadderView.class.getName());
-  static ArrayList<Integer> tileIdsWithLadders = new ArrayList<>();
+  private static ArrayList<Integer> tileIdsWithLadders = new ArrayList<>();
 
-  public LadderView(){
-
-  }
   public static ArrayList<Integer> getTileIdsWithLadders() {
     return tileIdsWithLadders;
   }
@@ -51,7 +37,7 @@ public class LadderView {
     return new int[] {row, col};
   }
 
-  public static void generateLadder(){
+  public static void generateLadder() {
     BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
     Board board = BoardGameFactory.createClassicBoard();

@@ -11,17 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-/**
- * The type Board game.
- * A facade class that represents the board game.
- */
 public class BoardGame {
   private final List<Player> players;
   private final List<BoardGameObserver> observers;
-  Logger logger = Logger.getLogger(BoardGame.class.getName());
+  private final Logger logger = Logger.getLogger(BoardGame.class.getName());
   private Board board;
   private Player currentPlayer;
   private Dice dice;
+  private int currentPlayerIndex = 0;
 
   public BoardGame(Board board, List<Player> players, int numbOfDice) {
     this.board = board;
@@ -31,6 +28,29 @@ public class BoardGame {
     setBoard(board);
     createDice(numbOfDice);
     addPlayers(players);
+  }
+
+  public void playTurn() {
+    if (players.isEmpty()) {
+      return;
+    }
+
+    currentPlayer = players.get(currentPlayerIndex);
+    int steps = dice.roll();
+
+    Tile oldTile = board.getTile(currentPlayer.getCurrentTileId());
+    int nextTileId = Math.min(currentPlayer.getCurrentTileId() + steps, board.getTiles().size());
+    currentPlayer.setCurrentTileId(nextTileId);
+    Tile newTile = board.getTile(nextTileId);
+
+    notifyObservers(BoardGameEventType.PLAYER_MOVED, currentPlayer, oldTile, newTile);
+
+    if (nextTileId >= board.getTiles().size()) {
+      notifyObservers(BoardGameEventType.GAME_FINISHED, currentPlayer, oldTile, newTile);
+      return;
+    }
+
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
   }
 
   public void addObserver(BoardGameObserver observer) {
@@ -46,10 +66,6 @@ public class BoardGame {
     for (BoardGameObserver observer : observers) {
       observer.onEvent(new BoardGameEvent(eventType, player, oldTile, newTile));
     }
-  }
-
-  public Board getBoard() {
-    return board;
   }
 
   public void setBoard(Board board) {

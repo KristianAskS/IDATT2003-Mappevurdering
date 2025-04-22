@@ -32,7 +32,10 @@ public class BoardView {
     for (int tileId = 1; tileId <= totalTiles; tileId++) {
       Tile tile = board.getTileId(tileId);
       TileView tileView = new TileView(tile, TILE_SIZE);
-
+      int tileIdWithAction = LadderView.getTileIdsWithLadders().get(tileId - 1);
+      if (tileId == tileIdWithAction) {
+        tileView.setStyle("-fx-background-color: green");
+      }
       if (tileId % 2 == 0) {
         tileView.setStyle("-fx-background-color: #1E90FF");
       } else {

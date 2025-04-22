@@ -88,7 +88,7 @@ public class Ladder {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
     logger.log(Level.INFO, () -> "Center (x,y): (" + x + "," + y + ")");
-    return new double[]{x, y};
+    return new double[] {x, y};
   }
 
   private int calculateRungCount(double ladderLength) {
@@ -97,7 +97,7 @@ public class Ladder {
 
   private double[] computePerpendicularUnitVector(double dx, double dy) {
     double length = Math.hypot(dx, dy);
-    return new double[]{-dy / length, dx / length};
+    return new double[] {-dy / length, dx / length};
   }
 
   /**
@@ -131,7 +131,7 @@ public class Ladder {
     logger.log(Level.INFO, () -> String.format("Right rail: (%.1f,%.1f)-(%.1f,%.1f)",
         startRightX, startRightY, endRightX, endRightY));
 
-    return new double[][]{
+    return new double[][] {
         {startLeftX, startLeftY},
         {endLeftX, endLeftY},
         {startRightX, startRightY},
@@ -172,7 +172,7 @@ public class Ladder {
   }
 
   private void addLine(double startX, double startY, double endX, double endY, double width,
-      Color color) {
+                       Color color) {
     Line line = new Line(startX, startY, endX, endY);
     line.setStroke(color);
     line.setStrokeWidth(width);
