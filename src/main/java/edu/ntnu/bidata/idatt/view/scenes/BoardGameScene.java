@@ -1,5 +1,3 @@
-// Refactored BoardGameScene.java
-
 package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
@@ -54,6 +52,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/**
+ * Boardgame UI controller. reacts to state changes
+ */
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
   private final Scene scene;
@@ -73,12 +74,13 @@ public class BoardGameScene implements BoardGameObserver {
 
     BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
-    int numbOfDice = 1;
+    int numbOfDice = 1; // TODO: Make a static
     Board board = BoardGameSelectionScene.getSelectedBoard();
     boards.add(board);
     boardService.setBoard(board);
     boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
 
+    playerService.setPlayers(players);
     boardGameController =
         new BoardGameController(this, boardService, playerService, board, numbOfDice);
 
@@ -94,6 +96,7 @@ public class BoardGameScene implements BoardGameObserver {
 
     StackPane container = new StackPane(rootPane);
     scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
+
     initializePlayers();
     logger.log(Level.INFO, "BoardGameGUI created");
   }
@@ -153,7 +156,7 @@ public class BoardGameScene implements BoardGameObserver {
   public void setTokenPositionOnTile(TileView tile) {
     List<Node> tokens =
         tile.getChildren().stream().filter(node -> node instanceof TokenView).toList();
-    final double[][] offsets = getTokenOffsets(tokens.size());
+    double[][] offsets = getTokenOffsets(tokens.size());
     IntStream.range(0, tokens.size()).forEach(i -> {
       Node token = tokens.get(i);
       double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
@@ -236,7 +239,24 @@ public class BoardGameScene implements BoardGameObserver {
   @Override
   public void onEvent(BoardGameEvent eventType) {
     Platform.runLater(() -> {
+      if (eventType.oldTile() == null || eventType.newTile() == null) {
+        eventLog.appendText("Invalid move: on of the tiles is null\n");
+      }
       if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
+        assert eventType.oldTile() != null;
+        assert eventType.newTile() != null;
+
+        TokenView tokenView = eventType.player().getToken();
+
+        TileView oldTileView = (TileView) scene.lookup("#tile" + eventType.oldTile().getTileId());
+        TileView newTileView = (TileView) scene.lookup("#tile" + eventType.newTile().getTileId());
+
+        if (oldTileView != null && newTileView != null && tokenView != null) {
+          oldTileView.getChildren().remove(tokenView);
+          newTileView.getChildren().addAll(tokenView);
+          setTokenPositionOnTile(newTileView);
+        }
+
         String moveText =
             eventType.player().getName() + " moved from " + eventType.oldTile().getTileId() +
                 " to " + eventType.newTile().getTileId() + "\n";

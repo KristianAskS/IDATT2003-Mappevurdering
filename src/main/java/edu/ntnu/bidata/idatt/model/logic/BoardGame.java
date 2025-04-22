@@ -9,8 +9,12 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Game logic and state
+ */
 public class BoardGame {
   private final List<Player> players;
   private final List<BoardGameObserver> observers;
@@ -32,6 +36,7 @@ public class BoardGame {
 
   public void playTurn() {
     if (players.isEmpty()) {
+      logger.log(Level.INFO, "players.isEmpty()");
       return;
     }
 
@@ -73,6 +78,7 @@ public class BoardGame {
   }
 
   public void addPlayers(List<Player> players) {
+    players.forEach(player -> player.setCurrentTileId(1));
     this.players.addAll(players);
   }
 
