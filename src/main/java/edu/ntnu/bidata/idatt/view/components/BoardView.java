@@ -47,9 +47,6 @@ public class BoardView {
         description = description.length() < 7 ? description : "";
 
         tileView.addTileActionView(description, Color.RED);
-
-        Tooltip tooltip = new Tooltip(tile.getLandAction().getDescription());
-        Tooltip.install(tileView, tooltip);
       }
 
 

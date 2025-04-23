@@ -87,7 +87,16 @@ public class BoardGameScene implements BoardGameObserver {
     ladderOverlay.prefWidthProperty().bind(boardPane.widthProperty());
     ladderOverlay.prefHeightProperty().bind(boardPane.heightProperty());
 
-    Platform.runLater(() -> LadderView.generateLadder(board, boardPane, ladderOverlay));
+    Platform.runLater(() -> {
+      LadderView.generateLadder(board, boardPane, ladderOverlay);
+      for (Integer tileId : LadderView.getTileIdsWithLadders()){
+        TileView tileView = (TileView) boardPane.lookup("#tile" + tileId);
+        if (tileView != null){
+          tileView.setStyle("-fx-background-color: #FFEE58");
+          tileView.addTileActionView("", Color.RED);
+        }
+      }
+    });
 
     StackPane boardWithOverlay = new StackPane(boardPane, ladderOverlay);
     rootPane.setCenter(boardWithOverlay);
@@ -213,10 +222,6 @@ public class BoardGameScene implements BoardGameObserver {
   @Override
   public void onEvent(BoardGameEvent eventType) {
     Platform.runLater(() -> {
-      if (eventType.oldTile() == null || eventType.newTile() == null) {
-        eventLog.appendText("Invalid move: on of the tiles is null\n");
-        return;
-      }
       if (eventType.newTile().getLandAction() != null) {
         eventLog.appendText(
             "Tile action: " + eventType.newTile().getLandAction().getDescription() + "\n");
