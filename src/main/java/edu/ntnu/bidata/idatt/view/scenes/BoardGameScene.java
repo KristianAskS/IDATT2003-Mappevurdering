@@ -65,6 +65,7 @@ public class BoardGameScene implements BoardGameObserver {
       FXCollections.observableArrayList();
   List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private int roundCounter = 0;
+  private boolean isGameFinished = false;
 
 
   public BoardGameScene() throws IOException {
@@ -332,7 +333,15 @@ public class BoardGameScene implements BoardGameObserver {
         dataSeries.get(playerIndex).getData().add(new XYChart.Data<Number, Number>;
          */
       } else if (eventType.eventType() == BoardGameEventType.GAME_FINISHED) {
-        eventLog.appendText(eventType.player().getName() + " won the game!" + "\n");
+        if (isGameFinished) return;
+        isGameFinished = true;
+
+        List<Player> players = PlayerSelectionScene.getSelectedPlayers();
+
+        PodiumGameScene.setFinalRanking(players);
+
+        SceneManager.showPodiumGameScene();
+
       } else {
         eventLog.setText("Unknown event type: " + eventType.eventType() + "\n");
       }
