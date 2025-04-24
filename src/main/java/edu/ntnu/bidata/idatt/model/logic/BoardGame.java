@@ -46,23 +46,33 @@ public class BoardGame {
     Tile oldTile = board.getTile(currentPlayer.getCurrentTileId());
     int nextTileId = Math.min(currentPlayer.getCurrentTileId() + steps, board.getTiles().size());
     currentPlayer.setCurrentTileId(nextTileId);
-    Tile newTile = board.getTile(nextTileId);
+    Tile nextTile = board.getTile(nextTileId);
 
-    if (newTile.getLandAction() != null) {
-      newTile.getLandAction().perform(currentPlayer);
-      int destinationTileId = newTile.getLandAction().getDestinationTileId();
-      newTile = board.getTile(currentPlayer.getCurrentTileId());
+    Tile finalNewTile = nextTile;
+    logger.info(() -> String.format(
+        "About to dispatch PLAYER_MOVED: old=%s (id=%s), new=%s (id=%s)",
+        oldTile, oldTile==null?"null":oldTile.getTileId(),
+        finalNewTile, finalNewTile==null?"null":finalNewTile.getTileId()
+    ));
+
+    if (nextTile.getLandAction() != null) {
+      nextTile.getLandAction().perform(currentPlayer);
+      int destinationTileId = nextTile.getLandAction().getDestinationTileId();
+      nextTile = board.getTile(currentPlayer.getCurrentTileId());
       currentPlayer.setCurrentTileId(destinationTileId);
     }
 
-    notifyObservers(BoardGameEventType.PLAYER_MOVED, currentPlayer, oldTile, newTile);
+    notifyObservers(BoardGameEventType.PLAYER_MOVED, currentPlayer, oldTile, nextTile);
 
     if (nextTileId >= board.getTiles().size()) {
-      notifyObservers(BoardGameEventType.GAME_FINISHED, currentPlayer, oldTile, newTile);
+      notifyObservers(BoardGameEventType.GAME_FINISHED, currentPlayer, oldTile, nextTile);
       return;
     }
-
     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+  }
+
+  public void movePlayer() {
+
   }
 
   public void addObserver(BoardGameObserver observer) {

@@ -2,7 +2,6 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
 import javafx.util.Duration;
 

@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Ladder;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ public class LadderView {
     return tileIdsWithLadders;
   }
 
+  //TODO: move this method to another logic class
   public static int[] tileToGridPosition(Tile tile, Board board) {
     int totalTiles = board.getTiles().size();
     int tileId = tile.getTileId();
@@ -36,7 +38,7 @@ public class LadderView {
 
   public static void generateLadder(Board board, GridPane boardGridPane, Pane ladderOverlayPane) {
     tileIdsWithLadders.clear();
-    int totalLadders = 5; // TODO: make static or argument
+    int totalLadders = 20; // TODO: make static or argument
 
     for (int i = 0; i < totalLadders; i++) {
       int startId = (int) (Math.random() * 88) + 1;

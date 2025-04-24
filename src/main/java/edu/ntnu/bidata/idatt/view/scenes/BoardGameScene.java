@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
+import static edu.ntnu.bidata.idatt.model.entity.Ladder.VISUAL_CORRECTION;
 import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
@@ -27,10 +28,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -48,8 +51,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
 
 /**
  * Boardgame UI controller. reacts to state changes
@@ -62,6 +69,7 @@ public class BoardGameScene implements BoardGameObserver {
   private final PlayerService playerService = new PlayerService();
   private final BoardGameController boardGameController;
   private final DiceView diceView;
+  private final GridPane boardGridPane;
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
       FXCollections.observableArrayList();
   List<Player> players = PlayerSelectionScene.getSelectedPlayers();
@@ -73,26 +81,30 @@ public class BoardGameScene implements BoardGameObserver {
     rootPane.setLeft(createIOContainer());
 
     BoardService boardService = new BoardService();
-    List<Board> boards = boardService.getBoards();
-    int numbOfDice = 1; // TODO: Make a static
-    this.board = BoardGameSelectionScene.getSelectedBoard();
-    boards.add(board);
-    boardService.setBoard(board);
+    List<Board> boards = boardService.readBoardFromFile(BOARD_FILE_PATH);
+    Board selectedBoard = boards.stream()
+        .filter(board->board.getName().equals(BoardGameSelectionScene.getSelectedBoard().getName()))
+        .findFirst()
+        .orElseThrow(()-> new IllegalStateException("Selected board not found"));
+
+    boardService.setBoard(selectedBoard);
+    this.board = selectedBoard;
     boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
 
+    int numbOfDice = 1; // TODO: Make a static
     playerService.setPlayers(players);
     boardGameController =
         new BoardGameController(this, boardService, playerService, board, numbOfDice);
 
-    GridPane boardPane = BoardView.createBoardGUI(board);
+    this.boardGridPane = BoardView.createBoardGUI(board);
     Pane ladderOverlay = new Pane();
-    ladderOverlay.prefWidthProperty().bind(boardPane.widthProperty());
-    ladderOverlay.prefHeightProperty().bind(boardPane.heightProperty());
+    ladderOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
+    ladderOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
 
     Platform.runLater(() -> {
-      LadderView.generateLadder(board, boardPane, ladderOverlay);
+      LadderView.generateLadder(board, boardGridPane, ladderOverlay);
       for (Integer tileId : LadderView.getTileIdsWithLadders()) {
-        TileView tileView = (TileView) boardPane.lookup("#tile" + tileId);
+        TileView tileView = (TileView) boardGridPane.lookup("#tile" + tileId);
         if (tileView != null) {
           Tile tileWithLadder = board.getTile(tileId);
           if (tileWithLadder.getLandAction() != null) {
@@ -106,7 +118,7 @@ public class BoardGameScene implements BoardGameObserver {
       }
     });
 
-    StackPane boardWithOverlay = new StackPane(boardPane, ladderOverlay);
+    StackPane boardWithOverlay = new StackPane(boardGridPane, ladderOverlay);
     rootPane.setCenter(boardWithOverlay);
 
     StackPane container = new StackPane(rootPane);
@@ -124,6 +136,13 @@ public class BoardGameScene implements BoardGameObserver {
       case 5 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
       default -> new double[][] {{0.5, 0.5}};
     };
+  }
+
+  public static double[] getTileCenter(Bounds bounds) {
+    double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
+    double y = bounds.getMinY() + bounds.getHeight() * 0.5;
+    logger.info(() -> "Center (x,y): (" + x + "," + y + ")");
+    return new double[] {x, y};
   }
 
   private BorderPane createRootPane() {
@@ -228,36 +247,64 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   @Override
-  public void onEvent(BoardGameEvent eventType) {
+  public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
-      if (eventType.newTile().getLandAction() != null) {
-        eventLog.appendText(
-            "Tile action: " + eventType.newTile().getLandAction().getDescription() + "\n");
-      }
-
-      if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
-        TokenView tokenView = eventType.player().getToken();
-
-        TileView oldTileView = (TileView) scene.lookup("#tile" + eventType.oldTile().getTileId());
-        TileView newTileView = (TileView) scene.lookup("#tile" + eventType.newTile().getTileId());
-
-        if (oldTileView != null && newTileView != null && tokenView != null) {
-          oldTileView.getChildren().remove(tokenView);
-          newTileView.getChildren().addAll(tokenView);
-          setTokenPositionOnTile(newTileView);
+      if (event.eventType() != BoardGameEventType.PLAYER_MOVED) {
+        if (event.eventType() == BoardGameEventType.GAME_FINISHED) {
+          eventLog.appendText(event.player().getName() + " won the game!\n");
         }
-
-        String moveText =
-            eventType.player().getName() + " moved from " + eventType.oldTile().getTileId() +
-                " to " + eventType.newTile().getTileId() + "\n";
-        eventLog.appendText(moveText + "\n");
-        roundCounter++;
-        eventLog.appendText("Round number: " + roundCounter + "\n");
-      } else if (eventType.eventType() == BoardGameEventType.GAME_FINISHED) {
-        eventLog.appendText(eventType.player().getName() + " won the game!\n");
-      } else {
-        eventLog.setText("Unknown event type: " + eventType.eventType() + "\n");
+        return;
       }
+      Tile oldTile = event.oldTile();
+      Tile newTile = event.newTile();
+
+      if (newTile.getLandAction() != null) {
+        eventLog.appendText(
+            "Tile action: " + newTile.getLandAction().getDescription() + "\n"
+        );
+      }
+      TileView oldTileView = (TileView) scene.lookup("#tile" + oldTile.getTileId());
+      TileView newTileView = (TileView) scene.lookup("#tile" + newTile.getTileId());
+      TokenView tokenView = event.player().getToken();
+
+      int[] startGridPos = LadderView.tileToGridPosition(oldTile, board);
+      int[] endGridPos = LadderView.tileToGridPosition(newTile, board);
+
+      Node startNode = BoardView.getTileNodeAt(boardGridPane, startGridPos[0], startGridPos[1]);
+      Node endNode = BoardView.getTileNodeAt(boardGridPane, endGridPos[0], endGridPos[1]);
+
+      Bounds startBounds = startNode.localToParent(startNode.getBoundsInLocal());
+      Bounds endBounds = endNode.localToParent(endNode.getBoundsInLocal());
+
+      double[] startCenter = getTileCenter(startBounds);
+      double[] endCenter = getTileCenter(endBounds);
+
+      oldTileView.getChildren().remove(tokenView);
+      boardGridPane.getChildren().add(tokenView);
+
+      Path path = new Path(
+          new MoveTo(startCenter[0], startCenter[1]),
+          new LineTo(endCenter[0], endCenter[1])
+      );
+      PathTransition pathTransition = new PathTransition(Duration.seconds(1), path, tokenView);
+      pathTransition.setOrientation(PathTransition.OrientationType.NONE);
+      pathTransition.setCycleCount(1);
+      pathTransition.setOnFinished(e -> {
+        boardGridPane.getChildren().remove(tokenView);
+        newTileView.getChildren().add(tokenView);
+        setTokenPositionOnTile(newTileView);
+        boardGridPane.getChildren().remove(path);
+      });
+      pathTransition.play();
+
+      eventLog.appendText(
+          event.player().getName()
+              + " moved from " + oldTile.getTileId()
+              + " to " + newTile.getTileId() + "\n\n"
+      );
+      roundCounter++;
+      eventLog.appendText("Round number: " + roundCounter + "\n");
     });
   }
 }
+
