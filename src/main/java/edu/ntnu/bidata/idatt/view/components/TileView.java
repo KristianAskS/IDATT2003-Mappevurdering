@@ -48,11 +48,11 @@ public class TileView extends StackPane {
     this.tileView = tileView;
   }
 
-  public void addTileActionView(String description, Color color) {
-    Label tileActionView = new Label(description);
-    tileActionView.setTextFill(color);
-    tileActionView.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
-    this.getChildren().add(tileActionView);
+  public void addTileActionViewLbl(String description, Color color) {
+    Label tileActionViewLbl = new Label(description);
+    tileActionViewLbl.setTextFill(color);
+    tileActionViewLbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
+    this.getChildren().add(tileActionViewLbl);
   }
 
 }

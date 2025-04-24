@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
@@ -46,7 +45,7 @@ public class BoardView {
         String description = tile.getLandAction().getDescription();
         description = description.length() < 7 ? description : "";
 
-        tileView.addTileActionView(description, Color.RED);
+        tileView.addTileActionViewLbl(description, Color.RED);
       }
 
 

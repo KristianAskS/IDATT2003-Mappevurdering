@@ -12,6 +12,7 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
@@ -56,6 +57,7 @@ import javafx.scene.text.FontWeight;
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
   private final Scene scene;
+  private final Board board;
   private final TextArea eventLog = new TextArea("Game started! \n");
   private final PlayerService playerService = new PlayerService();
   private final BoardGameController boardGameController;
@@ -73,7 +75,7 @@ public class BoardGameScene implements BoardGameObserver {
     BoardService boardService = new BoardService();
     List<Board> boards = boardService.getBoards();
     int numbOfDice = 1; // TODO: Make a static
-    Board board = BoardGameSelectionScene.getSelectedBoard();
+    this.board = BoardGameSelectionScene.getSelectedBoard();
     boards.add(board);
     boardService.setBoard(board);
     boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
@@ -89,11 +91,17 @@ public class BoardGameScene implements BoardGameObserver {
 
     Platform.runLater(() -> {
       LadderView.generateLadder(board, boardPane, ladderOverlay);
-      for (Integer tileId : LadderView.getTileIdsWithLadders()){
+      for (Integer tileId : LadderView.getTileIdsWithLadders()) {
         TileView tileView = (TileView) boardPane.lookup("#tile" + tileId);
-        if (tileView != null){
-          tileView.setStyle("-fx-background-color: #FFEE58");
-          tileView.addTileActionView("", Color.RED);
+        if (tileView != null) {
+          Tile tileWithLadder = board.getTile(tileId);
+          if (tileWithLadder.getLandAction() != null) {
+            tileView.setStyle("-fx-background-color: #A5D6A7;");
+            tileView.addTileActionViewLbl("start", Color.RED);
+          } else {
+            tileView.setStyle("-fx-background-color: #EF9A9A");
+            tileView.addTileActionViewLbl("end", Color.RED);
+          }
         }
       }
     });
