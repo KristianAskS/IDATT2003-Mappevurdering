@@ -7,7 +7,8 @@ import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
-import edu.ntnu.bidata.idatt.controller.SceneManager;
+import edu.ntnu.bidata.idatt.view.components.Ladder;
+import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
@@ -16,10 +17,10 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
+import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.DiceView;
-import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
@@ -38,6 +39,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -58,22 +61,21 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 
-/**
- * Boardgame UI controller. reacts to state changes
- */
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
   private final Scene scene;
-  private final Board board;
   private final TextArea eventLog = new TextArea("Game started! \n");
   private final PlayerService playerService = new PlayerService();
   private final BoardGameController boardGameController;
   private final DiceView diceView;
   private final GridPane boardGridPane;
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
+
       FXCollections.observableArrayList();
   List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private int roundCounter = 0;
+  private boolean isGameFinished = false;
+
 
   public BoardGameScene() throws IOException {
     diceView = new DiceView();
@@ -81,18 +83,19 @@ public class BoardGameScene implements BoardGameObserver {
     rootPane.setLeft(createIOContainer());
 
     BoardService boardService = new BoardService();
-    List<Board> boards = boardService.readBoardFromFile(BOARD_FILE_PATH);
-    Board selectedBoard = boards.stream()
-        .filter(board->board.getName().equals(BoardGameSelectionScene.getSelectedBoard().getName()))
-        .findFirst()
-        .orElseThrow(()-> new IllegalStateException("Selected board not found"));
+    List<Board> boards = boardService.getBoards();
 
-    boardService.setBoard(selectedBoard);
-    this.board = selectedBoard;
+    //Denne må hentes fra forrige scene brukeren velger antall terninger
+    int numbOfDice = 1;
+
+    //denne skal ikke brukes da UI ikke skal kommunisere med forettningslogikken
+    //Board board = BoardGameFactory.createClassicBoard();
+    //Board board = boardService.readBoardFromFile("data/games/laddersAndSnakes.json").get(0);
+    Board board = BoardGameSelectionScene.getSelectedBoard();
+    boards.add(board);
+    boardService.setBoard(board);
     boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
 
-    int numbOfDice = 1; // TODO: Make a static
-    playerService.setPlayers(players);
     boardGameController =
         new BoardGameController(this, boardService, playerService, board, numbOfDice);
 
@@ -115,20 +118,37 @@ public class BoardGameScene implements BoardGameObserver {
             tileView.addTileActionViewLbl("end", Color.RED);
           }
         }
+        if (isValid && (startId / 10 != endId / 10)) {
+          Tile start = board.getTile(startId);
+          Tile end = board.getTile(endId);
+          LadderView.getTileIdsWithLadders().add(startId);
+          LadderView.getTileIdsWithLadders().add(endId);
+          Ladder ladder = new Ladder(start, end, board, boardPane);
+          ladderOverlay.getChildren().addAll(ladder.getLadders());
+        } else {
+          i--;
+        }
       }
     });
 
     StackPane boardWithOverlay = new StackPane(boardGridPane, ladderOverlay);
     rootPane.setCenter(boardWithOverlay);
 
+
+    // Pakke inn rootPane i en StackPane slik at vi kan skalere rootPane (for senere)
     StackPane container = new StackPane(rootPane);
     scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
+    // Initialiser spillere og plasser tokenene på starttilen (midlertidig løsning)
     initializePlayers();
+
     logger.log(Level.INFO, "BoardGameGUI created");
   }
 
-  private static double[][] getTokenTilePosition(int tokenCount) {
+  /**
+   * Returnerer hardkodede offset-koordinater basert på antall tokens på en tile.
+   */
+  private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
       case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
       case 3 -> new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
@@ -152,28 +172,37 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   private void initializePlayers() {
+    players.forEach(player -> player.setCurrentTileId(1));
+
     playerService.setPlayers(players);
+
     TileView startTile = (TileView) scene.lookup("#tile1");
     if (startTile != null) {
       List<Node> playerTokens = new ArrayList<>();
-      players.stream().filter(player -> player.getToken() != null)
+      players.stream()
+          .filter(player -> player.getToken() != null)
           .forEach(player -> playerTokens.add(player.getToken()));
+
       startTile.getChildren().addAll(playerTokens);
       setTokenPositionOnTile(startTile);
     }
   }
 
   public void setTokenPositionOnTile(TileView tile) {
-    List<Node> tokens =
-        tile.getChildren().stream().filter(node -> node instanceof TokenView).toList();
-    double[][] tokenTilePosition = getTokenTilePosition(tokens.size());
-    IntStream.range(0, tokens.size()).forEach(i -> {
-      Node token = tokens.get(i);
-      double x = (TILE_SIZE - tokenTilePosition[i][0] * TILE_SIZE * 2) / 2;
-      double y = (TILE_SIZE - tokenTilePosition[i][1] * TILE_SIZE * 2) / 2;
-      token.setTranslateX(x);
-      token.setTranslateY(y);
-    });
+    List<Node> tokens = tile.getChildren().stream()
+        .filter(node -> node instanceof TokenView)
+        .toList();
+
+    final double[][] offsets = getTokenOffsets(tokens.size());
+
+    IntStream.range(0, tokens.size())
+        .forEach(i -> {
+          Node token = tokens.get(i);
+          double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
+          double y = (TILE_SIZE - offsets[i][1] * TILE_SIZE * 2) / 2;
+          token.setTranslateX(x);
+          token.setTranslateY(y);
+        });
   }
 
   public Scene getScene() {
@@ -186,8 +215,13 @@ public class BoardGameScene implements BoardGameObserver {
     container.setPadding(new Insets(30));
     container.setSpacing(15);
     container.setAlignment(Pos.TOP_CENTER);
-    container.setStyle("-fx-background-color: #7DBED7;" + "-fx-background-radius: 0 40 40 0;" +
-        "-fx-border-radius: 0 40 40 0;" + "-fx-border-color: black;" + "-fx-border-width: 1;");
+    container.setStyle(
+        "-fx-background-color: #7DBED7;"
+            + "-fx-background-radius: 0 40 40 0;"
+            + "-fx-border-radius: 0 40 40 0;"
+            + "-fx-border-color: black;"
+            + "-fx-border-width: 1;"
+    );
 
     DropShadow dropShadow = new DropShadow();
     dropShadow.setRadius(10.0);
@@ -196,13 +230,16 @@ public class BoardGameScene implements BoardGameObserver {
     dropShadow.setColor(Color.color(0, 0, 0, 0.3));
     container.setEffect(dropShadow);
 
+    assert diceView != null;
     container.getChildren().add(diceView.getDiceImageView());
 
     Button rollDiceBtn = diceView.getRollDiceBtn();
     container.getChildren().add(rollDiceBtn);
     rollDiceBtn.setOnAction(e -> {
       Timeline timeline = diceView.createRollDiceAnimation(() -> {
-        boardGameController.handlePlayerTurn();
+        int result = diceView.rollResultProperty().get();
+        logger.log(Level.INFO, "Passing to controller: " + result);
+        boardGameController.handlePlayerTurn(result);
         rollDiceBtn.setDisable(false);
       });
       timeline.play();
@@ -217,6 +254,7 @@ public class BoardGameScene implements BoardGameObserver {
     outputLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
     outputLabel.setTextFill(Color.BLACK);
     container.getChildren().add(outputLabel);
+
     container.getChildren().add(createOutputArea());
 
     Region spacer = new Region();
@@ -237,74 +275,95 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   private TextArea createOutputArea() {
+    /*
+    VBox outputArea = new VBox();
+    outputArea.setSpacing(5);
+    outputArea.setPadding(new Insets(10));
+    outputArea.setStyle(
+        "-fx-background-color: #2B2B2B;"
+            + "-fx-background-radius: 10;"
+            + "-fx-border-radius: 10;"
+            + "-fx-border-color: black;"
+            + "-fx-border-width: 1;"
+            + "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);"
+            + "-fx-padding: 10 20 150 20;"
+    );
+
+     */
+
     eventLog.setEditable(false);
     eventLog.setWrapText(true);
     eventLog.setScrollTop(Double.MAX_VALUE);
     eventLog.setFont(Font.font("monospace", FontWeight.BOLD, 16));
     eventLog.setStyle("-fx-control-inner-background: black; -fx-text-fill: white;");
     eventLog.setPrefHeight(200);
+    /*
+    outputArea.getChildren().addAll(eventLog, roundLabel);
+    return outputArea;
+
+     */
     return eventLog;
+  }
+
+  private VBox createPerformanceMeter() {
+    VBox graphContainer = new VBox();
+    //graphContainer.setAlignment(Pos.CENTER_LEFT);
+    graphContainer.setFillWidth(true);
+
+    NumberAxis xAxis = new NumberAxis();
+    xAxis.setLabel("Turn");
+    xAxis.setTickUnit(1);
+    xAxis.setAnimated(true);
+    xAxis.setMinorTickCount(0);
+    xAxis.setForceZeroInRange(false);
+    xAxis.setMinorTickVisible(false);
+    NumberAxis yAxis = new NumberAxis("Dice Number", 0, 7, 1);
+    yAxis.setMinorTickVisible(false);
+    yAxis.setMinorTickCount(0);
+    yAxis.setAnimated(true);
+    LineChart<Number, Number> performanceGraph = new LineChart<Number, Number>(xAxis, yAxis);
+    performanceGraph.setTitle("Performance Meter");
+    performanceGraph.setMaxWidth(300);
+    performanceGraph.setData(dataSeries);
+    performanceGraph.setMaxHeight((double) 550 / 2 - 50);
+    performanceGraph.setAnimated(true);
+    graphContainer.getChildren().add(performanceGraph);
+    return graphContainer;
   }
 
   @Override
   public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
-      if (event.eventType() != BoardGameEventType.PLAYER_MOVED) {
-        if (event.eventType() == BoardGameEventType.GAME_FINISHED) {
-          eventLog.appendText(event.player().getName() + " won the game!\n");
-        }
-        return;
+      if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
+        String moveText =
+            eventType.player().getName() + " moved from "
+                + eventType.oldTile().getTileId()
+                + " to " + eventType.newTile().getTileId() + "\n";
+        eventLog.appendText(moveText + "\n");
+        roundCounter++;
+        eventLog.appendText("Round number: " + roundCounter + "\n");
+
+        /*
+        TODO: handle the graph
+        int playerIndex = boardGameController.getCurrentPlayerIndex();
+        dataSeries.get(playerIndex).getData().add(new XYChart.Data<Number, Number>;
+         */
+      } else if (eventType.eventType() == BoardGameEventType.GAME_FINISHED) {
+        if (isGameFinished) return;
+        isGameFinished = true;
+
+        List<Player> players = PlayerSelectionScene.getSelectedPlayers();
+
+        SceneManager.showPodiumGameScene();
+
+      } else if (eventType.eventType() == BoardGameEventType.PLAYER_FINISHED) {
+        eventLog.appendText("Player " + eventType.player().getName() + " finished\n");
+
+      } else {
+        eventLog.setText("Unknown event type: " + eventType.eventType() + "\n");
       }
-      Tile oldTile = event.oldTile();
-      Tile newTile = event.newTile();
-
-      if (newTile.getLandAction() != null) {
-        eventLog.appendText(
-            "Tile action: " + newTile.getLandAction().getDescription() + "\n"
-        );
-      }
-      TileView oldTileView = (TileView) scene.lookup("#tile" + oldTile.getTileId());
-      TileView newTileView = (TileView) scene.lookup("#tile" + newTile.getTileId());
-      TokenView tokenView = event.player().getToken();
-
-      int[] startGridPos = LadderView.tileToGridPosition(oldTile, board);
-      int[] endGridPos = LadderView.tileToGridPosition(newTile, board);
-
-      Node startNode = BoardView.getTileNodeAt(boardGridPane, startGridPos[0], startGridPos[1]);
-      Node endNode = BoardView.getTileNodeAt(boardGridPane, endGridPos[0], endGridPos[1]);
-
-      Bounds startBounds = startNode.localToParent(startNode.getBoundsInLocal());
-      Bounds endBounds = endNode.localToParent(endNode.getBoundsInLocal());
-
-      double[] startCenter = getTileCenter(startBounds);
-      double[] endCenter = getTileCenter(endBounds);
-
-      oldTileView.getChildren().remove(tokenView);
-      boardGridPane.getChildren().add(tokenView);
-
-      Path path = new Path(
-          new MoveTo(startCenter[0], startCenter[1]),
-          new LineTo(endCenter[0], endCenter[1])
-      );
-      PathTransition pathTransition = new PathTransition(Duration.seconds(1), path, tokenView);
-      pathTransition.setOrientation(PathTransition.OrientationType.NONE);
-      pathTransition.setCycleCount(1);
-      pathTransition.setOnFinished(e -> {
-        boardGridPane.getChildren().remove(tokenView);
-        newTileView.getChildren().add(tokenView);
-        setTokenPositionOnTile(newTileView);
-        boardGridPane.getChildren().remove(path);
-      });
-      pathTransition.play();
-
-      eventLog.appendText(
-          event.player().getName()
-              + " moved from " + oldTile.getTileId()
-              + " to " + newTile.getTileId() + "\n\n"
-      );
-      roundCounter++;
-      eventLog.appendText("Round number: " + roundCounter + "\n");
     });
   }
+
 }
 

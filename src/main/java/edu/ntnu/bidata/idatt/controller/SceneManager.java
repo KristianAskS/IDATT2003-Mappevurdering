@@ -5,6 +5,7 @@ import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameSelectionScene;
 import edu.ntnu.bidata.idatt.view.scenes.LandingScene;
 import edu.ntnu.bidata.idatt.view.scenes.PlayerSelectionScene;
+import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class SceneManager {
+
   public final static int SCENE_WIDTH = 1200;
   public final static int SCENE_HEIGHT = 800;
   private static final Logger logger = Logger.getLogger(SceneManager.class.getName());
@@ -46,6 +48,12 @@ public class SceneManager {
     Scene boardGameScene = loadBtnCss(new BoardGameScene().getScene());
     primaryStage.setScene(boardGameScene);
     logger.log(Level.INFO, "Switch scene to showBoardGameScene");
+  }
+
+  public static void showPodiumGameScene() {
+    Scene podiumGameScene = loadBtnCss(new PodiumGameScene().getScene());
+    primaryStage.setScene(podiumGameScene);
+    logger.log(Level.INFO, "Switch scene to showPodiumGameScene");
   }
 
   public static BorderPane getRootPane() {
