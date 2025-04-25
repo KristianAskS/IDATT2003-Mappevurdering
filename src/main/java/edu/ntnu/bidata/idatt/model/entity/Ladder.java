@@ -1,7 +1,7 @@
-package edu.ntnu.bidata.idatt.view.components;
+package edu.ntnu.bidata.idatt.model.entity;
 
-import edu.ntnu.bidata.idatt.model.entity.Board;
-import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.view.components.BoardView;
+import edu.ntnu.bidata.idatt.view.components.LadderView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -16,9 +16,8 @@ import javafx.scene.shape.Line;
  * Visual representation of a ladder connecting two {@link Tile} instances on a Snakes and Ladders board.
  */
 public class Ladder {
+  public static final double VISUAL_CORRECTION = -10;
   private static final Logger logger = Logger.getLogger(Ladder.class.getName());
-
-  private static final double VISUAL_CORRECTION = -10;
   private static final double SIDE_OFFSET = 20;
   private static final double RUNG_SPACING = 15;
 
@@ -28,7 +27,15 @@ public class Ladder {
     drawLadder(boardGrid, startTile, endTile, board);
   }
 
+  public static double[] getTileCenter(Bounds bounds) {
+    double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
+    double y = bounds.getMinY() + bounds.getHeight() * 0.5;
+    logger.info(() -> "Center (x,y): (" + x + "," + y + ")");
+    return new double[] {x, y};
+  }
+
   private void drawLadder(GridPane boardGrid, Tile startTile, Tile endTile, Board board) {
+    // Get the position of tile relative to the whole scene
     int[] startPos = LadderView.tileToGridPosition(startTile, board);
     int[] endPos = LadderView.tileToGridPosition(endTile, board);
     logTilePositions(startPos, endPos);
@@ -46,6 +53,7 @@ public class Ladder {
     double[] startCenter = getTileCenter(startBounds);
     double[] endCenter = getTileCenter(endBounds);
 
+    // Calculating the ladder pos
     double dx = endCenter[0] - startCenter[0];
     double dy = endCenter[1] - startCenter[1];
     double length = Math.hypot(dx, dy);
@@ -80,13 +88,6 @@ public class Ladder {
 
   private void logPerpendicular(double[] perp) {
     logger.info(() -> "unitPerpendicularX: " + perp[0] + " unitPerpendicularY: " + perp[1]);
-  }
-
-  private double[] getTileCenter(Bounds bounds) {
-    double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
-    double y = bounds.getMinY() + bounds.getHeight() * 0.5;
-    logger.info(() -> "Center (x,y): (" + x + "," + y + ")");
-    return new double[] {x, y};
   }
 
   private int calculateRungCount(double length) {

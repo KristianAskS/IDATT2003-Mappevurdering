@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
+import static edu.ntnu.bidata.idatt.model.entity.Ladder.VISUAL_CORRECTION;
 import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
@@ -28,10 +29,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -51,8 +54,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
 
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
@@ -61,6 +68,7 @@ public class BoardGameScene implements BoardGameObserver {
   private final PlayerService playerService = new PlayerService();
   private final BoardGameController boardGameController;
   private final DiceView diceView;
+  private final GridPane boardGridPane;
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
 
       FXCollections.observableArrayList();
@@ -91,25 +99,23 @@ public class BoardGameScene implements BoardGameObserver {
     boardGameController =
         new BoardGameController(this, boardService, playerService, board, numbOfDice);
 
-
-    GridPane boardPane = BoardView.createBoardGUI(board);
+    this.boardGridPane = BoardView.createBoardGUI(board);
     Pane ladderOverlay = new Pane();
-    ladderOverlay.prefWidthProperty().bind(boardPane.widthProperty());
-    ladderOverlay.prefHeightProperty().bind(boardPane.heightProperty());
+    ladderOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
+    ladderOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
 
     Platform.runLater(() -> {
-      LadderView.getTileIdsWithLadders().clear();
-      int totalLadders = 5;
-
-      for (int i = 0; i < totalLadders; i++) {
-        int startId = (int) (Math.random() * 88) + 1;
-        int endId = startId + 1 + (int) (Math.random() * (88 - startId) + 1);
-
-        boolean isValid = true;
-        for (Integer id : LadderView.getTileIdsWithLadders()) {
-          if (id == startId || id == endId) {
-            isValid = false;
-            break;
+      LadderView.generateLadder(board, boardGridPane, ladderOverlay);
+      for (Integer tileId : LadderView.getTileIdsWithLadders()) {
+        TileView tileView = (TileView) boardGridPane.lookup("#tile" + tileId);
+        if (tileView != null) {
+          Tile tileWithLadder = board.getTile(tileId);
+          if (tileWithLadder.getLandAction() != null) {
+            tileView.setStyle("-fx-background-color: #A5D6A7;");
+            tileView.addTileActionViewLbl("start", Color.RED);
+          } else {
+            tileView.setStyle("-fx-background-color: #EF9A9A");
+            tileView.addTileActionViewLbl("end", Color.RED);
           }
         }
         if (isValid && (startId / 10 != endId / 10)) {
@@ -125,7 +131,7 @@ public class BoardGameScene implements BoardGameObserver {
       }
     });
 
-    StackPane boardWithOverlay = new StackPane(boardPane, ladderOverlay);
+    StackPane boardWithOverlay = new StackPane(boardGridPane, ladderOverlay);
     rootPane.setCenter(boardWithOverlay);
 
 
@@ -150,6 +156,13 @@ public class BoardGameScene implements BoardGameObserver {
       case 5 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
       default -> new double[][] {{0.5, 0.5}};
     };
+  }
+
+  public static double[] getTileCenter(Bounds bounds) {
+    double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
+    double y = bounds.getMinY() + bounds.getHeight() * 0.5;
+    logger.info(() -> "Center (x,y): (" + x + "," + y + ")");
+    return new double[] {x, y};
   }
 
   private BorderPane createRootPane() {
@@ -319,7 +332,7 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   @Override
-  public void onEvent(BoardGameEvent eventType) {
+  public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
       if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
         String moveText =
@@ -353,3 +366,4 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
 }
+
