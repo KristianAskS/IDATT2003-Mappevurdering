@@ -2,6 +2,8 @@ package edu.ntnu.bidata.idatt.controller.patterns.observer;
 
 public enum BoardGameEventType {
   PLAYER_MOVED,
-  GAME_FINISHED
+  // Might be able to remove game finished enum
+  GAME_FINISHED,
+  PLAYER_FINISHED
 }
 
