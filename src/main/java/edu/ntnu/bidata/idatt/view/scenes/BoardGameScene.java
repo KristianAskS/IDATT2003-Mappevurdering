@@ -7,8 +7,7 @@ import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
-import edu.ntnu.bidata.idatt.view.components.Ladder;
-import edu.ntnu.bidata.idatt.view.components.LadderView;
+import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
@@ -17,10 +16,10 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
-import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.DiceView;
+import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -54,12 +52,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.util.Duration;
 
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
@@ -69,6 +63,7 @@ public class BoardGameScene implements BoardGameObserver {
   private final BoardGameController boardGameController;
   private final DiceView diceView;
   private final GridPane boardGridPane;
+  private final Pane tokenLayerPane = new Pane();
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
 
       FXCollections.observableArrayList();
@@ -97,12 +92,25 @@ public class BoardGameScene implements BoardGameObserver {
     boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
 
     boardGameController =
-        new BoardGameController(this, boardService, playerService, board, numbOfDice);
+        new BoardGameController(this, playerService, board, numbOfDice);
 
     this.boardGridPane = BoardView.createBoardGUI(board);
+    boardGridPane.setId("boardGridPane");
+
+    tokenLayerPane.setPickOnBounds(false);
+    tokenLayerPane.setMouseTransparent(true);
+    tokenLayerPane.prefWidthProperty().bind(boardGridPane.widthProperty());
+    tokenLayerPane.prefHeightProperty().bind(boardGridPane.heightProperty());
+
     Pane ladderOverlay = new Pane();
+    ladderOverlay.setPickOnBounds(false);
+    ladderOverlay.setMouseTransparent(true);
     ladderOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
     ladderOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
+
+    StackPane boardStackPane = new StackPane(boardGridPane, ladderOverlay, tokenLayerPane);
+    tokenLayerPane.toFront();
+    rootPane.setCenter(boardStackPane);
 
     Platform.runLater(() -> {
       LadderView.generateLadder(board, boardGridPane, ladderOverlay);
@@ -118,21 +126,8 @@ public class BoardGameScene implements BoardGameObserver {
             tileView.addTileActionViewLbl("end", Color.RED);
           }
         }
-        if (isValid && (startId / 10 != endId / 10)) {
-          Tile start = board.getTile(startId);
-          Tile end = board.getTile(endId);
-          LadderView.getTileIdsWithLadders().add(startId);
-          LadderView.getTileIdsWithLadders().add(endId);
-          Ladder ladder = new Ladder(start, end, board, boardPane);
-          ladderOverlay.getChildren().addAll(ladder.getLadders());
-        } else {
-          i--;
-        }
       }
     });
-
-    StackPane boardWithOverlay = new StackPane(boardGridPane, ladderOverlay);
-    rootPane.setCenter(boardWithOverlay);
 
 
     // Pakke inn rootPane i en StackPane slik at vi kan skalere rootPane (for senere)
@@ -332,7 +327,7 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   @Override
-  public void onEvent(BoardGameEvent event) {
+  public void onEvent(BoardGameEvent eventType) {
     Platform.runLater(() -> {
       if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
         String moveText =
@@ -349,7 +344,9 @@ public class BoardGameScene implements BoardGameObserver {
         dataSeries.get(playerIndex).getData().add(new XYChart.Data<Number, Number>;
          */
       } else if (eventType.eventType() == BoardGameEventType.GAME_FINISHED) {
-        if (isGameFinished) return;
+        if (isGameFinished) {
+          return;
+        }
         isGameFinished = true;
 
         List<Player> players = PlayerSelectionScene.getSelectedPlayers();
@@ -365,5 +362,8 @@ public class BoardGameScene implements BoardGameObserver {
     });
   }
 
+  public Pane getTokenLayer() {
+    return tokenLayerPane;
+  }
 }
 
