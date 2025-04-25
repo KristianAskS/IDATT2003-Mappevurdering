@@ -340,9 +340,11 @@ public class BoardGameScene implements BoardGameObserver {
 
         List<Player> players = PlayerSelectionScene.getSelectedPlayers();
 
-        PodiumGameScene.setFinalRanking(players);
-
         SceneManager.showPodiumGameScene();
+
+      } else if (eventType.eventType() == BoardGameEventType.PLAYER_FINISHED) {
+        eventLog.appendText("Player " + eventType.player().getName() + " finished\n");
+
       } else {
         eventLog.setText("Unknown event type: " + eventType.eventType() + "\n");
       }

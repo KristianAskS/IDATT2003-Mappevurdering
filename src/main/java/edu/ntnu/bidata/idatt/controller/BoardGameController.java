@@ -122,11 +122,16 @@ public class BoardGameController {
         BoardGameEventType.PLAYER_MOVED, current,
         new Tile(fromId), new Tile(toId)));
 
+    // If they reach the finish, they are finished
     if (toId >= board.getTiles().size()) {
       logger.log(Level.INFO, "{0} reached the finish!", current.getName());
 
       finishedPlayers.add(current);
       turnOrder.remove(currentPlayerIndex);
+
+      boardGameScene.onEvent(new BoardGameEvent(
+          BoardGameEventType.PLAYER_FINISHED, current,
+          new Tile(fromId), new Tile(toId)));
 
       if (currentPlayerIndex >= turnOrder.size()) {
         currentPlayerIndex = 0;
