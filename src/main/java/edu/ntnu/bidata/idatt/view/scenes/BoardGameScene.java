@@ -158,6 +158,8 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   private void initializePlayers() {
+    players.forEach(player -> player.setCurrentTileId(1));
+
     playerService.setPlayers(players);
 
     TileView startTile = (TileView) scene.lookup("#tile1");
