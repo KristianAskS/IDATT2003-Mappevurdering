@@ -272,7 +272,7 @@ public class PlayerSelectionScene {
   }
 
   private VBox createAvailablePlayersPanel() throws IOException {
-    VBox availablePanel = createPanel("Players");
+    VBox availablePanel = createPanel("Existing players");
 
     ObservableList<Player> availablePlayers = FXCollections.observableArrayList(
         playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
