@@ -1,6 +1,6 @@
 package edu.ntnu.bidata.idatt;
 
-import edu.ntnu.bidata.idatt.view.SceneManager;
+import edu.ntnu.bidata.idatt.controller.SceneManager;
 import java.io.IOException;
 import javafx.stage.Stage;
 

@@ -18,9 +18,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * BoardGameController er ansvarlig for view-relaterte operasjoner,
- * Den kommuniserer med både viewet (BoardGameScene) og modell-tjenestene (BoardService, PlayerService)
- * uten å inneholde forretningslogikk.
+ * BoardGameController is responsible for handling view-related operations during the board game.
+ * It communicates with both the view (BoardGameScene) and the model services (BoardService, PlayerService)
+ * without containing any business logic.
  *
  * @author Trile, Kristian Selmer
  * @version 1.0
@@ -63,7 +63,7 @@ public class BoardGameController {
   }
 
   /**
-   * Initialiserer controlleren
+   * Initializes the turn order if it has not already been initialized by fetching players from the player service.
    */
   private void ensureTurnOrderInitialised() {
     if (turnOrder.isEmpty()) {
@@ -79,11 +79,10 @@ public class BoardGameController {
   }
 
   /**
-   * Flytter en spillers token med et gitt antall steg.
-   * Controlleren oppdaterer spillerens posisjon i modellen og deretter viewet.
+   * Moves a player's token a given number of steps and updates the corresponding view.
    *
-   * @param player Spilleren som skal flyttes
-   * @param steps Antall steg spilleren skal flytte
+   * @param player The player to move
+   * @param steps The number of steps to move
    */
   public void movePlayer(Player player, int steps) {
     int fromId = player.getCurrentTileId();
@@ -103,6 +102,12 @@ public class BoardGameController {
     }
   }
 
+  /**
+   * Handles a player's turn by moving the player, checking if the player has finished,
+   * updating the finished players list, and firing events to the view.
+   *
+   * @param steps The number of steps rolled by the dice
+   */
   public void handlePlayerTurn(int steps) {
 
     ensureTurnOrderInitialised();
@@ -149,6 +154,11 @@ public class BoardGameController {
     }
   }
 
+  /**
+   * Returns the index of the player whose turn it currently is.
+   *
+   * @return The current player's index
+   */
   public int getCurrentPlayerIndex() {
     return currentPlayerIndex;
   }

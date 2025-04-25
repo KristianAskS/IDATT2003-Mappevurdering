@@ -1,37 +1,20 @@
 package edu.ntnu.bidata.idatt.view.components;
 
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
-
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
-import edu.ntnu.bidata.idatt.model.service.BoardService;
-import java.util.ArrayList;
-import java.util.List;
+import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 public class LadderView {
   private static final Logger logger = Logger.getLogger(LadderView.class.getName());
-  static ArrayList<Integer> tileIdsWithLadders = new ArrayList<>();
+  private static final Set<Integer> tileIdsWithLadders = new HashSet<>();
 
-  public LadderView(){
-
-  }
-  public static ArrayList<Integer> getTileIdsWithLadders() {
+  public static Set<Integer> getTileIdsWithLadders() {
     return tileIdsWithLadders;
   }
 
@@ -51,55 +34,36 @@ public class LadderView {
     return new int[] {row, col};
   }
 
-  public static void generateLadder(){
-    BoardService boardService = new BoardService();
-    List<Board> boards = boardService.getBoards();
-    Board board = BoardGameFactory.createClassicBoard();
-    boards.add(board);
-    boardService.setBoard(board);
+  public static void generateLadder(Board board, GridPane boardGridPane, Pane ladderOverlayPane) {
+    tileIdsWithLadders.clear();
+    int totalLadders = 5; // TODO: make static or argument
 
-    BorderPane borderPane = new BorderPane();
-    GridPane boardGrid = BoardView.createBoardGUI(board);
-    borderPane.setCenter(boardGrid);
+    for (int i = 0; i < totalLadders; i++) {
+      int startId = (int) (Math.random() * 88) + 1;
+      int endId = startId + 1 + (int) (Math.random() * (88 - startId));
 
-    Pane overlayPane = new Pane();
-    overlayPane.prefWidthProperty().bind(boardGrid.widthProperty());
-    overlayPane.prefHeightProperty().bind(boardGrid.heightProperty());
+      if (isValidLadder(startId, endId)) {
+        BoardGameFactory.createLadder(board, startId, endId);
 
-    Platform.runLater(() -> {
-      int totalLadders = 5; // Starts from 0
+        Tile start = board.getTile(startId);
+        Tile end = board.getTile(endId);
+        tileIdsWithLadders.add(startId);
+        tileIdsWithLadders.add(endId);
+        Ladder ladder = new Ladder(start, end, board, boardGridPane);
+        ladderOverlayPane.getChildren().addAll(ladder.getLadders());
 
-      for (int ladders = 0; ladders <= totalLadders - 1; ladders++) {
-        int startId = (int) (Math.random() * 88) + 1;
-        int endId = startId + 1 + (int) (Math.random() * (88 - startId) + 1);
-
-        boolean check = true;
-
-        int firstDigitStart = Integer.parseInt(Integer.toString(startId).substring(0, 1));
-        int firstDigitEnd = Integer.parseInt(Integer.toString(endId).substring(0, 1));
-
-        for (Integer tileIdsWithLadder : tileIdsWithLadders) {
-
-          if (startId == tileIdsWithLadder || endId == tileIdsWithLadder ||
-              firstDigitStart == firstDigitEnd) {
-            check = false;
-            ladders--;
-            break;
-          }
-        }
-        if (check) {
-          Tile start = board.getTile(startId);
-          Tile end = board.getTile(endId);
-          tileIdsWithLadders.add(startId);
-          tileIdsWithLadders.add(endId);
-          Ladder ladder = new Ladder(start, end, board, boardGrid);
-          overlayPane.getChildren().addAll(ladder.getLadders());
-        }
+        start.setNextTile(end);
+        start.setLandAction(
+            new LadderAction(end.getNextTileId(), "Ladder from " + startId + " to " + endId));
+      } else {
+        i--;
       }
-    });
-    StackPane boardWithOverlays = new StackPane(boardGrid, overlayPane);
-    borderPane.setCenter(boardWithOverlays);
+    }
+  }
 
-    StackPane container = new StackPane(borderPane);
+  private static boolean isValidLadder(int startId, int endId) {
+    return !tileIdsWithLadders.contains(startId) &&
+        !tileIdsWithLadders.contains(endId) &&
+        (startId / 10 != endId / 10);
   }
 }

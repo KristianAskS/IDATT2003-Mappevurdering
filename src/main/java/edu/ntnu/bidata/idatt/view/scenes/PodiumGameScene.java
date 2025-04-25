@@ -1,10 +1,10 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
+import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
+import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.view.SceneManager;
+import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.util.List;
 import javafx.geometry.Insets;

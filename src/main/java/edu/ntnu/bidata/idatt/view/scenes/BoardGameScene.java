@@ -1,8 +1,8 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
+import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
+import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
@@ -16,7 +16,7 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
-import edu.ntnu.bidata.idatt.view.SceneManager;
+import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.DiceView;
@@ -62,6 +62,7 @@ public class BoardGameScene implements BoardGameObserver {
   private final BoardGameController boardGameController;
   private final DiceView diceView;
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
+
       FXCollections.observableArrayList();
   List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private int roundCounter = 0;

@@ -1,4 +1,4 @@
-package edu.ntnu.bidata.idatt.view;
+package edu.ntnu.bidata.idatt.controller;
 
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
