@@ -220,16 +220,8 @@ public class PlayerSelectionScene {
       {
         deleteBtn.setOnAction(e -> {
           Player player = getTableView().getItems().get(getIndex());
-          Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-          confirm.setTitle("Remove player");
-          confirm.setHeaderText("Remove " + player.getName() + "?");
-          confirm.setContentText("Do you want to remove this player?");
-          confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-              selectedPlayers.remove(player);
-              updatePlayersCountLabel();
-            }
-          });
+          selectedPlayers.remove(player);
+          updatePlayersCountLabel();
         });
       }
 
@@ -292,19 +284,11 @@ public class PlayerSelectionScene {
           showAlert(Alert.AlertType.WARNING, "Maximum of players",
               "Exceeded maximum players: " + getTotalPlayerCount());
         } else {
-          Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-          confirm.setTitle("Add player");
-          confirm.setHeaderText("Add " + selected.getName() + "?");
-          confirm.setContentText("Do you want to add this player to the game?");
-          confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-              selectedPlayers.add(new Player(
-                  selected.getName(),
-                  new TokenView(Token.token(selected.getToken().getTokenColor(),
-                      selected.getToken().getTokenShape()))));
-              updatePlayersCountLabel();
-            }
-          });
+          selectedPlayers.add(new Player(
+              selected.getName(),
+              new TokenView(Token.token(selected.getToken().getTokenColor(),
+                  selected.getToken().getTokenShape()))));
+          updatePlayersCountLabel();
         }
       }
     });
