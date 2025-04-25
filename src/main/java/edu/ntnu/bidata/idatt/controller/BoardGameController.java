@@ -11,6 +11,8 @@ import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
+import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +22,7 @@ import java.util.logging.Logger;
  * Den kommuniserer med både viewet (BoardGameScene) og modell-tjenestene (BoardService, PlayerService)
  * uten å inneholde forretningslogikk.
  *
- * @author Trile
+ * @author Trile, Kristian Selmer
  * @version 1.0
  * @since 1.0
  */
@@ -28,42 +30,52 @@ public class BoardGameController {
   private static final Logger logger = Logger.getLogger(BoardGameController.class.getName());
   private static Dice dice = null;
   private static Die die = null;
-  private final BoardService boardService;
+  // private final BoardService boardService;
   private final PlayerService playerService;
   private final Board board;
   private final BoardGameScene boardGameScene;
+  private final List<Player> turnOrder = new ArrayList<>();
+  private final List<Player> finishedPlayers = new ArrayList<>();
   private int currentPlayerIndex = 0;
 
   //Konstruktør. Controlleren får referanser til viewet og de nødvendige modell-tjenestene.
-  public BoardGameController(BoardGameScene boardGameScene, BoardService boardService,
-                             PlayerService playerService, Board board, int numbOfDices) {
+  public BoardGameController(BoardGameScene boardGameScene,
+      BoardService boardService,
+      PlayerService playerService,
+      Board board,
+      int numberOfDice) {
+
     this.boardGameScene = boardGameScene;
-    this.boardService = boardService;
+    //this.boardService = boardService;
     this.playerService = playerService;
     this.board = board;
-    dice = new Dice(numbOfDices);
-    die = new Die();
 
-    initController();
+    dice = new Dice(numberOfDice);
+    die = new Die();
   }
 
-  /**
-   * @return the roll value of a single dice
-   */
   public static int getLastRolledValue() {
     return die.getLastRolledValue();
   }
 
-  public static void setRolledValue(int rollResult) {
-    dice.setRollResult(rollResult);
+  public static void setRolledValue(int rollValue) {
+    dice.setRollResult(rollValue);
   }
 
   /**
-   * Initialiserer controlleren, ex: ved å koble eventhandlers til view-komponenter.
+   * Initialiserer controlleren
    */
-  private void initController() {
-    //ex: på roll dice knapp, kan du knytte en event-handler:
-    //view.getRollButton().setOnAction(e -> handleRollDice());
+  private void ensureTurnOrderInitialised() {
+    if (turnOrder.isEmpty()) {
+      List<Player> players = playerService.getPlayers();
+      if (players.isEmpty()) {
+        logger.log(Level.WARNING,
+            "PlayerService is still empty – cannot start the game yet");
+        return;
+      }
+      turnOrder.addAll(players);
+      logger.log(Level.INFO, "Turn order initialised with {0} players", turnOrder.size());
+    }
   }
 
   /**
@@ -71,47 +83,65 @@ public class BoardGameController {
    * Controlleren oppdaterer spillerens posisjon i modellen og deretter viewet.
    *
    * @param player Spilleren som skal flyttes
+   * @param steps Antall steg spilleren skal flytte
    */
   public void movePlayer(Player player, int steps) {
-    int nextTileId = player.getCurrentTileId() + steps;
-    TileView oldTileView =
-        (TileView) boardGameScene.getScene().lookup("#tile" + player.getCurrentTileId());
-    if (oldTileView != null) {
-      oldTileView.getChildren().remove(player.getToken());
-    }
-    if (nextTileId > board.getTiles().size()) {
-      nextTileId = board.getTiles().size();
+    int fromId = player.getCurrentTileId();
+    int toId = Math.min(fromId + steps, board.getTiles().size());
+
+    TileView oldView = (TileView) boardGameScene.getScene().lookup("#tile" + fromId);
+    if (oldView != null) {
+      oldView.getChildren().remove(player.getToken());
     }
 
-    player.setCurrentTileId(nextTileId);
+    player.setCurrentTileId(toId);
 
-    TileView nextTileView = (TileView) boardGameScene.getScene().lookup("#tile" + nextTileId);
-    if (nextTileView != null) {
-      nextTileView.getChildren().add(player.getToken());
-      boardGameScene.setTokenPositionOnTile(nextTileView);
+    TileView newView = (TileView) boardGameScene.getScene().lookup("#tile" + toId);
+    if (newView != null) {
+      newView.getChildren().add(player.getToken());
+      boardGameScene.setTokenPositionOnTile(newView);
     }
   }
 
   public void handlePlayerTurn(int steps) {
-    List<Player> players = playerService.getPlayers();
-    if (players.isEmpty()) {
-      logger.log(Level.INFO, "players is empty");
+
+    ensureTurnOrderInitialised();
+    if (turnOrder.isEmpty()) {
+      logger.log(Level.INFO,
+          "players is empty");
       return;
     }
-    Player currentPlayer = players.get(currentPlayerIndex);
-    movePlayer(currentPlayer, steps);
 
-    if (currentPlayer.getCurrentTileId() >= board.getTiles().size()) {
-      boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.GAME_FINISHED, currentPlayer,
-          new Tile(currentPlayer.getCurrentTileId()),
-          new Tile(currentPlayer.getCurrentTileId() + steps)));
+    Player current = turnOrder.get(currentPlayerIndex);
+    int fromId = current.getCurrentTileId();
+
+    movePlayer(current, steps);
+    int toId = current.getCurrentTileId();
+
+    boardGameScene.onEvent(new BoardGameEvent(
+        BoardGameEventType.PLAYER_MOVED, current,
+        new Tile(fromId), new Tile(toId)));
+
+    if (toId >= board.getTiles().size()) {
+      logger.log(Level.INFO, "{0} reached the finish!", current.getName());
+
+      finishedPlayers.add(current);
+      turnOrder.remove(currentPlayerIndex);
+
+      if (currentPlayerIndex >= turnOrder.size()) {
+        currentPlayerIndex = 0;
+      }
+
+      if (turnOrder.isEmpty()) {
+        PodiumGameScene.setFinalRanking(finishedPlayers);
+        boardGameScene.onEvent(new BoardGameEvent(
+            BoardGameEventType.GAME_FINISHED, current,
+            new Tile(toId), new Tile(toId)));
+      }
+
+    } else {
+      currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
     }
-
-    boardGameScene.onEvent(
-        new BoardGameEvent(BoardGameEventType.PLAYER_MOVED, currentPlayer,
-            new Tile(currentPlayer.getCurrentTileId()),
-            new Tile(currentPlayer.getCurrentTileId() + steps)));
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
   }
 
   public int getCurrentPlayerIndex() {

@@ -341,7 +341,6 @@ public class BoardGameScene implements BoardGameObserver {
         PodiumGameScene.setFinalRanking(players);
 
         SceneManager.showPodiumGameScene();
-
       } else {
         eventLog.setText("Unknown event type: " + eventType.eventType() + "\n");
       }
