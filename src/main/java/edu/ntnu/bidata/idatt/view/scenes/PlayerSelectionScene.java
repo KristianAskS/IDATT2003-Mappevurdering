@@ -7,6 +7,7 @@ import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Token;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
+import edu.ntnu.bidata.idatt.view.components.AvailablePlayerCard;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.SelectedPlayerCard;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
@@ -211,9 +212,28 @@ public class PlayerSelectionScene {
         playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
     );
 
-    ListView<Player> playerListView = createAvailablePlayersList(availablePlayers);
-    VBox.setVgrow(playerListView, Priority.ALWAYS);
-    availablePanel.getChildren().add(playerListView);
+    VBox playersBox = new VBox(5);
+    playersBox.setStyle("-fx-background-color: transparent;");
+    playersBox.setFillWidth(true);
+
+    availablePlayers.forEach(p -> playersBox.getChildren().add(
+        new AvailablePlayerCard(p, chosen -> {
+          if (isAtMaxPlayers()) {
+            showAlert(Alert.AlertType.WARNING, "Maximum of players",
+                "Exceeded maximum players: " + getTotalPlayerCount());
+            return;
+          }
+          selectedPlayers.add(new Player(
+              chosen.getName(),
+              new TokenView(Token.token(chosen.getToken().getTokenColor(),
+                  chosen.getToken().getTokenShape())))
+          );
+          updatePlayersCountLabel();
+        })
+    ));
+
+    VBox.setVgrow(playersBox, Priority.ALWAYS);
+    availablePanel.getChildren().add(playersBox);
     return availablePanel;
   }
 
