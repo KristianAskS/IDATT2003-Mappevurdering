@@ -3,11 +3,10 @@ package edu.ntnu.bidata.idatt.controller;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.model.entity.Board;
-import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Die;
+import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
-import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
@@ -16,42 +15,44 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.Interpolator;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 
 /**
- * BoardGameController is responsible for handling view-related operations during the board game.
- * It communicates with both the view (BoardGameScene) and the model services (BoardService, PlayerService)
- * without containing any business logic.
- *
- * @author Trile, Kristian Selmer
- * @version 1.0
- * @since 1.0
+ * Controller for handling view-related operations during the board game.
+ * Uses hop-by-hop transitions for token movement, keeping token centered.
  */
 public class BoardGameController {
-  private static final Logger logger = Logger.getLogger(BoardGameController.class.getName());
-  private static Dice dice = null;
-  private static Die die = null;
-  // private final BoardService boardService;
+  private static final Logger LOGGER = Logger.getLogger(BoardGameController.class.getName());
+  private static Dice dice;
+  private static Die die;
+
   private final PlayerService playerService;
-  private final Board board;
+  private final Board gameBoard;
   private final BoardGameScene boardGameScene;
+
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
-  private int currentPlayerIndex = 0;
+  private int currentPlayerIndex;
 
-  //Konstruktør. Controlleren får referanser til viewet og de nødvendige modell-tjenestene.
-  public BoardGameController(BoardGameScene boardGameScene,
-      BoardService boardService,
+  public BoardGameController(
+      BoardGameScene boardGameScene,
       PlayerService playerService,
-      Board board,
+      Board gameBoard,
       int numberOfDice) {
-
     this.boardGameScene = boardGameScene;
-    //this.boardService = boardService;
     this.playerService = playerService;
-    this.board = board;
-
+    this.gameBoard = gameBoard;
     dice = new Dice(numberOfDice);
     die = new Die();
+    this.currentPlayerIndex = 0;
   }
 
   public static int getLastRolledValue() {
@@ -62,109 +63,140 @@ public class BoardGameController {
     dice.setRollResult(rollValue);
   }
 
-  /**
-   * Initializes the turn order if it has not already been initialized by fetching players from the player service.
-   */
-  private void ensureTurnOrderInitialised() {
-    if (turnOrder.isEmpty()) {
-      List<Player> players = playerService.getPlayers();
-      if (players.isEmpty()) {
-        logger.log(Level.WARNING,
-            "PlayerService is still empty – cannot start the game yet");
-        return;
-      }
-      turnOrder.addAll(players);
-      logger.log(Level.INFO, "Turn order initialised with {0} players", turnOrder.size());
-    }
-  }
-
-  /**
-   * Moves a player's token a given number of steps and updates the corresponding view.
-   *
-   * @param player The player to move
-   * @param steps The number of steps to move
-   */
-  public void movePlayer(Player player, int steps) {
-    int fromId = player.getCurrentTileId();
-    int toId = Math.min(fromId + steps, board.getTiles().size());
-
-    TileView oldView = (TileView) boardGameScene.getScene().lookup("#tile" + fromId);
-    if (oldView != null) {
-      oldView.getChildren().remove(player.getToken());
-    }
-
-    player.setCurrentTileId(toId);
-
-    TileView newView = (TileView) boardGameScene.getScene().lookup("#tile" + toId);
-    if (newView != null) {
-      newView.getChildren().add(player.getToken());
-      boardGameScene.setTokenPositionOnTile(newView);
-    }
-  }
-
-  /**
-   * Handles a player's turn by moving the player, checking if the player has finished,
-   * updating the finished players list, and firing events to the view.
-   *
-   * @param steps The number of steps rolled by the dice
-   */
-  public void handlePlayerTurn(int steps) {
-
-    ensureTurnOrderInitialised();
-    if (turnOrder.isEmpty()) {
-      logger.log(Level.INFO,
-          "players is empty");
+  private void ensureTurnOrderInitialized() {
+    if (!turnOrder.isEmpty()) return;
+    List<Player> players = playerService.getPlayers();
+    if (players.isEmpty()) {
+      LOGGER.log(Level.WARNING, "No players available to start the game");
       return;
     }
+    turnOrder.addAll(players);
+    LOGGER.log(Level.INFO, "Turn order initialized with {0} players", turnOrder.size());
+  }
 
-    Player current = turnOrder.get(currentPlayerIndex);
-    int fromId = current.getCurrentTileId();
+  public void handlePlayerTurn(int steps) {
+    ensureTurnOrderInitialized();
+    if (turnOrder.isEmpty()) return;
 
-    movePlayer(current, steps);
-    int toId = current.getCurrentTileId();
+    Player currentPlayer = turnOrder.get(currentPlayerIndex);
+    int fromTileId = currentPlayer.getCurrentTileId();
 
+    movePlayerWithHops(currentPlayer, steps);
+
+    int toTileId = currentPlayer.getCurrentTileId();
     boardGameScene.onEvent(new BoardGameEvent(
-        BoardGameEventType.PLAYER_MOVED, current,
-        new Tile(fromId), new Tile(toId)));
+        BoardGameEventType.PLAYER_MOVED,
+        currentPlayer,
+        new Tile(fromTileId),
+        new Tile(toTileId)));
 
-    // If they reach the finish, they are finished
-    if (toId >= board.getTiles().size()) {
-      logger.log(Level.INFO, "{0} reached the finish!", current.getName());
-
-      finishedPlayers.add(current);
-      turnOrder.remove(currentPlayerIndex);
-
-      boardGameScene.onEvent(new BoardGameEvent(
-          BoardGameEventType.PLAYER_FINISHED, current,
-          new Tile(fromId), new Tile(toId)));
-
-      if (currentPlayerIndex >= turnOrder.size()) {
-        currentPlayerIndex = 0;
-      }
-
-      if (turnOrder.isEmpty()) {
-        PodiumGameScene.setFinalRanking(finishedPlayers);
-        boardGameScene.onEvent(new BoardGameEvent(
-            BoardGameEventType.GAME_FINISHED, current,
-            new Tile(toId), new Tile(toId)));
-      }
-
+    if (toTileId >= gameBoard.getTiles().size()) {
+      finishPlayer(currentPlayer, fromTileId, toTileId);
     } else {
       currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
     }
   }
 
-  /**
-   * Returns the index of the player whose turn it currently is.
-   *
-   * @return The current player's index
-   */
+  private void finishPlayer(Player player, int fromTileId, int toTileId) {
+    LOGGER.log(Level.INFO, "{0} reached the finish!", player.getName());
+    finishedPlayers.add(player);
+    turnOrder.remove(currentPlayerIndex);
+    boardGameScene.onEvent(new BoardGameEvent(
+        BoardGameEventType.PLAYER_FINISHED,
+        player,
+        new Tile(fromTileId),
+        new Tile(toTileId)));
+
+    if (turnOrder.isEmpty()) {
+      PodiumGameScene.setFinalRanking(finishedPlayers);
+      boardGameScene.onEvent(new BoardGameEvent(
+          BoardGameEventType.GAME_FINISHED,
+          player,
+          new Tile(toTileId),
+          new Tile(toTileId)));
+    } else if (currentPlayerIndex >= turnOrder.size()) {
+      currentPlayerIndex = 0;
+    }
+  }
+
+  private void movePlayerWithHops(Player player, int steps) {
+    int fromTileId = player.getCurrentTileId();
+    int toTileId = Math.min(fromTileId + steps, gameBoard.getTiles().size());
+
+    TileView startTileView = lookupTileView(fromTileId);
+    TileView endTileView = lookupTileView(toTileId);
+    Node tokenNode = player.getToken();
+    Pane tokenOverlay = boardGameScene.getTokenLayer();
+
+    if (startTileView == null || tokenNode == null) {
+      player.setCurrentTileId(toTileId);
+      return;
+    }
+
+    startTileView.getChildren().remove(tokenNode);
+    tokenOverlay.getChildren().add(tokenNode);
+    tokenNode.toFront();
+
+
+    tokenNode.applyCss();
+    if (tokenNode instanceof Parent) ((Parent) tokenNode).layout();
+    Bounds tokenBounds = tokenNode.getBoundsInLocal();
+    double halfWidth = tokenBounds.getWidth() * 0.5;
+    double halfHeight = tokenBounds.getHeight() * 0.5;
+
+    Bounds startBounds = startTileView.localToScene(startTileView.getBoundsInLocal());
+    double startCenterX = startBounds.getMinX() + startBounds.getWidth() * 0.5;
+    double startCenterY = startBounds.getMinY() + startBounds.getHeight() * 0.5;
+    Point2D startOverlayPoint = tokenOverlay.sceneToLocal(startCenterX, startCenterY);
+
+    tokenNode.setTranslateX(startOverlayPoint.getX() - halfWidth);
+    tokenNode.setTranslateY(startOverlayPoint.getY() - halfHeight);
+
+    SequentialTransition hopSequence = new SequentialTransition();
+    Point2D previousOrigin = new Point2D(
+        startOverlayPoint.getX() - halfWidth,
+        startOverlayPoint.getY() - halfHeight);
+
+    for (int tileId = fromTileId + 1; tileId <= toTileId; tileId++) {
+      TileView tileView = lookupTileView(tileId);
+      if (tileView == null) continue;
+
+      Bounds tileBounds = tileView.localToScene(tileView.getBoundsInLocal());
+      double centerX = tileBounds.getMinX() + tileBounds.getWidth() * 0.5;
+      double centerY = tileBounds.getMinY() + tileBounds.getHeight() * 0.5;
+      Point2D overlayPoint = tokenOverlay.sceneToLocal(centerX, centerY);
+      Point2D nextOrigin = new Point2D(
+          overlayPoint.getX() - halfWidth,
+          overlayPoint.getY() - halfHeight);
+
+      TranslateTransition hop = new TranslateTransition(Duration.millis(200), tokenNode);
+      hop.setByX(nextOrigin.getX() - previousOrigin.getX());
+      hop.setByY(nextOrigin.getY() - previousOrigin.getY());
+      hop.setInterpolator(Interpolator.LINEAR);
+      hopSequence.getChildren().add(hop);
+
+      previousOrigin = nextOrigin;
+    }
+
+    hopSequence.setOnFinished(event -> {
+      tokenOverlay.getChildren().remove(tokenNode);
+      if (endTileView != null) {
+        endTileView.getChildren().add(tokenNode);
+        boardGameScene.setTokenPositionOnTile(endTileView);
+      }
+      tokenNode.setTranslateX(0);
+      tokenNode.setTranslateY(0);
+    });
+
+    hopSequence.play();
+    player.setCurrentTileId(toTileId);
+  }
+
+  private TileView lookupTileView(int tileId) {
+    return (TileView) boardGameScene.getScene().lookup("#tile" + tileId);
+  }
+
   public int getCurrentPlayerIndex() {
     return currentPlayerIndex;
   }
-
-  /* TODO:
-  Andre metoder for view-relaterte operasjoner kan legges til her:
-  ex: metoder for å håndtere btn klikk eller andre events, vise dialoger etc.
-   */
 }

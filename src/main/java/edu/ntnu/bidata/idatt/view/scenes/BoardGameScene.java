@@ -92,7 +92,7 @@ public class BoardGameScene implements BoardGameObserver {
     boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
 
     boardGameController =
-        new BoardGameController(this, boardService, playerService, board, numbOfDice);
+        new BoardGameController(this, playerService, board, numbOfDice);
 
     this.boardGridPane = BoardView.createBoardGUI(board);
     boardGridPane.setId("boardGridPane");
