@@ -141,8 +141,8 @@ public class BoardGameController {
     tokenNode.applyCss();
     if (tokenNode instanceof Parent) ((Parent) tokenNode).layout();
     Bounds tokenBounds = tokenNode.getBoundsInLocal();
-    double halfWidth = tokenBounds.getWidth() * 0.5;
-    double halfHeight = tokenBounds.getHeight() * 0.5;
+    double halfWidth = tokenBounds.getWidth() * 0.35;
+    double halfHeight = tokenBounds.getHeight() * 0.35;
 
     Bounds startBounds = startTileView.localToScene(startTileView.getBoundsInLocal());
     double startCenterX = startBounds.getMinX() + startBounds.getWidth() * 0.5;
