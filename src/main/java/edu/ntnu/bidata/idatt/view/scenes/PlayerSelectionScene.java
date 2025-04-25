@@ -8,6 +8,7 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Token;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import edu.ntnu.bidata.idatt.view.components.SelectedPlayerCard;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,21 +22,19 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -48,6 +47,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class PlayerSelectionScene {
+
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
   private static final TableView<Player> playerTable = new TableView<>();
   private static final ObservableList<Player> selectedPlayers = FXCollections.observableArrayList();
@@ -170,88 +170,29 @@ public class PlayerSelectionScene {
     return inputPanel;
   }
 
+
   private VBox createPlayerTablePanel() {
     VBox tablePanel = createPanel("Players added to the game");
     tablePanel.setPrefWidth(PANEL_WIDTH + 50);
-    TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
-    TableColumn<Player, String> tokenColumn = new TableColumn<>("Token");
-    TableColumn<Player, Void> deleteColumn = new TableColumn<>("Delete");
 
-    nameColumn.setCellFactory(col -> new TableCell<>() {
-      @Override
-      protected void updateItem(String item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty || getTableRow().getItem() == null) {
-          setText(null);
-          setGraphic(null);
-          return;
-        }
-        Player player = getTableRow().getItem();
-        setText(player.getName());
-        setAlignment(Pos.CENTER_LEFT);
-      }
-    });
+    VBox playersBox = new VBox(5);
+    playersBox.setStyle("-fx-background-color: transparent;");
+    playersBox.setFillWidth(true);
 
-    tokenColumn.setCellFactory(col -> new TableCell<>() {
-      @Override
-      protected void updateItem(String item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty || getTableRow().getItem() == null) {
-          setGraphic(null);
-          setText(null);
-          return;
-        }
-        Player player = getTableRow().getItem();
-        TokenView token = player.getToken();
-        if (token == null) {
-          return;
-        }
-        Rectangle colorBox = new Rectangle(15, 15, token.getTokenColor());
-        colorBox.setStroke(Color.BLACK);
-        Label shapeLabel = new Label(capitalize(token.getTokenShape()));
-        HBox layout = new HBox(10, colorBox, shapeLabel);
-        layout.setAlignment(Pos.CENTER_LEFT);
-        setGraphic(layout);
-      }
-    });
-    deleteColumn.setCellFactory(col -> new TableCell<>() {
-      private final Button deleteBtn = new Button("❌");
+    Runnable refreshCards = () -> {
+      playersBox.getChildren().setAll(
+          selectedPlayers.stream()
+              .map(p -> new SelectedPlayerCard(p, pl -> {
+                selectedPlayers.remove(pl);
+                updatePlayersCountLabel();
+              }))
+              .toList()
+      );
+    };
+    refreshCards.run();
+    selectedPlayers.addListener((ListChangeListener<Player>) c -> refreshCards.run());
 
-      {
-        deleteBtn.setOnAction(e -> {
-          Player player = getTableView().getItems().get(getIndex());
-          selectedPlayers.remove(player);
-          updatePlayersCountLabel();
-        });
-      }
-
-      @Override
-      protected void updateItem(Void item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty) {
-          setGraphic(null);
-        } else {
-          setAlignment(Pos.CENTER);
-          setGraphic(deleteBtn);
-        }
-      }
-    });
-
-
-    playerTable.setItems(selectedPlayers);
-    playerTable.getColumns().setAll(List.of(nameColumn, tokenColumn, deleteColumn));
-    playerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-    Label placeholderLabel = new Label("No players added");
-    placeholderLabel.getStyleClass().add("label-sublabel");
-    playerTable.setPlaceholder(placeholderLabel);
-
-    playerTable.setFixedCellSize(40);
-    double numberOfRows = 5;
-    double rowHeight = playerTable.getFixedCellSize();
-    double headerHeight = 28;
-    double tableInsets = playerTable.getInsets().getTop() + playerTable.getInsets().getBottom();
-    playerTable.setPrefHeight(numberOfRows * rowHeight + headerHeight + tableInsets + 20);
-    playerTable.setMaxHeight(playerTable.getPrefHeight());
+    playersBox.setPrefHeight(5 * 40);
 
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
@@ -259,7 +200,7 @@ public class PlayerSelectionScene {
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
     editCountBtn.setOnAction(e -> showTotalPlayerSelectionDialog());
 
-    tablePanel.getChildren().addAll(playerTable, spacer, playersCountLabel, editCountBtn);
+    tablePanel.getChildren().addAll(playersBox, spacer, playersCountLabel, editCountBtn);
     return tablePanel;
   }
 
@@ -458,7 +399,7 @@ public class PlayerSelectionScene {
   }
 
   private void addScaleAnimation(javafx.scene.Node node, double targetScale,
-                                 Duration duration) {
+      Duration duration) {
     node.setOnMouseEntered(e -> {
       Timeline anim = new Timeline(
           new KeyFrame(duration,
