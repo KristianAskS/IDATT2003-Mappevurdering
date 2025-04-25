@@ -64,8 +64,15 @@ public class LadderView {
   }
 
   private static boolean isValidLadder(int startId, int endId) {
-    return !tileIdsWithLadders.contains(startId) &&
-        !tileIdsWithLadders.contains(endId) &&
-        (startId / 10 != endId / 10);
+    if (startId == endId) {
+      return false;
+    }
+    if (tileIdsWithLadders.contains(startId)
+        || tileIdsWithLadders.contains(endId)) {
+      return false;
+    }
+    int rowStart = (startId - 1) / 10;
+    int rowEnd   = (endId   - 1) / 10;
+    return rowStart != rowEnd;
   }
 }
