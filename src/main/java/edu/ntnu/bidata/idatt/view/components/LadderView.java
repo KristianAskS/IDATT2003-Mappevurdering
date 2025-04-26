@@ -38,7 +38,7 @@ public class LadderView {
 
   public static void generateLadder(Board board, GridPane boardGridPane, Pane ladderOverlayPane) {
     tileIdsWithLadders.clear();
-    int totalLadders = 20; // TODO: make static or argument
+    int totalLadders = 5; // TODO: make static or argument
 
     for (int i = 0; i < totalLadders; i++) {
       int startId = (int) (Math.random() * 88) + 1;

@@ -16,19 +16,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.Interpolator;
-import javafx.animation.SequentialTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.PathTransition;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
-/**
- * Controller for handling view-related operations during the board game.
- * Uses hop-by-hop transitions for token movement, keeping token centered.
- */
 public class BoardGameController {
   private static final Logger LOGGER = Logger.getLogger(BoardGameController.class.getName());
   private static Dice dice;
@@ -40,7 +37,7 @@ public class BoardGameController {
 
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
-  private int currentPlayerIndex;
+  private int currentPlayerIndex = 0;
 
   public BoardGameController(
       BoardGameScene boardGameScene,
@@ -52,7 +49,6 @@ public class BoardGameController {
     this.gameBoard = gameBoard;
     dice = new Dice(numberOfDice);
     die = new Die();
-    this.currentPlayerIndex = 0;
   }
 
   public static int getLastRolledValue() {
@@ -64,7 +60,9 @@ public class BoardGameController {
   }
 
   private void ensureTurnOrderInitialized() {
-    if (!turnOrder.isEmpty()) return;
+    if (!turnOrder.isEmpty()) {
+      return;
+    }
     List<Player> players = playerService.getPlayers();
     if (players.isEmpty()) {
       LOGGER.log(Level.WARNING, "No players available to start the game");
@@ -76,124 +74,107 @@ public class BoardGameController {
 
   public void handlePlayerTurn(int steps) {
     ensureTurnOrderInitialized();
-    if (turnOrder.isEmpty()) return;
-
+    if (turnOrder.isEmpty()) {
+      return;
+    }
     Player currentPlayer = turnOrder.get(currentPlayerIndex);
-    int fromTileId = currentPlayer.getCurrentTileId();
-
-    movePlayerWithHops(currentPlayer, steps);
-
-    int toTileId = currentPlayer.getCurrentTileId();
+    int startTileIndex = currentPlayer.getCurrentTileId();
+    movePlayer(currentPlayer, steps);
+    int endTileIndex = currentPlayer.getCurrentTileId();
     boardGameScene.onEvent(new BoardGameEvent(
         BoardGameEventType.PLAYER_MOVED,
         currentPlayer,
-        new Tile(fromTileId),
-        new Tile(toTileId)));
-
-    if (toTileId >= gameBoard.getTiles().size()) {
-      finishPlayer(currentPlayer, fromTileId, toTileId);
+        new Tile(startTileIndex),
+        new Tile(endTileIndex)));
+    if (endTileIndex >= gameBoard.getTiles().size()) {
+      finishPlayer(currentPlayer, startTileIndex, endTileIndex);
     } else {
       currentPlayerIndex = (currentPlayerIndex + 1) % turnOrder.size();
     }
   }
 
-  private void finishPlayer(Player player, int fromTileId, int toTileId) {
+  private void finishPlayer(Player player, int startTileIndex, int endTileIndex) {
     LOGGER.log(Level.INFO, "{0} reached the finish!", player.getName());
     finishedPlayers.add(player);
     turnOrder.remove(currentPlayerIndex);
     boardGameScene.onEvent(new BoardGameEvent(
         BoardGameEventType.PLAYER_FINISHED,
         player,
-        new Tile(fromTileId),
-        new Tile(toTileId)));
-
+        new Tile(startTileIndex),
+        new Tile(endTileIndex)));
     if (turnOrder.isEmpty()) {
       PodiumGameScene.setFinalRanking(finishedPlayers);
       boardGameScene.onEvent(new BoardGameEvent(
           BoardGameEventType.GAME_FINISHED,
           player,
-          new Tile(toTileId),
-          new Tile(toTileId)));
+          new Tile(endTileIndex),
+          new Tile(endTileIndex)));
     } else if (currentPlayerIndex >= turnOrder.size()) {
       currentPlayerIndex = 0;
     }
   }
 
-  private void movePlayerWithHops(Player player, int steps) {
-    int fromTileId = player.getCurrentTileId();
-    int toTileId = Math.min(fromTileId + steps, gameBoard.getTiles().size());
+  private void movePlayer(Player player, int steps) {
+    int startTileIndex = player.getCurrentTileId();
+    int endTileIndex = Math.min(startTileIndex + steps, gameBoard.getTiles().size());
 
-    TileView startTileView = lookupTileView(fromTileId);
-    TileView endTileView = lookupTileView(toTileId);
-    Node tokenNode = player.getToken();
+    TileView startTileView = lookupTileView(startTileIndex);
+    TileView endTileView = lookupTileView(endTileIndex);
+    Node playerToken = player.getToken();
     Pane tokenOverlay = boardGameScene.getTokenLayer();
 
-    if (startTileView == null || tokenNode == null) {
-      player.setCurrentTileId(toTileId);
+    if (startTileView == null || playerToken == null) {
+      player.setCurrentTileId(endTileIndex);
       return;
     }
 
-    startTileView.getChildren().remove(tokenNode);
-    tokenOverlay.getChildren().add(tokenNode);
-    tokenNode.toFront();
+    Bounds tokenBounds = playerToken.localToScene(playerToken.getBoundsInLocal());
+    double tokenCenterX = tokenBounds.getMinX() + tokenBounds.getWidth()  * 0.5;
+    double tokenCenterY = tokenBounds.getMinY() + tokenBounds.getHeight() * 0.5;
 
+    startTileView.getChildren().remove(playerToken);
+    tokenOverlay.getChildren().add(playerToken);
+    playerToken.toFront();
+    Point2D tokenOverlayStart = tokenOverlay.sceneToLocal(tokenCenterX, tokenCenterY);
+    playerToken.setTranslateX(tokenOverlayStart.getX());
+    playerToken.setTranslateY(tokenOverlayStart.getY());
 
-    tokenNode.applyCss();
-    if (tokenNode instanceof Parent) ((Parent) tokenNode).layout();
-    Bounds tokenBounds = tokenNode.getBoundsInLocal();
-    double halfWidth = tokenBounds.getWidth() * 0.35;
-    double halfHeight = tokenBounds.getHeight() * 0.35;
+    Path movementPath = new Path();
+    movementPath.getElements().add(new MoveTo(tokenOverlayStart.getX(), tokenOverlayStart.getY()));
 
-    Bounds startBounds = startTileView.localToScene(startTileView.getBoundsInLocal());
-    double startCenterX = startBounds.getMinX() + startBounds.getWidth() * 0.5;
-    double startCenterY = startBounds.getMinY() + startBounds.getHeight() * 0.5;
-    Point2D startOverlayPoint = tokenOverlay.sceneToLocal(startCenterX, startCenterY);
-
-    tokenNode.setTranslateX(startOverlayPoint.getX() - halfWidth);
-    tokenNode.setTranslateY(startOverlayPoint.getY() - halfHeight);
-
-    SequentialTransition hopSequence = new SequentialTransition();
-    Point2D previousOrigin = new Point2D(
-        startOverlayPoint.getX() - halfWidth,
-        startOverlayPoint.getY() - halfHeight);
-
-    for (int tileId = fromTileId + 1; tileId <= toTileId; tileId++) {
-      TileView tileView = lookupTileView(tileId);
-      if (tileView == null) continue;
-
+    for (int id = startTileIndex + 1; id <= endTileIndex; id++) {
+      TileView tileView = lookupTileView(id);
+      if (tileView == null) {
+        continue;
+      }
       Bounds tileBounds = tileView.localToScene(tileView.getBoundsInLocal());
-      double centerX = tileBounds.getMinX() + tileBounds.getWidth() * 0.5;
-      double centerY = tileBounds.getMinY() + tileBounds.getHeight() * 0.5;
+      double centerX = tileBounds.getMinX() + tileBounds.getWidth()  * 0.40;
+      double centerY = tileBounds.getMinY() + tileBounds.getHeight() * 0.40;
       Point2D overlayPoint = tokenOverlay.sceneToLocal(centerX, centerY);
-      Point2D nextOrigin = new Point2D(
-          overlayPoint.getX() - halfWidth,
-          overlayPoint.getY() - halfHeight);
-
-      TranslateTransition hop = new TranslateTransition(Duration.millis(200), tokenNode);
-      hop.setByX(nextOrigin.getX() - previousOrigin.getX());
-      hop.setByY(nextOrigin.getY() - previousOrigin.getY());
-      hop.setInterpolator(Interpolator.LINEAR);
-      hopSequence.getChildren().add(hop);
-
-      previousOrigin = nextOrigin;
+      movementPath.getElements().add(new LineTo(overlayPoint.getX(), overlayPoint.getY()));
     }
 
-    hopSequence.setOnFinished(event -> {
-      tokenOverlay.getChildren().remove(tokenNode);
+    PathTransition movementTransition = new PathTransition(
+        Duration.millis(200 * (endTileIndex - startTileIndex)),
+        movementPath,
+        playerToken);
+    movementTransition.setInterpolator(Interpolator.LINEAR);
+    movementTransition.setOnFinished(evt -> {
+      tokenOverlay.getChildren().remove(playerToken);
       if (endTileView != null) {
-        endTileView.getChildren().add(tokenNode);
+        endTileView.getChildren().add(playerToken);
         boardGameScene.setTokenPositionOnTile(endTileView);
       }
-      tokenNode.setTranslateX(0);
-      tokenNode.setTranslateY(0);
+      playerToken.setTranslateX(0);
+      playerToken.setTranslateY(0);
     });
+    movementTransition.play();
 
-    hopSequence.play();
-    player.setCurrentTileId(toTileId);
+    player.setCurrentTileId(endTileIndex);
   }
 
-  private TileView lookupTileView(int tileId) {
-    return (TileView) boardGameScene.getScene().lookup("#tile" + tileId);
+  private TileView lookupTileView(int tileIndex) {
+    return (TileView) boardGameScene.getScene().lookup("#tile" + tileIndex);
   }
 
   public int getCurrentPlayerIndex() {
