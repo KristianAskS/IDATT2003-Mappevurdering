@@ -419,7 +419,7 @@ public class PlayerSelectionScene {
   }
 
   private void addScaleAnimation(javafx.scene.Node node, double targetScale,
-      Duration duration) {
+                                 Duration duration) {
     node.setOnMouseEntered(e -> {
       Timeline anim = new Timeline(
           new KeyFrame(duration,

@@ -72,7 +72,7 @@ public class LadderView {
       return false;
     }
     int rowStart = (startId - 1) / 10;
-    int rowEnd   = (endId   - 1) / 10;
+    int rowEnd = (endId - 1) / 10;
     return rowStart != rowEnd;
   }
 }
