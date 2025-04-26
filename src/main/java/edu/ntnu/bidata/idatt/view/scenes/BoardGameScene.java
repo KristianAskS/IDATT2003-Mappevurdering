@@ -9,11 +9,9 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
-import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
@@ -65,12 +63,9 @@ public class BoardGameScene implements BoardGameObserver {
   private final GridPane boardGridPane;
   private final Pane tokenLayerPane = new Pane();
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
-
       FXCollections.observableArrayList();
   List<Player> players = PlayerSelectionScene.getSelectedPlayers();
-  private int roundCounter = 0;
   private boolean isGameFinished = false;
-
 
   public BoardGameScene() throws IOException {
     diceView = new DiceView();
@@ -78,7 +73,6 @@ public class BoardGameScene implements BoardGameObserver {
     rootPane.setLeft(createIOContainer());
 
     BoardService boardService = new BoardService();
-    List<Board> boards = boardService.getBoards();
 
     //Denne må hentes fra forrige scene brukeren velger antall terninger
     int numbOfDice = 1;
@@ -87,9 +81,8 @@ public class BoardGameScene implements BoardGameObserver {
     //Board board = BoardGameFactory.createClassicBoard();
     //Board board = boardService.readBoardFromFile("data/games/laddersAndSnakes.json").get(0);
     Board board = BoardGameSelectionScene.getSelectedBoard();
-    boards.add(board);
     boardService.setBoard(board);
-    boardService.writeBoardToFile(boards, BOARD_FILE_PATH);
+    boardService.writeBoardToFile(List.of(board), BOARD_FILE_PATH);
 
     boardGameController =
         new BoardGameController(this, playerService, board, numbOfDice);
@@ -113,20 +106,7 @@ public class BoardGameScene implements BoardGameObserver {
     rootPane.setCenter(boardStackPane);
 
     Platform.runLater(() -> {
-      LadderView.generateLadder(board, boardGridPane, ladderOverlay);
-      for (Integer tileId : LadderView.getTileIdsWithLadders()) {
-        TileView tileView = (TileView) boardGridPane.lookup("#tile" + tileId);
-        if (tileView != null) {
-          Tile tileWithLadder = board.getTile(tileId);
-          if (tileWithLadder.getLandAction() != null) {
-            tileView.setStyle("-fx-background-color: #A5D6A7;");
-            tileView.addTileActionViewLbl("start", Color.RED);
-          } else {
-            tileView.setStyle("-fx-background-color: #EF9A9A");
-            tileView.addTileActionViewLbl("end", Color.RED);
-          }
-        }
-      }
+      LadderView.drawLadders(board, boardGridPane, ladderOverlay);
     });
 
 
@@ -328,40 +308,38 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   @Override
-  public void onEvent(BoardGameEvent eventType) {
+  public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
-      if (eventType.eventType() == BoardGameEventType.PLAYER_MOVED) {
-        String moveText =
-            eventType.player().getName() + " moved from "
-                + eventType.oldTile().getTileId()
-                + " to " + eventType.newTile().getTileId() + "\n";
-        eventLog.appendText(moveText + "\n");
-        roundCounter++;
-        eventLog.appendText("Round number: " + roundCounter + "\n");
-
-        /*
-        TODO: handle the graph
-        int playerIndex = boardGameController.getCurrentPlayerIndex();
-        dataSeries.get(playerIndex).getData().add(new XYChart.Data<Number, Number>;
-         */
-      } else if (eventType.eventType() == BoardGameEventType.GAME_FINISHED) {
-        if (isGameFinished) {
-          return;
+      switch (event.eventType()) {
+        case PLAYER_MOVED -> {
+          String text = event.player().getName()
+              + " moved from " + event.oldTile().getTileId()
+              + " to " + event.newTile().getTileId() + "\n";
+          eventLog.appendText(text);
         }
-        isGameFinished = true;
-
-        List<Player> players = PlayerSelectionScene.getSelectedPlayers();
-
-        SceneManager.showPodiumGameScene();
-
-      } else if (eventType.eventType() == BoardGameEventType.PLAYER_FINISHED) {
-        eventLog.appendText("Player " + eventType.player().getName() + " finished\n");
-
-      } else {
-        eventLog.setText("Unknown event type: " + eventType.eventType() + "\n");
+        case PLAYER_LADDER_ACTION -> {
+          String text = event.player().getName()
+              + " climbed a ladder from " + event.oldTile().getTileId()
+              + " to " + event.newTile().getTileId() + "\n";
+          eventLog.appendText(text);
+        }
+        case PLAYER_FINISHED -> {
+          eventLog.appendText("Player " + event.player().getName() + " finished!\n");
+        }
+        case GAME_FINISHED -> {
+          if (!isGameFinished) {
+            isGameFinished = true;
+            SceneManager.showPodiumGameScene();
+          }
+        }
+        default -> {
+          //Remove this in release versions
+          eventLog.appendText("Testing: Unknown event type: " + event.eventType() + "\n");
+        }
       }
     });
   }
+
 
   public Pane getTokenLayer() {
     return tokenLayerPane;
