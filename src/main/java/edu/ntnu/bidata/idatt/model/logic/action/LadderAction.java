@@ -4,33 +4,27 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 
 public class LadderAction implements TileAction {
 
-  private int destinationTileld;
+  private int destinationTileId;
   private String description;
 
-  public LadderAction(int destinationTileld, String description) {
-    this.destinationTileld = destinationTileld;
+  public LadderAction(int destinationTileId, String description) {
+    this.destinationTileId = destinationTileId;
     this.description = description;
   }
 
-
   @Override
   public void perform(Player player) {
-    player.setCurrentTileId(destinationTileld);
-  }
-
-
-  public int getDestinationTileld() {
-    return destinationTileld;
+    player.setCurrentTileId(destinationTileId);
   }
 
   @Override
   public int getDestinationTileId() {
-    return destinationTileld;
+    return destinationTileId;
   }
 
   @Override
   public void setDestinationTileId(int destinationTileId) {
-    this.destinationTileld = destinationTileId;
+    this.destinationTileId = destinationTileId;
   }
 
   public String getDescription() {

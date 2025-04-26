@@ -1,7 +1,7 @@
 package edu.ntnu.bidata.idatt.model.entity;
 
+import edu.ntnu.bidata.idatt.controller.BoardGameController;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
-import edu.ntnu.bidata.idatt.view.components.LadderView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,8 +36,8 @@ public class Ladder {
 
   private void drawLadder(GridPane boardGrid, Tile startTile, Tile endTile, Board board) {
     // Get the position of tile relative to the whole scene
-    int[] startPos = LadderView.tileToGridPosition(startTile, board);
-    int[] endPos = LadderView.tileToGridPosition(endTile, board);
+    int[] startPos = BoardGameController.tileToGridPosition(startTile, board);
+    int[] endPos = BoardGameController.tileToGridPosition(endTile, board);
     logTilePositions(startPos, endPos);
 
     Node startNode = BoardView.getTileNodeAt(boardGrid, startPos[0], startPos[1]);
