@@ -40,19 +40,10 @@ public class TileView extends StackPane {
     getChildren().addAll(rectangle, numb);
   }
 
-  public TileView getTileView() {
-    return tileView;
-  }
-
-  public void setTileView(TileView tileView) {
-    this.tileView = tileView;
-  }
-
   public void addTileActionViewLbl(String description, Color color) {
     Label tileActionViewLbl = new Label(description);
     tileActionViewLbl.setTextFill(color);
     tileActionViewLbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
     this.getChildren().add(tileActionViewLbl);
   }
-
 }

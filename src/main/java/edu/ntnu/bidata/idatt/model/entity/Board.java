@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a game board consisting of multiple tiles.
+ * Represents a game board consisting of tiles mapped.
  */
 public class Board {
   private final Map<Integer, Tile> tiles = new HashMap<>();

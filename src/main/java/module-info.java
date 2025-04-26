@@ -9,4 +9,5 @@ module edu.ntnu.bidata.idatt {
   exports edu.ntnu.bidata.idatt.view.scenes;
   opens edu.ntnu.bidata.idatt.model.entity to com.google.gson;
   exports edu.ntnu.bidata.idatt.controller;
+  exports edu.ntnu.bidata.idatt.model.entity;
 }

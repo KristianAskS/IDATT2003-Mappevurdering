@@ -156,3 +156,39 @@
     -fx-background-color: linear-gradient(to bottom, #ce93d8, #ba68c8);
     -fx-background-radius: 10;
 }
+
+.available-card {
+    -fx-background-color: transparent;
+    -fx-padding: 3 6 3 6;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-transition: all 200ms ease-out;
+}
+
+.available-card:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.selected-card {
+    -fx-background-color: transparent;
+    -fx-padding: 3 6 3 6;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-transition: all 200ms ease-out;
+}
+
+.selected-card:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.selected-card:hover .delete-btn {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 4, 0, 0, 0);
+}
+
+.delete-btn {
+    -fx-cursor: hand;
+}

@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
 import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Ladder;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ public class LadderView {
     return tileIdsWithLadders;
   }
 
+  //TODO: move this method to another logic class
   public static int[] tileToGridPosition(Tile tile, Board board) {
     int totalTiles = board.getTiles().size();
     int tileId = tile.getTileId();
@@ -62,8 +64,15 @@ public class LadderView {
   }
 
   private static boolean isValidLadder(int startId, int endId) {
-    return !tileIdsWithLadders.contains(startId) &&
-        !tileIdsWithLadders.contains(endId) &&
-        (startId / 10 != endId / 10);
+    if (startId == endId) {
+      return false;
+    }
+    if (tileIdsWithLadders.contains(startId)
+        || tileIdsWithLadders.contains(endId)) {
+      return false;
+    }
+    int rowStart = (startId - 1) / 10;
+    int rowEnd = (endId - 1) / 10;
+    return rowStart != rowEnd;
   }
 }
