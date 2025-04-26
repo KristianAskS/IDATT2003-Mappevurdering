@@ -41,7 +41,7 @@ public final class BoardGameFactory {
   }
 
   public static void addRandomLadders(Board board, int count) {
-    int maxTile = board.getTiles().size();
+    //int maxTile = board.getTiles().size();
     int placed = 0;
     while (placed < count) {
       int startId = (int) (Math.random() * 88) + 1;

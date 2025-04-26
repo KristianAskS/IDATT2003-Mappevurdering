@@ -62,12 +62,12 @@ public class Ladder {
     logger.info(() -> "length of (dx,dy): " + length);
 
     int rungCount = calculateRungCount(length);
-    double[] perpUnit = computePerpendicularUnitVector(dx, dy);
-    maybeFlipDirection(perpUnit, startPos[0], board);
+    double[] perpUnit = calculatePerpendicularUnitVector(dx, dy);
+    flipDirection(perpUnit, startPos[0], board);
 
     logPerpendicular(perpUnit);
 
-    double[][] sideCoords = computeSideRailCoordinates(startCenter, endCenter, perpUnit);
+    double[][] sideCoords = calculateSideRailCoordinates(startCenter, endCenter, perpUnit);
     addSideRail(sideCoords[0], sideCoords[1]);
     addSideRail(sideCoords[2], sideCoords[3]);
     addRungs(sideCoords, rungCount);
@@ -94,12 +94,12 @@ public class Ladder {
     return Math.max(1, (int) (length / RUNG_SPACING));
   }
 
-  private double[] computePerpendicularUnitVector(double dx, double dy) {
+  private double[] calculatePerpendicularUnitVector(double dx, double dy) {
     double length = Math.hypot(dx, dy);
     return new double[] {-dy / length, dx / length};
   }
 
-  private void maybeFlipDirection(double[] perp, int startRow, Board board) {
+  private void flipDirection(double[] perp, int startRow, Board board) {
     int totalRows = board.getTiles().size() / 10; // TODO: Replace hardcoded value
     int rowFromBottom = totalRows - 1 - startRow;
     if (rowFromBottom % 2 == 1) {
@@ -108,7 +108,7 @@ public class Ladder {
     }
   }
 
-  private double[][] computeSideRailCoordinates(double[] start, double[] end, double[] perpUnit) {
+  private double[][] calculateSideRailCoordinates(double[] start, double[] end, double[] perpUnit) {
     double offX = perpUnit[0] * SIDE_OFFSET;
     double offY = perpUnit[1] * SIDE_OFFSET;
 
@@ -127,10 +127,10 @@ public class Ladder {
   private void addRungs(double[][] coords, int count) {
     for (int i = 1; i < count; i++) {
       double t = i / (double) count;
-      double upperX = lerp(coords[0][0], coords[1][0], t);
-      double upperY = lerp(coords[0][1], coords[1][1], t);
-      double lowerX = lerp(coords[2][0], coords[3][0], t);
-      double lowerY = lerp(coords[2][1], coords[3][1], t);
+      double upperX = linearInterpolation(coords[0][0], coords[1][0], t);
+      double upperY = linearInterpolation(coords[0][1], coords[1][1], t);
+      double lowerX = linearInterpolation(coords[2][0], coords[3][0], t);
+      double lowerY = linearInterpolation(coords[2][1], coords[3][1], t);
 
       Line rung = new Line(upperX, upperY, lowerX, lowerY);
       rung.setStroke(Color.SANDYBROWN);
@@ -156,7 +156,7 @@ public class Ladder {
     ladders.add(line);
   }
 
-  private double lerp(double a, double b, double t) {
+  private double linearInterpolation(double a, double b, double t) {
     return a + t * (b - a);
   }
 

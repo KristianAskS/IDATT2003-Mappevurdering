@@ -35,18 +35,18 @@ public class BoardGameController {
 
   private final PlayerService playerService;
   private final Board board;
-  private final BoardGameScene gameScene;
+  private final BoardGameScene boardGameScene;
 
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
   private int currentPlayerIndex = 0;
 
   public BoardGameController(
-      BoardGameScene gameScene,
+      BoardGameScene boardGameScene,
       PlayerService playerService,
       Board board,
       int numberOfDice) {
-    this.gameScene = gameScene;
+    this.boardGameScene = boardGameScene;
     this.playerService = playerService;
     this.board = board;
     dice = new Dice(numberOfDice);
@@ -101,7 +101,7 @@ public class BoardGameController {
 
     movePlayerAlongTiles(currentPlayer, steps, () -> {
       int landedTileId = currentPlayer.getCurrentTileId();
-      gameScene.onEvent(new BoardGameEvent(
+      boardGameScene.onEvent(new BoardGameEvent(
           BoardGameEventType.PLAYER_MOVED,
           currentPlayer,
           new Tile(originTileId),
@@ -117,7 +117,7 @@ public class BoardGameController {
             landedTileId,
             ladderDestination,
             () -> {
-              gameScene.onEvent(new BoardGameEvent(
+              boardGameScene.onEvent(new BoardGameEvent(
                   BoardGameEventType.PLAYER_LADDER_ACTION,
                   currentPlayer,
                   new Tile(landedTileId),
@@ -144,7 +144,7 @@ public class BoardGameController {
     finishedPlayers.add(player);
     turnOrder.remove(currentPlayerIndex);
 
-    gameScene.onEvent(new BoardGameEvent(
+    boardGameScene.onEvent(new BoardGameEvent(
         BoardGameEventType.PLAYER_FINISHED,
         player,
         null, // old tile not needed here
@@ -152,7 +152,7 @@ public class BoardGameController {
 
     if (turnOrder.isEmpty()) {
       PodiumGameScene.setFinalRanking(finishedPlayers);
-      gameScene.onEvent(new BoardGameEvent(
+      boardGameScene.onEvent(new BoardGameEvent(
           BoardGameEventType.GAME_FINISHED,
           player,
           null,
@@ -166,7 +166,7 @@ public class BoardGameController {
     int startTileId = player.getCurrentTileId();
     int targetTileId = Math.min(startTileId + steps, board.getTiles().size());
     Node token = player.getToken();
-    Pane overlay = gameScene.getTokenLayer();
+    Pane overlay = boardGameScene.getTokenLayer();
 
     if (token == null) {
       player.setCurrentTileId(targetTileId);
@@ -174,32 +174,32 @@ public class BoardGameController {
       return;
     }
 
-    SequentialTransition sequence = new SequentialTransition();
+    SequentialTransition sequentialTransition = new SequentialTransition();
     for (int nextId = startTileId + 1; nextId <= targetTileId; nextId++) {
       int finalNextId = nextId;
-      PauseTransition hop = new PauseTransition(Duration.millis(250));
-      hop.setOnFinished(evt -> {
-        Pane parent = (Pane) token.getParent();
-        parent.getChildren().remove(token);
+      PauseTransition hopPauseTransition = new PauseTransition(Duration.millis(250));
+      hopPauseTransition.setOnFinished(evt -> {
+        Pane parentPane = (Pane) token.getParent();
+        parentPane.getChildren().remove(token);
 
-        TileView tv = lookupTileView(finalNextId);
-        tv.getChildren().add(token);
-        gameScene.setTokenPositionOnTile(tv);
+        TileView tileView = lookupTileView(finalNextId);
+        tileView.getChildren().add(token);
+        boardGameScene.setTokenPositionOnTile(tileView);
 
         player.setCurrentTileId(finalNextId);
       });
-      sequence.getChildren().add(hop);
+      sequentialTransition.getChildren().addAll(hopPauseTransition);
     }
 
-    sequence.setOnFinished(evt -> onComplete.run());
-    sequence.play();
+    sequentialTransition.setOnFinished(evt -> onComplete.run());
+    sequentialTransition.play();
   }
 
   private void animateLadderJump(Player player, int fromTile, int toTile, Runnable onComplete) {
     TileView startView = lookupTileView(fromTile);
     TileView endView = lookupTileView(toTile);
     Node token = player.getToken();
-    Pane overlay = gameScene.getTokenLayer();
+    Pane overlay = boardGameScene.getTokenLayer();
 
     Point2D startCenter = tileCenter(startView, overlay);
     Pane parent = (Pane) token.getParent();
@@ -219,7 +219,7 @@ public class BoardGameController {
     jump.setOnFinished(evt -> {
       overlay.getChildren().remove(token);
       endView.getChildren().add(token);
-      gameScene.setTokenPositionOnTile(endView);
+      boardGameScene.setTokenPositionOnTile(endView);
       onComplete.run();
     });
     jump.play();
@@ -233,6 +233,6 @@ public class BoardGameController {
   }
 
   private TileView lookupTileView(int tileId) {
-    return (TileView) gameScene.getScene().lookup("#tile" + tileId);
+    return (TileView) boardGameScene.getScene().lookup("#tile" + tileId);
   }
 }
