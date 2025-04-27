@@ -177,24 +177,29 @@ public class BoardGameController {
 
     SequentialTransition sequentialTransition = new SequentialTransition();
     for (int nextId = startTileId + 1; nextId <= targetTileId; nextId++) {
-      int finalNextId = nextId;
-      PauseTransition hopPauseTransition = new PauseTransition(Duration.millis(250));
-      hopPauseTransition.setOnFinished(evt -> {
-        Pane parentPane = (Pane) token.getParent();
-        parentPane.getChildren().remove(token);
-
-        TileView tileView = lookupTileView(finalNextId);
-        tileView.getChildren().add(token);
-        boardGameScene.setTokenPositionOnTile(tileView);
-        boardGameScene.repositionTokenOnTile();
-
-        player.setCurrentTileId(finalNextId);
-      });
+      PauseTransition hopPauseTransition =
+          getPauseTransition(player, nextId, token);
       sequentialTransition.getChildren().addAll(hopPauseTransition);
     }
 
     sequentialTransition.setOnFinished(evt -> onComplete.run());
     sequentialTransition.play();
+  }
+
+  private PauseTransition getPauseTransition(Player player, int nextId, Node token) {
+    PauseTransition hopPauseTransition = new PauseTransition(Duration.millis(250));
+    hopPauseTransition.setOnFinished(evt -> {
+      Pane parentPane = (Pane) token.getParent();
+      parentPane.getChildren().remove(token);
+
+      TileView tileView = lookupTileView(nextId);
+      tileView.getChildren().add(token);
+      boardGameScene.setTokenPositionOnTile(tileView);
+      boardGameScene.repositionTokenOnTile();
+
+      player.setCurrentTileId(nextId);
+    });
+    return hopPauseTransition;
   }
 
   private void animateLadderMovement(Player player, int fromTile, int toTile, Runnable onComplete) {

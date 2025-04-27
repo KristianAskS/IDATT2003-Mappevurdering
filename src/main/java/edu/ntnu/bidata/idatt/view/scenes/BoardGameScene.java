@@ -78,12 +78,9 @@ public class BoardGameScene implements BoardGameObserver {
 
     //Denne må hentes fra forrige scene brukeren velger antall terninger
     int numbOfDice = 1;
-
-    //denne skal ikke brukes da UI ikke skal kommunisere med forettningslogikken
-    //Board board = BoardGameFactory.createClassicBoard();
-    //Board board = boardService.readBoardFromFile("data/games/laddersAndSnakes.json").get(0);
     Board board = BoardGameSelectionScene.getSelectedBoard();
     boardService.setBoard(board);
+    //Ikke bra view kan ikke snakke med logikken (håndter dette i kontroller)
     boardService.writeBoardToFile(List.of(board), BOARD_FILE_PATH);
 
     boardGameController =
