@@ -186,6 +186,7 @@ public class BoardGameController {
         TileView tileView = lookupTileView(finalNextId);
         tileView.getChildren().add(token);
         boardGameScene.setTokenPositionOnTile(tileView);
+        boardGameScene.repositionTokenOnTile();
 
         player.setCurrentTileId(finalNextId);
       });

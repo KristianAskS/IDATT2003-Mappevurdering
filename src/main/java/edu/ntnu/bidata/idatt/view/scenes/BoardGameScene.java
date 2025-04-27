@@ -9,7 +9,6 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
-import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
@@ -40,7 +39,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TextArea;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
@@ -66,8 +64,8 @@ public class BoardGameScene implements BoardGameObserver {
   private final Pane tokenLayerPane = new Pane();
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
       FXCollections.observableArrayList();
-  private HBox stagingArea;
   List<Player> players = PlayerSelectionScene.getSelectedPlayers();
+  private HBox stagingArea;
   private boolean isGameFinished = false;
 
   public BoardGameScene() throws IOException {
@@ -178,6 +176,18 @@ public class BoardGameScene implements BoardGameObserver {
         });
   }
 
+  public void repositionTokenOnTile() {
+    players.forEach(player -> {
+      int tileId = player.getCurrentTileId();
+      if (tileId > 0) {
+        TileView tileView = (TileView) scene.lookup("#tile" + tileId);
+        if (tileView != null) {
+          setTokenPositionOnTile(tileView);
+        }
+      }
+    });
+  }
+
   public Scene getScene() {
     return scene;
   }
@@ -220,7 +230,8 @@ public class BoardGameScene implements BoardGameObserver {
     container.getChildren().add(rollDiceBtn);
     rollDiceBtn.setOnAction(e -> {
       Timeline timeline = diceView.createRollDiceAnimation(() -> {
-        int result = diceView.rollResultProperty().get();;
+        int result = diceView.rollResultProperty().get();
+        ;
         logger.log(Level.INFO, "Passing to controller: " + result);
         boardGameController.handlePlayerTurn(result);
         rollDiceBtn.setDisable(false);
@@ -321,11 +332,9 @@ public class BoardGameScene implements BoardGameObserver {
       Player player = event.player();
       int rollValue = BoardGameController.getLastRolledValue();
 
-      // 1) Log the roll once per turn
       eventLog.appendText(String.format("%s rolled a %d%n", player.getName(), rollValue));
 
-      // 2) Log the move/ladder/finish
-      int oldId = event.oldTile()  != null ? event.oldTile().getTileId()  : 0;
+      int oldId = event.oldTile() != null ? event.oldTile().getTileId() : 0;
       int newId = event.newTile() != null ? event.newTile().getTileId() : 0;
 
       switch (event.eventType()) {
@@ -333,6 +342,7 @@ public class BoardGameScene implements BoardGameObserver {
           eventLog.appendText(
               String.format("%s moved from %d to %d%n", player.getName(), oldId, newId)
           );
+          repositionTokenOnTile();
           break;
 
         case PLAYER_LADDER_ACTION:
@@ -340,12 +350,14 @@ public class BoardGameScene implements BoardGameObserver {
               String.format("%s climbed a ladder from %d to %d%n",
                   player.getName(), oldId, newId)
           );
+          repositionTokenOnTile();
           break;
 
         case PLAYER_FINISHED:
           eventLog.appendText(
               String.format("Player %s finished!%n", player.getName())
           );
+          repositionTokenOnTile();
           break;
 
         case GAME_FINISHED:
@@ -354,13 +366,11 @@ public class BoardGameScene implements BoardGameObserver {
             SceneManager.showPodiumGameScene();
           }
           break;
-
         default:
-          // nothing else to do
+          repositionTokenOnTile();
       }
     });
   }
-
 
 
   public Pane getTokenLayer() {
