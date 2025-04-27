@@ -92,38 +92,39 @@ public class BoardGameController {
 
   public void handlePlayerTurn(int steps) {
     ensureTurnOrderInitialized();
+    setRolledValue(steps);
     if (turnOrder.isEmpty()) {
       return;
     }
 
     Player currentPlayer = turnOrder.get(currentPlayerIndex);
     int originTileId = currentPlayer.getCurrentTileId();
+    Tile originTile = originTileId == 0 ? null : board.getTile(originTileId);
 
     movePlayerAlongTiles(currentPlayer, steps, () -> {
       int landedTileId = currentPlayer.getCurrentTileId();
+      Tile landedTile = board.getTile(landedTileId);
+
       boardGameScene.onEvent(new BoardGameEvent(
           BoardGameEventType.PLAYER_MOVED,
           currentPlayer,
-          new Tile(originTileId),
-          new Tile(landedTileId)));
+          originTile,
+          landedTile
+      ));
 
-      Tile landedTile = board.getTile(landedTileId);
       if (landedTile.getLandAction() != null) {
-        int ladderDestination = landedTile.getLandAction().getDestinationTileId();
+        int ladderDestinationTileId = landedTile.getLandAction().getDestinationTileId();
         landedTile.getLandAction().perform(currentPlayer);
 
-        animateLadderJump(
-            currentPlayer,
-            landedTileId,
-            ladderDestination,
-            () -> {
-              boardGameScene.onEvent(new BoardGameEvent(
-                  BoardGameEventType.PLAYER_LADDER_ACTION,
-                  currentPlayer,
-                  new Tile(landedTileId),
-                  new Tile(ladderDestination)));
-              advanceOrFinish(currentPlayer);
-            });
+        animateLadderMovement(currentPlayer, landedTileId, ladderDestinationTileId, () -> {
+          boardGameScene.onEvent(new BoardGameEvent(
+              BoardGameEventType.PLAYER_LADDER_ACTION,
+              currentPlayer,
+              landedTile,
+              board.getTile(ladderDestinationTileId)
+          ));
+          advanceOrFinish(currentPlayer);
+        });
       } else {
         advanceOrFinish(currentPlayer);
       }
@@ -195,7 +196,7 @@ public class BoardGameController {
     sequentialTransition.play();
   }
 
-  private void animateLadderJump(Player player, int fromTile, int toTile, Runnable onComplete) {
+  private void animateLadderMovement(Player player, int fromTile, int toTile, Runnable onComplete) {
     TileView startView = lookupTileView(fromTile);
     TileView endView = lookupTileView(toTile);
     Node token = player.getToken();

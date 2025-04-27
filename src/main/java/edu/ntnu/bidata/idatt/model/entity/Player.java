@@ -13,6 +13,7 @@ public class Player {
   public Player(String name, TokenView token) {
     this.name = name;
     this.token = token;
+    this.currentTileId = 0;
   }
 
   public String getName() {

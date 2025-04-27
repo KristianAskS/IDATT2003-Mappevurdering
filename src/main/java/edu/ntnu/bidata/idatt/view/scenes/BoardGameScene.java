@@ -21,7 +21,6 @@ import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,10 +39,12 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TextArea;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -64,13 +65,15 @@ public class BoardGameScene implements BoardGameObserver {
   private final Pane tokenLayerPane = new Pane();
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
       FXCollections.observableArrayList();
+  private HBox stagingArea;
   List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private boolean isGameFinished = false;
 
   public BoardGameScene() throws IOException {
     diceView = new DiceView();
     BorderPane rootPane = createRootPane();
-    rootPane.setLeft(createIOContainer());
+    VBox ioContainer = createIOContainer();
+    rootPane.setLeft(ioContainer);
 
     BoardService boardService = new BoardService();
 
@@ -148,20 +151,13 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
   private void initializePlayers() {
-    players.forEach(player -> player.setCurrentTileId(1));
-
+    players.forEach(player -> player.setCurrentTileId(0));
     playerService.setPlayers(players);
-
-    TileView startTile = (TileView) scene.lookup("#tile1");
-    if (startTile != null) {
-      List<Node> playerTokens = new ArrayList<>();
-      players.stream()
-          .filter(player -> player.getToken() != null)
-          .forEach(player -> playerTokens.add(player.getToken()));
-
-      startTile.getChildren().addAll(playerTokens);
-      setTokenPositionOnTile(startTile);
-    }
+    stagingArea.getChildren().clear();
+    Label lbl = new Label("Waiting to start");
+    lbl.setWrapText(true);
+    stagingArea.getChildren().add(lbl);
+    players.forEach(player -> stagingArea.getChildren().add(player.getToken()));
   }
 
   public void setTokenPositionOnTile(TileView tile) {
@@ -184,6 +180,16 @@ public class BoardGameScene implements BoardGameObserver {
   public Scene getScene() {
     return scene;
   }
+
+  private HBox createStagingArea() {
+    HBox stagingArea = new HBox(10);
+    stagingArea.setPadding(new Insets(10));
+    stagingArea.setAlignment(Pos.CENTER);
+    stagingArea.setStyle("-fx-background-color: rgba(255,255,255,0.2);"
+        + "-fx-border-color: white; -fx-border-radius: 8;");
+    return stagingArea;
+  }
+
 
   private VBox createIOContainer() {
     VBox container = new VBox();
@@ -213,7 +219,7 @@ public class BoardGameScene implements BoardGameObserver {
     container.getChildren().add(rollDiceBtn);
     rollDiceBtn.setOnAction(e -> {
       Timeline timeline = diceView.createRollDiceAnimation(() -> {
-        int result = diceView.rollResultProperty().get();
+        int result = diceView.rollResultProperty().get();;
         logger.log(Level.INFO, "Passing to controller: " + result);
         boardGameController.handlePlayerTurn(result);
         rollDiceBtn.setDisable(false);
@@ -236,6 +242,8 @@ public class BoardGameScene implements BoardGameObserver {
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
     container.getChildren().add(spacer);
+    this.stagingArea = createStagingArea();
+    container.getChildren().add(stagingArea);
 
     Button backBtn = Buttons.getBackBtn("Back");
     container.getChildren().add(backBtn);
@@ -264,7 +272,6 @@ public class BoardGameScene implements BoardGameObserver {
             + "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);"
             + "-fx-padding: 10 20 150 20;"
     );
-
      */
 
     eventLog.setEditable(false);
@@ -310,6 +317,10 @@ public class BoardGameScene implements BoardGameObserver {
   @Override
   public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
+      Player player = event.player();
+      int rollValue = BoardGameController.getLastRolledValue();
+      eventLog.appendText(String.format("%s rolled a %d%n", player.getName(), rollValue));
+
       switch (event.eventType()) {
         case PLAYER_MOVED -> {
           String text = event.player().getName()

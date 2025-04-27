@@ -50,7 +50,7 @@ public class BoardGame {
 
     Tile finalNewTile = nextTile;
     logger.info(() -> String.format(
-        "About to dispatch PLAYER_MOVED: old=%s (id=%s), new=%s (id=%s)",
+        "About to handle event PLAYER_MOVED: old=%s (id=%s), new=%s (id=%s)",
         oldTile, oldTile == null ? "null" : oldTile.getTileId(),
         finalNewTile, finalNewTile == null ? "null" : finalNewTile.getTileId()
     ));
