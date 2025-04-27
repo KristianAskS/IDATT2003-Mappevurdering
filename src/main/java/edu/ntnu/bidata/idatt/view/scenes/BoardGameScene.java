@@ -9,6 +9,7 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
@@ -319,37 +320,47 @@ public class BoardGameScene implements BoardGameObserver {
     Platform.runLater(() -> {
       Player player = event.player();
       int rollValue = BoardGameController.getLastRolledValue();
+
+      // 1) Log the roll once per turn
       eventLog.appendText(String.format("%s rolled a %d%n", player.getName(), rollValue));
 
+      // 2) Log the move/ladder/finish
+      int oldId = event.oldTile()  != null ? event.oldTile().getTileId()  : 0;
+      int newId = event.newTile() != null ? event.newTile().getTileId() : 0;
+
       switch (event.eventType()) {
-        case PLAYER_MOVED -> {
-          String text = event.player().getName()
-              + " moved from " + event.oldTile().getTileId()
-              + " to " + event.newTile().getTileId() + "\n";
-          eventLog.appendText(text);
-        }
-        case PLAYER_LADDER_ACTION -> {
-          String text = event.player().getName()
-              + " climbed a ladder from " + event.oldTile().getTileId()
-              + " to " + event.newTile().getTileId() + "\n";
-          eventLog.appendText(text);
-        }
-        case PLAYER_FINISHED -> {
-          eventLog.appendText("Player " + event.player().getName() + " finished!\n");
-        }
-        case GAME_FINISHED -> {
+        case PLAYER_MOVED:
+          eventLog.appendText(
+              String.format("%s moved from %d to %d%n", player.getName(), oldId, newId)
+          );
+          break;
+
+        case PLAYER_LADDER_ACTION:
+          eventLog.appendText(
+              String.format("%s climbed a ladder from %d to %d%n",
+                  player.getName(), oldId, newId)
+          );
+          break;
+
+        case PLAYER_FINISHED:
+          eventLog.appendText(
+              String.format("Player %s finished!%n", player.getName())
+          );
+          break;
+
+        case GAME_FINISHED:
           if (!isGameFinished) {
             isGameFinished = true;
             SceneManager.showPodiumGameScene();
           }
-        }
-        default -> {
-          //Remove this in release versions
-          eventLog.appendText("Testing: Unknown event type: " + event.eventType() + "\n");
-        }
+          break;
+
+        default:
+          // nothing else to do
       }
     });
   }
+
 
 
   public Pane getTokenLayer() {
