@@ -1,9 +1,10 @@
+// src/main/java/edu/ntnu/bidata/idatt/view/scenes/BoardGameScene.java
+
 package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.model.entity.Ladder.VISUAL_CORRECTION;
-import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
@@ -12,8 +13,6 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.service.BoardService;
-import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.DiceView;
@@ -55,37 +54,27 @@ import javafx.scene.text.FontWeight;
 
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
+
   private final Scene scene;
   private final TextArea eventLog = new TextArea("Game started! \n");
-  private final PlayerService playerService = new PlayerService();
-  private final BoardGameController boardGameController;
   private final DiceView diceView;
   private final GridPane boardGridPane;
   private final Pane tokenLayerPane = new Pane();
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
       FXCollections.observableArrayList();
-  List<Player> players = PlayerSelectionScene.getSelectedPlayers();
+  private final BoardGameController boardGameController;
+  private List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private HBox stagingArea;
   private boolean isGameFinished = false;
 
   public BoardGameScene() throws IOException {
     diceView = new DiceView();
+
     BorderPane rootPane = createRootPane();
     VBox ioContainer = createIOContainer();
     rootPane.setLeft(ioContainer);
 
-    BoardService boardService = new BoardService();
-
-    //Denne må hentes fra forrige scene brukeren velger antall terninger
-    int numbOfDice = 1;
     Board board = BoardGameSelectionScene.getSelectedBoard();
-    boardService.setBoard(board);
-    //Ikke bra view kan ikke snakke med logikken (håndter dette i kontroller)
-    boardService.writeBoardToFile(List.of(board), BOARD_FILE_PATH);
-
-    boardGameController =
-        new BoardGameController(this, playerService, board, numbOfDice);
-
     this.boardGridPane = BoardView.createBoardGUI(board);
     boardGridPane.setId("boardGridPane");
 
@@ -100,28 +89,25 @@ public class BoardGameScene implements BoardGameObserver {
     ladderOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
     ladderOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
 
-    StackPane boardStackPane = new StackPane(boardGridPane, ladderOverlay, tokenLayerPane);
+    StackPane boardStack = new StackPane(boardGridPane, ladderOverlay, tokenLayerPane);
     tokenLayerPane.toFront();
-    rootPane.setCenter(boardStackPane);
+    rootPane.setCenter(boardStack);
 
-    Platform.runLater(() -> {
-      LadderView.drawLadders(board, boardGridPane, ladderOverlay);
-    });
+    Platform.runLater(() ->
+        LadderView.drawLadders(board, boardGridPane, ladderOverlay)
+    );
 
+    int numbOfDice = 1;  // should be an argument value or static
+    boardGameController = new BoardGameController(this, board, numbOfDice);
 
-    // Pakke inn rootPane i en StackPane slik at vi kan skalere rootPane (for senere)
     StackPane container = new StackPane(rootPane);
     scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    // Initialiser spillere og plasser tokenene på starttilen (midlertidig løsning)
-    initializePlayers();
+    boardGameController.initializePlayers(players);
 
-    logger.log(Level.INFO, "BoardGameGUI created");
+    logger.log(Level.INFO, "BoardGameScene initialized");
   }
 
-  /**
-   * Returnerer hardkodede offset-koordinater basert på antall tokens på en tile.
-   */
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
       case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
@@ -132,23 +118,18 @@ public class BoardGameScene implements BoardGameObserver {
     };
   }
 
-  // Currently not used
+  @SuppressWarnings("unused")
   public static double[] getTileCenter(Bounds bounds) {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
-    logger.info(() -> "Center (x,y): (" + x + "," + y + ")");
+    logger.info(() -> "Center:(" + x + "," + y + ")");
     return new double[] {x, y};
   }
 
-  private BorderPane createRootPane() {
-    BorderPane root = new BorderPane();
-    root.setStyle("-fx-background-color: #1A237E;");
-    return root;
-  }
 
-  private void initializePlayers() {
+  public void setupPlayersUI(List<Player> players) {
+    this.players = players;
     players.forEach(player -> player.setCurrentTileId(0));
-    playerService.setPlayers(players);
     stagingArea.getChildren().clear();
     Label lbl = new Label("Waiting to start");
     lbl.setWrapText(true);
@@ -156,31 +137,70 @@ public class BoardGameScene implements BoardGameObserver {
     players.forEach(player -> stagingArea.getChildren().add(player.getToken()));
   }
 
+
   public void setTokenPositionOnTile(TileView tile) {
     List<Node> tokens = tile.getChildren().stream()
-        .filter(node -> node instanceof TokenView)
-        .toList();
-
-    final double[][] offsets = getTokenOffsets(tokens.size());
-
+        .filter(node -> node instanceof TokenView).toList();
+    double[][] offsets = getTokenOffsets(tokens.size());
     IntStream.range(0, tokens.size())
         .forEach(i -> {
-          Node token = tokens.get(i);
+          Node tokenNode = tokens.get(i);
           double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
           double y = (TILE_SIZE - offsets[i][1] * TILE_SIZE * 2) / 2;
-          token.setTranslateX(x);
-          token.setTranslateY(y);
+          tokenNode.setTranslateX(x);
+          tokenNode.setTranslateY(y);
         });
   }
+
 
   public void repositionTokenOnTile() {
     players.forEach(player -> {
       int tileId = player.getCurrentTileId();
       if (tileId > 0) {
-        TileView tileView = (TileView) scene.lookup("#tile" + tileId);
+        var tileView = (TileView) scene.lookup("#tile" + tileId);
         if (tileView != null) {
           setTokenPositionOnTile(tileView);
         }
+      }
+    });
+  }
+
+  @Override
+  public void onEvent(BoardGameEvent event) {
+    Platform.runLater(() -> {
+      var pl = event.player();
+      //int rolled = boardGameController.getLastRolledValue();
+      //eventLog.appendText(String.format("%s rolled a %d%n", pl.getName(), rolled));
+
+      int oldId = event.oldTile() != null ? event.oldTile().getTileId() : 0;
+      int newId = event.newTile() != null ? event.newTile().getTileId() : 0;
+
+      switch (event.eventType()) {
+        case PLAYER_MOVED -> {
+          eventLog.appendText(
+              String.format("%s moved from %d to %d%n", pl.getName(), oldId, newId)
+          );
+          repositionTokenOnTile();
+        }
+        case PLAYER_LADDER_ACTION -> {
+          eventLog.appendText(
+              String.format("%s climbed a ladder from %d to %d%n", pl.getName(), oldId, newId)
+          );
+          repositionTokenOnTile();
+        }
+        case PLAYER_FINISHED -> {
+          eventLog.appendText(
+              String.format("Player %s finished!%n", pl.getName())
+          );
+          repositionTokenOnTile();
+        }
+        case GAME_FINISHED -> {
+          if (!isGameFinished) {
+            isGameFinished = true;
+            SceneManager.showPodiumGameScene();
+          }
+        }
+        default -> repositionTokenOnTile();
       }
     });
   }
@@ -189,188 +209,124 @@ public class BoardGameScene implements BoardGameObserver {
     return scene;
   }
 
+  public Pane getTokenLayer() {
+    return tokenLayerPane;
+  }
+
+  private BorderPane createRootPane() {
+    BorderPane rootBorderPane = new BorderPane();
+    rootBorderPane.setStyle("-fx-background-color: #1A237E;");
+    return rootBorderPane;
+  }
+
   private HBox createStagingArea() {
     HBox stagingArea = new HBox(10);
     stagingArea.setPadding(new Insets(10));
     stagingArea.setAlignment(Pos.CENTER);
-    stagingArea.setStyle("-fx-background-color: rgba(255,255,255,0.2);"
-        + "-fx-border-color: white; -fx-border-radius: 8;");
+    stagingArea.setStyle(
+        "-fx-background-color: rgba(255,255,255,0.2);"
+            + "-fx-border-color: white; -fx-border-radius: 8;"
+    );
     return stagingArea;
   }
 
-
-  private VBox createIOContainer() {
-    VBox container = new VBox();
-    container.setPrefWidth(250);
-    container.setPadding(new Insets(30));
-    container.setSpacing(15);
-    container.setAlignment(Pos.TOP_CENTER);
-    container.setStyle(
-        "-fx-background-color: #7DBED7;"
-            + "-fx-background-radius: 0 40 40 0;"
-            + "-fx-border-radius: 0 40 40 0;"
-            + "-fx-border-color: black;"
-            + "-fx-border-width: 1;"
-    );
-
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setRadius(10.0);
-    dropShadow.setOffsetX(10.0);
-    dropShadow.setOffsetY(10.0);
-    dropShadow.setColor(Color.color(0, 0, 0, 0.3));
-    container.setEffect(dropShadow);
-
-    assert diceView != null;
-    container.getChildren().add(diceView.getDiceImageView());
-
-    Button rollDiceBtn = diceView.getRollDiceBtn();
-    container.getChildren().add(rollDiceBtn);
-    rollDiceBtn.setOnAction(e -> {
-      Timeline timeline = diceView.createRollDiceAnimation(() -> {
-        int result = diceView.rollResultProperty().get();
-        ;
-        logger.log(Level.INFO, "Passing to controller: " + result);
-        boardGameController.handlePlayerTurn(result);
-        rollDiceBtn.setDisable(false);
-      });
-      timeline.play();
-    });
-
-    Label rollResultLabel = new Label();
-    rollResultLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
-    rollResultLabel.textProperty().bind(diceView.rollResultProperty().asString("Roll result: %d"));
-    container.getChildren().add(rollResultLabel);
-
-    Label outputLabel = new Label("Output");
-    outputLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
-    outputLabel.setTextFill(Color.BLACK);
-    container.getChildren().add(outputLabel);
-
-    container.getChildren().add(createOutputArea());
-
-    Region spacer = new Region();
-    VBox.setVgrow(spacer, Priority.ALWAYS);
-    container.getChildren().add(spacer);
-    this.stagingArea = createStagingArea();
-    container.getChildren().add(stagingArea);
-
-    Button backBtn = Buttons.getBackBtn("Back");
-    container.getChildren().add(backBtn);
-    backBtn.setOnAction(e -> {
-      try {
-        SceneManager.showPlayerSelectionScene();
-      } catch (IOException ex) {
-        throw new RuntimeException(ex);
-      }
-    });
-
-    return container;
-  }
-
   private TextArea createOutputArea() {
-    /*
-    VBox outputArea = new VBox();
-    outputArea.setSpacing(5);
-    outputArea.setPadding(new Insets(10));
-    outputArea.setStyle(
-        "-fx-background-color: #2B2B2B;"
-            + "-fx-background-radius: 10;"
-            + "-fx-border-radius: 10;"
-            + "-fx-border-color: black;"
-            + "-fx-border-width: 1;"
-            + "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);"
-            + "-fx-padding: 10 20 150 20;"
-    );
-     */
-
     eventLog.setEditable(false);
     eventLog.setWrapText(true);
     eventLog.setScrollTop(Double.MAX_VALUE);
     eventLog.setFont(Font.font("monospace", FontWeight.BOLD, 16));
     eventLog.setStyle("-fx-control-inner-background: black; -fx-text-fill: white;");
     eventLog.setPrefHeight(200);
-    /*
-    outputArea.getChildren().addAll(eventLog, roundLabel);
-    return outputArea;
-
-     */
     return eventLog;
   }
 
+  private VBox createIOContainer() {
+    VBox ioContainer = new VBox();
+    ioContainer.setPrefWidth(250);
+    ioContainer.setPadding(new Insets(30));
+    ioContainer.setSpacing(15);
+    ioContainer.setAlignment(Pos.TOP_CENTER);
+    ioContainer.setStyle(
+        "-fx-background-color: #7DBED7;"
+            + "-fx-background-radius: 0 40 40 0;"
+            + "-fx-border-radius: 0 40 40 0;"
+            + "-fx-border-color: black;"
+            + "-fx-border-width: 1;"
+    );
+    DropShadow dropShadow = new DropShadow(10, Color.color(0, 0, 0, 0.3));
+    ioContainer.setEffect(dropShadow);
+
+    ioContainer.getChildren().add(diceView.getDiceImageView());
+    Button rollBtn = diceView.getRollDiceBtn();
+    ioContainer.getChildren().add(rollBtn);
+    rollBtn.setOnAction(event -> {
+      //Sett den til false om du skal teste
+      rollBtn.setDisable(true);
+      Timeline timeline = diceView.createRollDiceAnimation(() -> {
+        int result = diceView.rollResultProperty().get();
+        boardGameController.handlePlayerTurn(result);
+        rollBtn.setDisable(false);
+      });
+      timeline.play();
+    });
+
+    Label rollLbl = new Label();
+    rollLbl.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    rollLbl.textProperty().bind(
+        diceView.rollResultProperty().asString("Roll result: %d")
+    );
+    ioContainer.getChildren().add(rollLbl);
+
+
+    Label outputLbl = new Label("Output");
+    outputLbl.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    outputLbl.setTextFill(Color.BLACK);
+    ioContainer.getChildren().add(outputLbl);
+    ioContainer.getChildren().add(createOutputArea());
+
+    var spacer = new Region();
+    VBox.setVgrow(spacer, Priority.ALWAYS);
+    ioContainer.getChildren().add(spacer);
+
+    this.stagingArea = createStagingArea();
+    ioContainer.getChildren().add(stagingArea);
+
+    Button back = Buttons.getBackBtn("Back");
+    back.setOnAction(e -> {
+      try {
+        SceneManager.showPlayerSelectionScene();
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    });
+    ioContainer.getChildren().add(back);
+
+    return ioContainer;
+  }
+
+  @SuppressWarnings("unused")
   private VBox createPerformanceMeter() {
-    VBox graphContainer = new VBox();
-    //graphContainer.setAlignment(Pos.CENTER_LEFT);
-    graphContainer.setFillWidth(true);
+    VBox container = new VBox();
+    container.setFillWidth(true);
 
     NumberAxis xAxis = new NumberAxis();
     xAxis.setLabel("Turn");
     xAxis.setTickUnit(1);
     xAxis.setAnimated(true);
-    xAxis.setMinorTickCount(0);
-    xAxis.setForceZeroInRange(false);
     xAxis.setMinorTickVisible(false);
+
     NumberAxis yAxis = new NumberAxis("Dice Number", 0, 7, 1);
-    yAxis.setMinorTickVisible(false);
-    yAxis.setMinorTickCount(0);
     yAxis.setAnimated(true);
-    LineChart<Number, Number> performanceGraph = new LineChart<Number, Number>(xAxis, yAxis);
-    performanceGraph.setTitle("Performance Meter");
-    performanceGraph.setMaxWidth(300);
-    performanceGraph.setData(dataSeries);
-    performanceGraph.setMaxHeight((double) 550 / 2 - 50);
-    performanceGraph.setAnimated(true);
-    graphContainer.getChildren().add(performanceGraph);
-    return graphContainer;
-  }
+    yAxis.setMinorTickVisible(false);
 
-  @Override
-  public void onEvent(BoardGameEvent event) {
-    Platform.runLater(() -> {
-      Player player = event.player();
-      int rollValue = BoardGameController.getLastRolledValue();
+    LineChart<Number, Number> chart = new LineChart<Number, Number>(xAxis, yAxis);
+    chart.setTitle("Performance Meter");
+    chart.setMaxWidth(300);
+    chart.setData(dataSeries);
+    chart.setMaxHeight(225);
+    chart.setAnimated(true);
 
-      eventLog.appendText(String.format("%s rolled a %d%n", player.getName(), rollValue));
-
-      int oldId = event.oldTile() != null ? event.oldTile().getTileId() : 0;
-      int newId = event.newTile() != null ? event.newTile().getTileId() : 0;
-
-      switch (event.eventType()) {
-        case PLAYER_MOVED:
-          eventLog.appendText(
-              String.format("%s moved from %d to %d%n", player.getName(), oldId, newId)
-          );
-          repositionTokenOnTile();
-          break;
-
-        case PLAYER_LADDER_ACTION:
-          eventLog.appendText(
-              String.format("%s climbed a ladder from %d to %d%n",
-                  player.getName(), oldId, newId)
-          );
-          repositionTokenOnTile();
-          break;
-
-        case PLAYER_FINISHED:
-          eventLog.appendText(
-              String.format("Player %s finished!%n", player.getName())
-          );
-          repositionTokenOnTile();
-          break;
-
-        case GAME_FINISHED:
-          if (!isGameFinished) {
-            isGameFinished = true;
-            SceneManager.showPodiumGameScene();
-          }
-          break;
-        default:
-          repositionTokenOnTile();
-      }
-    });
-  }
-
-
-  public Pane getTokenLayer() {
-    return tokenLayerPane;
+    container.getChildren().add(chart);
+    return container;
   }
 }
