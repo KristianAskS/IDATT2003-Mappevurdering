@@ -163,39 +163,61 @@ public class PlayerSelectionScene {
     playerColorPicker.getStyleClass().add("colorpicker");
     addScaleAnimation(playerColorPicker, 1.02, Duration.millis(200));
 
+    Label imgLabel = new Label("Choose Image (optional)");
+    imgLabel.setWrapText(true);
+    imgLabel.setTextAlignment(TextAlignment.CENTER);
+    imgLabel.getStyleClass().add("label-sublabel");
+
+    Label imgPath = new Label();
+
+    Button imgBtn = Buttons.getEditBtn("Browse");
+    Button imgResetBtn = Buttons.getEditBtn("Remove image");
+
+    imgBtn.setMinWidth(Region.USE_PREF_SIZE);
+    imgResetBtn.setMinWidth(Region.USE_PREF_SIZE);
+
+    imgBtn.setOnAction(e -> {
+      FileChooser fc = new FileChooser();
+      fc.getExtensionFilters().add(
+          new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+      );
+      File f = fc.showOpenDialog(scene.getWindow());
+      if (f != null) {
+        selectedImage = f;
+        imgPath.setText(f.getName());
+
+        shapeComboBox.getSelectionModel().select("circle");
+        shapeComboBox.setDisable(true);
+      }
+    });
+
+    imgResetBtn.setOnAction(e ->
+        resetSelectedImage(shapeComboBox, imgPath)
+    );
+
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
     addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox));
 
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
-    Label imgLabel = new Label("Choose Image (optional)");
-    imgLabel.setWrapText(true);
-    imgLabel.setTextAlignment(TextAlignment.CENTER);
-    imgLabel.getStyleClass().add("label-sublabel");
-
-    Button imgBtn = Buttons.getEditBtn("Browse…");
-    Label imgPath = new Label();
-    imgBtn.setOnAction(e -> {
-      FileChooser fc = new FileChooser();
-      fc.getExtensionFilters().add(
-          new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
-      File f = fc.showOpenDialog(scene.getWindow());
-      if (f != null) {
-        selectedImage = f;
-        imgPath.setText(f.getName());
-      }
-    });
-
     inputPanel.getChildren().addAll(
-        imgLabel, imgBtn, imgPath,
+        imgLabel, new HBox(10, imgBtn, imgResetBtn), imgPath,
         nameLabel, nameInput,
         shapeLabel, shapeComboBox,
         colorLabel, playerColorPicker,
         spacer,
         addPlayerBtn
     );
+
     return inputPanel;
+  }
+
+  private void resetSelectedImage(ComboBox<String> shapeComboBox, Label imgPathLabel) {
+    selectedImage = null;
+    imgPathLabel.setText("");
+    shapeComboBox.setDisable(false);
+    shapeComboBox.getSelectionModel().clearSelection();
   }
 
 
@@ -324,6 +346,7 @@ public class PlayerSelectionScene {
     String name = nameField.getText();
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
+    File selectedImage = this.selectedImage;
 
     if (isAtMaxPlayers()) {
       showAlert(Alert.AlertType.WARNING, "Maximum of players",
@@ -331,7 +354,11 @@ public class PlayerSelectionScene {
       resetInputs(nameField, shapeComboBox);
       return;
     }
-    if (name == null || name.isBlank() || shape == null || color == null) {
+    if (shape == null || selectedImage != null) {
+      shape = "circle";
+    }
+
+    if (name == null || name.isBlank() || color == null) {
       showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
       return;
     }
