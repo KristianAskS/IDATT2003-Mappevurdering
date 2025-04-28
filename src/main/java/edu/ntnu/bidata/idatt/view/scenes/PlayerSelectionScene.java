@@ -11,7 +11,12 @@ import edu.ntnu.bidata.idatt.view.components.AvailablePlayerCard;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.SelectedPlayerCard;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +50,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 public class PlayerSelectionScene {
@@ -58,6 +65,7 @@ public class PlayerSelectionScene {
   private final PlayerService playerService = new PlayerService();
   private final Scene scene;
   private final int PANEL_WIDTH = 300;
+  private File selectedImage;
 
   public PlayerSelectionScene() throws IOException {
     BorderPane rootPane = SceneManager.getRootPane();
@@ -155,6 +163,38 @@ public class PlayerSelectionScene {
     playerColorPicker.getStyleClass().add("colorpicker");
     addScaleAnimation(playerColorPicker, 1.02, Duration.millis(200));
 
+    Label imgLabel = new Label("Choose Image (optional)");
+    imgLabel.setWrapText(true);
+    imgLabel.setTextAlignment(TextAlignment.CENTER);
+    imgLabel.getStyleClass().add("label-sublabel");
+
+    Label imgPath = new Label();
+
+    Button imgBtn = Buttons.getEditBtn("Browse");
+    Button imgResetBtn = Buttons.getEditBtn("Remove image");
+
+    imgBtn.setMinWidth(Region.USE_PREF_SIZE);
+    imgResetBtn.setMinWidth(Region.USE_PREF_SIZE);
+
+    imgBtn.setOnAction(e -> {
+      FileChooser fc = new FileChooser();
+      fc.getExtensionFilters().add(
+          new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+      );
+      File f = fc.showOpenDialog(scene.getWindow());
+      if (f != null) {
+        selectedImage = f;
+        imgPath.setText(f.getName());
+
+        shapeComboBox.getSelectionModel().select("circle");
+        shapeComboBox.setDisable(true);
+      }
+    });
+
+    imgResetBtn.setOnAction(e ->
+        resetSelectedImage(shapeComboBox, imgPath)
+    );
+
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
     addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox));
 
@@ -162,13 +202,22 @@ public class PlayerSelectionScene {
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
     inputPanel.getChildren().addAll(
+        imgLabel, new HBox(10, imgBtn, imgResetBtn), imgPath,
         nameLabel, nameInput,
         shapeLabel, shapeComboBox,
         colorLabel, playerColorPicker,
         spacer,
         addPlayerBtn
     );
+
     return inputPanel;
+  }
+
+  private void resetSelectedImage(ComboBox<String> shapeComboBox, Label imgPathLabel) {
+    selectedImage = null;
+    imgPathLabel.setText("");
+    shapeComboBox.setDisable(false);
+    shapeComboBox.getSelectionModel().clearSelection();
   }
 
 
@@ -225,8 +274,11 @@ public class PlayerSelectionScene {
           }
           selectedPlayers.add(new Player(
               chosen.getName(),
-              new TokenView(Token.token(chosen.getToken().getTokenColor(),
-                  chosen.getToken().getTokenShape())))
+              new TokenView(Token.token(
+                  chosen.getToken().getTokenColor(),
+                  chosen.getToken().getTokenShape(),
+                  chosen.getToken().getImagePath()
+              )))
           );
           updatePlayersCountLabel();
         })
@@ -247,8 +299,11 @@ public class PlayerSelectionScene {
         } else {
           selectedPlayers.add(new Player(
               selected.getName(),
-              new TokenView(Token.token(selected.getToken().getTokenColor(),
-                  selected.getToken().getTokenShape()))));
+              new TokenView(Token.token(
+                  selected.getToken().getTokenColor(),
+                  selected.getToken().getTokenShape(),
+                  selected.getToken().getImagePath()
+              ))));
           updatePlayersCountLabel();
         }
       }
@@ -286,25 +341,57 @@ public class PlayerSelectionScene {
     return listView;
   }
 
+
   private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox) {
     String name = nameField.getText();
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
+    File selectedImage = this.selectedImage;
 
     if (isAtMaxPlayers()) {
       showAlert(Alert.AlertType.WARNING, "Maximum of players",
           "Exceeded maximum players: " + getTotalPlayerCount());
       resetInputs(nameField, shapeComboBox);
-    } else if (name == null || name.isBlank() || shape == null || color == null) {
-      showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
-    } else {
-      TokenView token = new TokenView(Token.token(color, shape));
-      Player newPlayer = new Player(name, token);
-      selectedPlayers.add(newPlayer);
-      updatePlayersCountLabel();
-      resetInputs(nameField, shapeComboBox);
-      logger.log(Level.INFO, "Added player: " + name + " with color and shape");
+      return;
     }
+    if (shape == null || selectedImage != null) {
+      shape = "circle";
+    }
+
+    if (name == null || name.isBlank() || color == null) {
+      showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
+      return;
+    }
+
+    String storedImgPath = null;
+    try {
+      if (selectedImage != null) {
+        Path targetDir = Paths.get("data/games/tokenimages");
+        Files.createDirectories(targetDir);
+
+        String uniqueName = "image" + "-" + selectedImage.getName();
+        Path dest = targetDir.resolve(uniqueName);
+
+        Files.copy(selectedImage.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+        storedImgPath = dest.toUri().toString();
+
+        logger.log(Level.INFO, "Token image saved to {0}", dest);
+      }
+    } catch (IOException ex) {
+      logger.log(Level.SEVERE, "Failed to copy token image: {0}", ex.getMessage());
+      showAlert(Alert.AlertType.ERROR, "Image error", "Could not save the chosen image.");
+      return;
+    }
+
+    TokenView token = new TokenView(Token.token(color, shape, storedImgPath));
+    Player newPlayer = new Player(name, token);
+    selectedPlayers.add(newPlayer);
+    updatePlayersCountLabel();
+    resetInputs(nameField, shapeComboBox);
+    selectedImage = null;
+
+    logger.log(Level.INFO, "Added player: {0} with image {1}",
+        new Object[]{name, storedImgPath});
   }
 
   private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox) {
@@ -419,7 +506,7 @@ public class PlayerSelectionScene {
   }
 
   private void addScaleAnimation(javafx.scene.Node node, double targetScale,
-                                 Duration duration) {
+      Duration duration) {
     node.setOnMouseEntered(e -> {
       Timeline anim = new Timeline(
           new KeyFrame(duration,
