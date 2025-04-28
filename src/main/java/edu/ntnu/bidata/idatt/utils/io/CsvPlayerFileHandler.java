@@ -1,8 +1,7 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
-import static edu.ntnu.bidata.idatt.model.entity.Token.token;
-
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Token;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,6 +23,8 @@ import javafx.scene.paint.Color;
  */
 public class CsvPlayerFileHandler implements FileHandler<Player> {
 
+  private static final String IMG_DIR = "data/games/tokenimages";
+
   Logger logger = Logger.getLogger(CsvPlayerFileHandler.class.getName());
 
   /**
@@ -36,8 +37,14 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
         TokenView token = player.getToken();
-        String writeLine = player.getName() + "," + toRgbString(token.getTokenColor()) + "," +
-            token.getTokenShape();
+
+        String writeLine = String.join(",",
+            player.getName(),
+            toRgbString(token.getTokenColor()),
+            token.getTokenShape(),
+            token.getImagePath() == null ? "" : token.getImagePath()
+        );
+
         bufferedWriter.write(writeLine);
         bufferedWriter.newLine();
         logger.log(Level.FINE, "Player: " + player.getName() + " has been written to the file");
@@ -60,14 +67,15 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
       String line;
       while ((line = bufferedReader.readLine()) != null) {
-        String[] playerData = line.split(",");
-        if (playerData.length == 3) {
+        String[] playerData = line.split(",", -1);
+        if (playerData.length >= 3) {
           String name = playerData[0].trim();
           Color color = Color.web(playerData[1].trim());
           String shape = playerData[2].trim();
-          TokenView token = new TokenView(token(color, shape));
-          Player player = new Player(name, token);
-          players.add(player);
+          String img = playerData.length > 3 ? playerData[3].trim() : null;
+
+          TokenView token = new TokenView(Token.token(color, shape, img));
+          players.add(new Player(name, token));
         }
       }
     } catch (IOException e) {

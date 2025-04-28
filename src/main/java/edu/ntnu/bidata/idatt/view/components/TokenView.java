@@ -6,17 +6,17 @@ import edu.ntnu.bidata.idatt.model.entity.Token;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.image.Image;
-import javafx.scene.layout.StackPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
 public class TokenView extends StackPane {
+
   private static final Logger logger = Logger.getLogger(TokenView.class.getName());
   private final Token token;
-  // optional filepath to image
 
 
   public TokenView(Token token) {
@@ -66,7 +66,7 @@ public class TokenView extends StackPane {
     }
 
     logger.log(Level.INFO, "TokenView created with color {0} and shape {1}",
-        new Object[] {token.getColor(), token.getShape()});
+        new Object[]{token.getColor(), token.getShape()});
   }
 
   private static void setStrokeHandler(Ellipse token) {
@@ -82,5 +82,9 @@ public class TokenView extends StackPane {
 
   public String getTokenShape() {
     return token.getShape();
+  }
+
+  public String getImagePath() {
+    return token.getImagePath();
   }
 }

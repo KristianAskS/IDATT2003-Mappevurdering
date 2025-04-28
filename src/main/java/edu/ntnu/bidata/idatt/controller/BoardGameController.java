@@ -34,6 +34,7 @@ import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
 public class BoardGameController {
+
   private static final Logger LOGGER = Logger.getLogger(BoardGameController.class.getName());
 
   private final PlayerService playerService;
@@ -73,7 +74,7 @@ public class BoardGameController {
     }
 
     row = rows - 1 - row;
-    return new int[] {row, col};
+    return new int[]{row, col};
   }
 
   public void initializePlayers(List<Player> players) {
@@ -194,7 +195,8 @@ public class BoardGameController {
     return pauseTransition;
   }
 
-  private void animateLadderMovement(Player player, int fromTileId, int toTileId, Runnable onDoneCallback) {
+  private void animateLadderMovement(Player player, int fromTileId, int toTileId,
+      Runnable onDoneCallback) {
     TileView startTileView = lookupTileView(fromTileId);
     TileView endTileView = lookupTileView(toTileId);
     Node token = player.getToken();
