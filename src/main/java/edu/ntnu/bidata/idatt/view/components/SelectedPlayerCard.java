@@ -12,6 +12,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -28,20 +30,13 @@ public class SelectedPlayerCard extends HBox {
   public SelectedPlayerCard(Player player, Consumer<Player> onDelete) {
     super(10);
     setAlignment(Pos.CENTER_LEFT);
-    // setStyle("-fx-background-color: transparent;");
     setMaxWidth(Double.MAX_VALUE);
 
     getStyleClass().add("selected-card");
 
-    Rectangle colorBox =
-        new Rectangle(COLOR_BOX_SIZE, COLOR_BOX_SIZE, player.getToken().getTokenColor());
-    colorBox.setStroke(Color.BLACK);
-
     Label nameLbl = new Label(player.getName());
     nameLbl.getStyleClass().add("label-listview");
     nameLbl.setMinWidth(90);
-
-    String shape = player.getToken().getTokenShape();
 
     Region spacer = new Region();
     HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -52,15 +47,38 @@ public class SelectedPlayerCard extends HBox {
     deleteBtn.setOnAction(e -> onDelete.accept(player));
 
     Node tokenPreview;
-    if (player.getToken().getTokenShape() != null && player.getToken().getImagePath() == null) {
-      tokenPreview = new Rectangle(COLOR_BOX_SIZE, COLOR_BOX_SIZE,
-          player.getToken().getTokenColor());
-      ((Rectangle) tokenPreview).setStroke(Color.BLACK);
+    String imgPath = player.getToken().getImagePath();
+    String shapeStr = player.getToken().getTokenShape() == null
+        ? "" : player.getToken().getTokenShape().toLowerCase();
+    Color tokenCol = player.getToken().getTokenColor();
+
+    if (imgPath != null && !imgPath.isBlank()) {
+      tokenPreview = new ImageView(new Image(imgPath, COLOR_BOX_SIZE, COLOR_BOX_SIZE, true, true));
     } else {
-      ImageView iv = new ImageView(new Image(player.getToken().getImagePath(), 18, 18, true, true));
-      tokenPreview = iv;
+      switch (shapeStr) {
+        case "circle" -> {
+          Circle c = new Circle(COLOR_BOX_SIZE / 2.0, tokenCol);
+          c.setStroke(Color.BLACK);
+          tokenPreview = c;
+        }
+        case "triangle" -> {
+          Polygon t = new Polygon(
+              COLOR_BOX_SIZE / 2.0, 0,
+              COLOR_BOX_SIZE, COLOR_BOX_SIZE,
+              0, COLOR_BOX_SIZE
+          );
+          t.setFill(tokenCol);
+          t.setStroke(Color.BLACK);
+          tokenPreview = t;
+        }
+        default -> {
+          Rectangle r = new Rectangle(COLOR_BOX_SIZE, COLOR_BOX_SIZE, tokenCol);
+          r.setStroke(Color.BLACK);
+          tokenPreview = r;
+        }
+      }
     }
 
-    getChildren().addAll(nameLbl, spacer, tokenPreview, deleteBtn);
+    getChildren().addAll(tokenPreview, nameLbl, spacer, deleteBtn);
   }
 }
