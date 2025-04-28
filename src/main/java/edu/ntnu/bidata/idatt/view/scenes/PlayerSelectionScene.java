@@ -50,6 +50,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
@@ -169,6 +170,8 @@ public class PlayerSelectionScene {
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
     Label imgLabel = new Label("Choose Image (optional)");
+    imgLabel.setWrapText(true);
+    imgLabel.setTextAlignment(TextAlignment.CENTER);
     imgLabel.getStyleClass().add("label-sublabel");
 
     Button imgBtn = Buttons.getEditBtn("Browse…");
@@ -176,7 +179,7 @@ public class PlayerSelectionScene {
     imgBtn.setOnAction(e -> {
       FileChooser fc = new FileChooser();
       fc.getExtensionFilters().add(
-          new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif"));
+          new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
       File f = fc.showOpenDialog(scene.getWindow());
       if (f != null) {
         selectedImage = f;
