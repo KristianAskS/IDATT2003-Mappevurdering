@@ -23,13 +23,19 @@ public class TokenView extends StackPane {
     this.token = token;
 
     if (token.getImagePath() != null) {
-      Image image = new Image(token.getImagePath());
-      ImageView view = new ImageView(image);
-      view.setFitWidth(TILE_SIZE);
-      view.setFitHeight(TILE_SIZE);
+      double size = TILE_SIZE * 0.4;
 
-      Rectangle clip = new Rectangle(TILE_SIZE, TILE_SIZE);
+      Image image = new Image(token.getImagePath(), true);
+      ImageView view = new ImageView(image);
+
+      view.setPreserveRatio(true);
+      view.setSmooth(true);
+      view.setFitWidth(size);
+      view.setFitHeight(size);
+
+      Rectangle clip = new Rectangle(size, size);
       view.setClip(clip);
+
       getChildren().add(view);
 
     } else {
