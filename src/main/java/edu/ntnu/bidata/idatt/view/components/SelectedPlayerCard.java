@@ -6,23 +6,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 
 /**
  * Compact, fully–transparent card that visualises a {@link Player}.
  */
 public class SelectedPlayerCard extends HBox {
-
-  private static final int COLOR_BOX_SIZE = 18;
-  private static final int IMAGE_SIZE = 22;
 
   /**
    * @param player   the player to visualise
@@ -47,38 +38,7 @@ public class SelectedPlayerCard extends HBox {
     deleteBtn.setStyle("-fx-background-color: transparent;");
     deleteBtn.setOnAction(e -> onDelete.accept(player));
 
-    Node tokenPreview;
-    String imgPath = player.getToken().getImagePath();
-    String shapeStr = player.getToken().getTokenShape() == null
-        ? "" : player.getToken().getTokenShape().toLowerCase();
-    Color tokenCol = player.getToken().getTokenColor();
-
-    if (imgPath != null && !imgPath.isBlank()) {
-      tokenPreview = new ImageView(new Image(imgPath, IMAGE_SIZE, IMAGE_SIZE, true, true));
-    } else {
-      switch (shapeStr) {
-        case "circle" -> {
-          Circle c = new Circle(COLOR_BOX_SIZE / 2.0, tokenCol);
-          c.setStroke(Color.BLACK);
-          tokenPreview = c;
-        }
-        case "triangle" -> {
-          Polygon t = new Polygon(
-              COLOR_BOX_SIZE / 2.0, 0,
-              COLOR_BOX_SIZE, COLOR_BOX_SIZE,
-              0, COLOR_BOX_SIZE
-          );
-          t.setFill(tokenCol);
-          t.setStroke(Color.BLACK);
-          tokenPreview = t;
-        }
-        default -> {
-          Rectangle r = new Rectangle(COLOR_BOX_SIZE, COLOR_BOX_SIZE, tokenCol);
-          r.setStroke(Color.BLACK);
-          tokenPreview = r;
-        }
-      }
-    }
+    Node tokenPreview = TokenPreview.create(player.getToken());
 
     getChildren().addAll(tokenPreview, nameLbl, spacer, deleteBtn);
   }
