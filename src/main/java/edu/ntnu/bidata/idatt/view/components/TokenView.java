@@ -5,46 +5,64 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
 import edu.ntnu.bidata.idatt.model.entity.Token;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
 public class TokenView extends StackPane {
   private static final Logger logger = Logger.getLogger(TokenView.class.getName());
   private final Token token;
+  // optional filepath to image
+
 
   public TokenView(Token token) {
     this.token = token;
 
-    switch (token.getShape().toLowerCase()) {
-      case "circle" -> {
-        Ellipse circle = new Ellipse(0.2 * TILE_SIZE, 0.2 * TILE_SIZE);
-        circle.setFill(token.getColor());
-        setStrokeHandler(circle);
-        getChildren().add(circle);
+    if (token.getImagePath() != null) {
+      Image image = new Image(token.getImagePath());
+      ImageView view = new ImageView(image);
+      view.setFitWidth(TILE_SIZE);
+      view.setFitHeight(TILE_SIZE);
+
+      Rectangle clip = new Rectangle(TILE_SIZE, TILE_SIZE);
+      view.setClip(clip);
+      getChildren().add(view);
+
+    } else {
+
+      switch (token.getShape().toLowerCase()) {
+        case "circle" -> {
+          Ellipse circle = new Ellipse(0.2 * TILE_SIZE, 0.2 * TILE_SIZE);
+          circle.setFill(token.getColor());
+          setStrokeHandler(circle);
+          getChildren().add(circle);
+        }
+        case "square" -> {
+          javafx.scene.shape.Rectangle square =
+              new javafx.scene.shape.Rectangle(0.4 * TILE_SIZE, 0.4 * TILE_SIZE);
+          square.setFill(token.getColor());
+          square.setStroke(Color.BLACK);
+          square.setStrokeWidth(3);
+          getChildren().add(square);
+        }
+        case "triangle" -> {
+          javafx.scene.shape.Polygon triangle = new javafx.scene.shape.Polygon();
+          triangle.getPoints().addAll(
+              0.0, -0.2 * TILE_SIZE,
+              -0.2 * TILE_SIZE, 0.2 * TILE_SIZE,
+              0.2 * TILE_SIZE, 0.2 * TILE_SIZE
+          );
+          triangle.setFill(token.getColor());
+          triangle.setStroke(Color.BLACK);
+          triangle.setStrokeWidth(3);
+          getChildren().add(triangle);
+        }
+        default -> logger.warning("Unknown shape: " + token.getShape());
       }
-      case "square" -> {
-        javafx.scene.shape.Rectangle square =
-            new javafx.scene.shape.Rectangle(0.4 * TILE_SIZE, 0.4 * TILE_SIZE);
-        square.setFill(token.getColor());
-        square.setStroke(Color.BLACK);
-        square.setStrokeWidth(3);
-        getChildren().add(square);
-      }
-      case "triangle" -> {
-        javafx.scene.shape.Polygon triangle = new javafx.scene.shape.Polygon();
-        triangle.getPoints().addAll(
-            0.0, -0.2 * TILE_SIZE,
-            -0.2 * TILE_SIZE, 0.2 * TILE_SIZE,
-            0.2 * TILE_SIZE, 0.2 * TILE_SIZE
-        );
-        triangle.setFill(token.getColor());
-        triangle.setStroke(Color.BLACK);
-        triangle.setStrokeWidth(3);
-        getChildren().add(triangle);
-      }
-      default -> logger.warning("Unknown shape: " + token.getShape());
     }
 
     logger.log(Level.INFO, "TokenView created with color {0} and shape {1}",
