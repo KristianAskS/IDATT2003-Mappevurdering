@@ -22,6 +22,7 @@ import javafx.scene.shape.Rectangle;
 public class SelectedPlayerCard extends HBox {
 
   private static final int COLOR_BOX_SIZE = 18;
+  private static final int IMAGE_SIZE = 22;
 
   /**
    * @param player   the player to visualise
@@ -53,7 +54,7 @@ public class SelectedPlayerCard extends HBox {
     Color tokenCol = player.getToken().getTokenColor();
 
     if (imgPath != null && !imgPath.isBlank()) {
-      tokenPreview = new ImageView(new Image(imgPath, COLOR_BOX_SIZE, COLOR_BOX_SIZE, true, true));
+      tokenPreview = new ImageView(new Image(imgPath, IMAGE_SIZE, IMAGE_SIZE, true, true));
     } else {
       switch (shapeStr) {
         case "circle" -> {

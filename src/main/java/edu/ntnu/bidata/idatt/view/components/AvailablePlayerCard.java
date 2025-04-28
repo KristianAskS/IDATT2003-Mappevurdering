@@ -22,6 +22,7 @@ import javafx.scene.shape.Rectangle;
 public class AvailablePlayerCard extends HBox {
 
   private static final int COLOR_BOX_SIZE = 18;
+  private static final int IMAGE_SIZE = 22;
 
   public AvailablePlayerCard(Player player, Consumer<Player> onSelect) {
     super(10);
@@ -45,7 +46,7 @@ public class AvailablePlayerCard extends HBox {
 
     if (imgPath != null && !imgPath.isBlank()) {
       tokenPreview = new ImageView(
-          new Image(imgPath, COLOR_BOX_SIZE, COLOR_BOX_SIZE, true, true)
+          new Image(imgPath, IMAGE_SIZE, IMAGE_SIZE, true, true)
       );
     } else {
       switch (shapeStr) {
