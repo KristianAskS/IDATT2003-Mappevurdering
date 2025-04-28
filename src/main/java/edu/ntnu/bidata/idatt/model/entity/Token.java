@@ -41,6 +41,7 @@ public class Token {
   }
 
   public String getImagePath() {
+
     return imagePath;
   }
 

@@ -8,6 +8,8 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -72,9 +74,13 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
           String name = playerData[0].trim();
           Color color = Color.web(playerData[1].trim());
           String shape = playerData[2].trim();
-          String img = playerData.length > 3 ? playerData[3].trim() : null;
 
-          TokenView token = new TokenView(Token.token(color, shape, img));
+          String imgRel = playerData.length > 3 ? playerData[3].trim() : "";
+          String imgAbs = imgRel.isBlank() ? null : toFileUri(imgRel);
+
+          // String img = playerData.length > 3 ? playerData[3].trim() : null;
+
+          TokenView token = new TokenView(Token.token(color, shape, imgAbs));
           players.add(new Player(name, token));
         }
       }
@@ -90,5 +96,16 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     int blue = (int) (color.getBlue() * 255);
     int alpha = (int) (color.getOpacity() * 255);
     return String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
+  }
+
+  private String toFileUri(String csvPath) {
+    if (csvPath.matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*")) {
+      return csvPath;
+    }
+    Path p = Paths.get(csvPath);
+    if (!p.isAbsolute()) {
+      p = Paths.get("").toAbsolutePath().resolve(p).normalize();
+    }
+    return p.toUri().toString();
   }
 }

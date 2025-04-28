@@ -1,11 +1,11 @@
 Lionel Messi,#ADD8E6FF,circle
 Cristiano Ronaldo,#DC143CFF,circle
 Kylian Mbappé,#00008BFF,triangle
-Erling Haaland,#FFFF00FF,square
+Erling Haaland,#FFFF00FF,square,data/games/tokenimages/Haaland.png
 Kevin De Bruyne,#87CEFAFF,triangle
 Virgil van Dijk,#006400FF,square
 Luka Modrić,#F5F5F5FF,circle
-Neymar Jr,#9932CCFF,triangle
+Neymar Jr,#9932CCFF,triangle,data/games/tokenimages/Neymar.png
 Robert Lewandowski,#CD5C5CFF,square
 Mohamed Salah,#C71585FF,triangle
 Karim Benzema,#DAA520FF,circle
@@ -13,4 +13,4 @@ Sadio Mané,#228B22FF,square
 Heung-min Son,#6495EDFF,triangle
 Toni Kroos,#C0C0C0FF,circle
 Pedri,#FF69B4FF,square
-Jude Bellingham,#4169E1FF,triangle
+Jude Bellingham,#4169E1FF,triangle, data/games/tokenimages/test.jpg
