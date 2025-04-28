@@ -16,51 +16,43 @@ import javafx.scene.shape.StrokeType;
 public class TokenView extends StackPane {
 
   private static final Logger logger = Logger.getLogger(TokenView.class.getName());
+  private static final double SIZE = TILE_SIZE * 0.4;
+  private static final double HALF_SIZE = SIZE / 2.0;
+  private static final double TRI_OFFSET = HALF_SIZE;
   private final Token token;
-
 
   public TokenView(Token token) {
     this.token = token;
 
     if (token.getImagePath() != null) {
-      double size = TILE_SIZE * 0.4;
-
-      Image image = new Image(token.getImagePath(), true);
-      ImageView view = new ImageView(image);
-
+      ImageView view = new ImageView(new Image(token.getImagePath(), true));
       view.setPreserveRatio(true);
       view.setSmooth(true);
-      view.setFitWidth(size);
-      view.setFitHeight(size);
-
-      Rectangle clip = new Rectangle(size, size);
-      view.setClip(clip);
-
+      view.setFitWidth(SIZE);
+      view.setFitHeight(SIZE);
+      view.setClip(new Rectangle(SIZE, SIZE));
       getChildren().add(view);
 
     } else {
-
       switch (token.getShape().toLowerCase()) {
         case "circle" -> {
-          Ellipse circle = new Ellipse(0.2 * TILE_SIZE, 0.2 * TILE_SIZE);
+          Ellipse circle = new Ellipse(HALF_SIZE, HALF_SIZE);
           circle.setFill(token.getColor());
           setStrokeHandler(circle);
           getChildren().add(circle);
         }
         case "square" -> {
-          javafx.scene.shape.Rectangle square =
-              new javafx.scene.shape.Rectangle(0.4 * TILE_SIZE, 0.4 * TILE_SIZE);
+          Rectangle square = new Rectangle(SIZE, SIZE);
           square.setFill(token.getColor());
           square.setStroke(Color.BLACK);
           square.setStrokeWidth(3);
           getChildren().add(square);
         }
         case "triangle" -> {
-          javafx.scene.shape.Polygon triangle = new javafx.scene.shape.Polygon();
-          triangle.getPoints().addAll(
-              0.0, -0.2 * TILE_SIZE,
-              -0.2 * TILE_SIZE, 0.2 * TILE_SIZE,
-              0.2 * TILE_SIZE, 0.2 * TILE_SIZE
+          javafx.scene.shape.Polygon triangle = new javafx.scene.shape.Polygon(
+              0.0, -TRI_OFFSET,
+              -TRI_OFFSET, TRI_OFFSET,
+              TRI_OFFSET, TRI_OFFSET
           );
           triangle.setFill(token.getColor());
           triangle.setStroke(Color.BLACK);
