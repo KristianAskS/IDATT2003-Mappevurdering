@@ -4,7 +4,10 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import java.util.function.Consumer;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -27,10 +30,6 @@ public class AvailablePlayerCard extends HBox {
 
     setCursor(Cursor.HAND);
 
-    Rectangle colorBox =
-        new Rectangle(COLOR_BOX_SIZE, COLOR_BOX_SIZE, player.getToken().getTokenColor());
-    colorBox.setStroke(Color.BLACK);
-
     Label nameLbl = new Label(player.getName());
     nameLbl.getStyleClass().add("label-listview");
     nameLbl.setMinWidth(90);
@@ -38,7 +37,17 @@ public class AvailablePlayerCard extends HBox {
     Region spacer = new Region();
     HBox.setHgrow(spacer, Priority.ALWAYS);
 
-    getChildren().addAll(colorBox, nameLbl, spacer);
+    Node tokenPreview;
+    if (player.getToken().getTokenShape() != null && player.getToken().getImagePath() == null) {
+      tokenPreview = new Rectangle(COLOR_BOX_SIZE, COLOR_BOX_SIZE,
+          player.getToken().getTokenColor());
+      ((Rectangle) tokenPreview).setStroke(Color.BLACK);
+    } else {
+      ImageView iv = new ImageView(new Image(player.getToken().getImagePath(), 18, 18, true, true));
+      tokenPreview = iv;
+    }
+
+    getChildren().addAll(nameLbl, spacer, tokenPreview);
 
     setOnMouseClicked(e -> onSelect.accept(player));
   }
