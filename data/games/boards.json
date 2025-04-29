@@ -1,7 +1,7 @@
 [
   {
-    "name": "Quick Ludo",
-    "description": "32‑tile Ludo track for faster games",
+    "name": "Classic Ludo",
+    "description": "Standard 52‑tile Ludo track",
     "tiles": [
       {
         "tileId": 1,
@@ -128,7 +128,87 @@
         "nextTileId": -1
       },
       {
-        "tileId": 32
+        "tileId": 32,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 33,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 34,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 35,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 36,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 37,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 38,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 39,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 40,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 41,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 42,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 43,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 44,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 45,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 46,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 47,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 48,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 49,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 50,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 51,
+        "nextTileId": -1
+      },
+      {
+        "tileId": 52
       }
     ]
   }

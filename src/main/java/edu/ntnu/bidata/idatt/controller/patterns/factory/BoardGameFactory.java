@@ -42,15 +42,7 @@ public final class BoardGameFactory {
     return createBoardTiles("Classic Ludo", "Standard 52‑tile Ludo track", 52);
   }
 
-  public static Board createLudoQuickBoard() {
-    return createBoardTiles("Quick Ludo", "32‑tile Ludo track for faster games", 32);
-  }
-
-  public static Board createLudoMegaBoard() {
-    return createBoardTiles("Mega Ludo", "80‑tile Ludo track that accommodates up to 8 players",
-        80);
-  }
-
+  //TODO: make more ludo board variants
   public static void addRandomLadders(Board board, int count) {
     int placed = 0;
     while (placed < count) {

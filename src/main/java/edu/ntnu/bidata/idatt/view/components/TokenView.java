@@ -1,8 +1,10 @@
 package edu.ntnu.bidata.idatt.view.components;
 
-import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
+import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LADDER;
+import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LUDO;
 
 import edu.ntnu.bidata.idatt.model.entity.Token;
+import edu.ntnu.bidata.idatt.view.scenes.GameSelectionScene;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.image.Image;
@@ -17,7 +19,9 @@ import javafx.scene.shape.StrokeType;
 public class TokenView extends StackPane {
 
   private static final Logger logger = Logger.getLogger(TokenView.class.getName());
-  private static final double SIZE = TILE_SIZE * 0.4;
+  private static final double SIZE = (
+      "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame())) ?
+          TILE_SIZE_LUDO : TILE_SIZE_LADDER) * 0.4;
   private static final double HALF_SIZE = SIZE / 2.0;
   private static final double TRI_OFFSET = HALF_SIZE;
   private final Token token;

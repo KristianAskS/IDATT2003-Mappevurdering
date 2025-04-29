@@ -5,7 +5,8 @@ package edu.ntnu.bidata.idatt.view.scenes;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 import static edu.ntnu.bidata.idatt.model.entity.Ladder.VISUAL_CORRECTION;
-import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE;
+import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LADDER;
+import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LUDO;
 
 import edu.ntnu.bidata.idatt.controller.BoardGameController;
 import edu.ntnu.bidata.idatt.controller.SceneManager;
@@ -13,10 +14,11 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.view.components.BoardView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.DiceView;
 import edu.ntnu.bidata.idatt.view.components.LadderView;
+import edu.ntnu.bidata.idatt.view.components.LaddersBoardView;
+import edu.ntnu.bidata.idatt.view.components.LudoBoardView;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
@@ -75,7 +77,11 @@ public class BoardGameScene implements BoardGameObserver {
     rootPane.setLeft(ioContainer);
 
     Board board = BoardSelectionScene.getSelectedBoard();
-    this.boardGridPane = BoardView.createBoardGUI(board);
+    if ("LUDO".equalsIgnoreCase(GameSelectionScene.getSelectedGame())) {
+      this.boardGridPane = new LudoBoardView().createBoardGUI(board);
+    } else {
+      this.boardGridPane = new LaddersBoardView().createBoardGUI(board);
+    }
     boardGridPane.setId("boardGridPane");
 
     tokenLayerPane.setPickOnBounds(false);
@@ -142,11 +148,13 @@ public class BoardGameScene implements BoardGameObserver {
     List<Node> tokens = tile.getChildren().stream()
         .filter(node -> node instanceof TokenView).toList();
     double[][] offsets = getTokenOffsets(tokens.size());
+    int tileSize = "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame())) ?
+        TILE_SIZE_LUDO : TILE_SIZE_LADDER;
     IntStream.range(0, tokens.size())
         .forEach(i -> {
           Node tokenNode = tokens.get(i);
-          double x = (TILE_SIZE - offsets[i][0] * TILE_SIZE * 2) / 2;
-          double y = (TILE_SIZE - offsets[i][1] * TILE_SIZE * 2) / 2;
+          double x = (tileSize - offsets[i][0] * tileSize * 2) / 2;
+          double y = (tileSize - offsets[i][1] * tileSize * 2) / 2;
           tokenNode.setTranslateX(x);
           tokenNode.setTranslateY(y);
         });

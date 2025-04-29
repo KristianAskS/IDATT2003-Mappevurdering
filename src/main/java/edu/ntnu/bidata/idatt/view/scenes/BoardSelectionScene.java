@@ -5,7 +5,6 @@ import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
-import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
@@ -30,7 +29,7 @@ import javafx.scene.paint.Color;
 
 public class BoardSelectionScene {
   private static final Logger logger =
-      Logger.getLogger(ConsoleBoardGameObserver.class.getName());
+      Logger.getLogger(BoardSelectionScene.class.getName());
 
   private static Board selectedBoard;
 
@@ -113,13 +112,8 @@ public class BoardSelectionScene {
     Button classic = Buttons.getSecondaryBtn("Classic Ludo");
     classic.setOnAction(e -> load(BoardGameFactory.createLudoClassicBoard()));
 
-    Button quick = Buttons.getSecondaryBtn("Quick Ludo");
-    quick.setOnAction(e -> load(BoardGameFactory.createLudoQuickBoard()));
-
-    Button mega = Buttons.getSecondaryBtn("Mega Ludo (8 players)");
-    mega.setOnAction(e -> load(BoardGameFactory.createLudoMegaBoard()));
-
-    parent.getChildren().addAll(classic, quick, mega);
+    //TODO: make more ludo board variants
+    parent.getChildren().addAll(classic);
   }
 
   private void addSnakesAndLaddersButtons(VBox parent) {
