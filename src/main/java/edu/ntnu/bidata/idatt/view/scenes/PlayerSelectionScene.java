@@ -18,10 +18,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -39,6 +41,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -192,16 +195,23 @@ public class PlayerSelectionScene {
     imgResetBtn.setOnAction(e -> resetSelectedImage(shapeComboBox, imgPath));
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
-    addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox));
+
+    Label dobLabel = new Label("Birthday (optional");
+    dobLabel.getStyleClass().add("label-sublabel");
+    DatePicker dobPicker = new DatePicker();
+    addScaleAnimation(dobPicker, 1.02, Duration.millis(200));
 
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
+
+    addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox, dobPicker));
 
     inputPanel.getChildren().addAll(
         imgLabel, new HBox(10, imgBtn, imgResetBtn), imgPath,
         nameLabel, nameInput,
         shapeLabel, shapeComboBox,
         colorLabel, playerColorPicker,
+        dobLabel, dobPicker,
         spacer,
         addPlayerBtn
     );
@@ -331,7 +341,8 @@ public class PlayerSelectionScene {
     }
   }
 
-  private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox) {
+  private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox,
+      DatePicker dobPicker) {
     String name = nameField.getText();
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
@@ -373,12 +384,26 @@ public class PlayerSelectionScene {
     }
 
     TokenView token = new TokenView(Token.token(color, shape, storedImgPath));
-    Player newPlayer = new Player(name, token);
+
+    LocalDate dob = dobPicker.getValue();
+    if (dob == null) {
+      dob = randomBirthDate();
+    }
+
+    Player newPlayer = new Player(name, token, dob);
+
     selectedPlayers.add(newPlayer);
     updatePlayersCountLabel();
     resetInputs(nameField, shapeComboBox);
     this.selectedImage = null;
-    logger.log(Level.INFO, "Added player: {0} (img={1})", new Object[] {name, storedImgPath});
+    logger.log(Level.INFO, "Added player: {0} (img={1})", new Object[]{name, storedImgPath});
+  }
+
+  private LocalDate randomBirthDate() {
+    long start = LocalDate.of(1980, 1, 1).toEpochDay();
+    long end = LocalDate.of(2003, 1, 1).toEpochDay();
+    long randomDay = ThreadLocalRandom.current().nextLong(start, end);
+    return LocalDate.ofEpochDay(randomDay);
   }
 
   private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox) {
