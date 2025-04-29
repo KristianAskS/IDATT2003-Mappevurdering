@@ -26,6 +26,7 @@ public class AvailablePlayerCard extends HBox {
     Label nameLbl = new Label(player.getName());
     nameLbl.getStyleClass().add("label-listview");
     nameLbl.setMinWidth(90);
+    nameLbl.setWrapText(true);
 
     Region spacer = new Region();
     HBox.setHgrow(spacer, Priority.ALWAYS);

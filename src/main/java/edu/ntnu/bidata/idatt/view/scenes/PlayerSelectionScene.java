@@ -62,6 +62,7 @@ public class PlayerSelectionScene {
   private static final TableView<Player> playerTable = new TableView<>();
   private static final ObservableList<Player> selectedPlayers = FXCollections.observableArrayList();
   private static final Label playersCountLabel = new Label("Players: 0/0");
+  private static final String IMG_DIR = "data/games/tokenimages";
   private static Integer totalPlayerCount = null;
   private static ColorPicker playerColorPicker;
   private final String selectedGame = GameSelectionScene.getSelectedGame();
@@ -355,7 +356,7 @@ public class PlayerSelectionScene {
     String storedImgPath = null;
     try {
       if (selectedImage != null) {
-        Path targetDir = Paths.get("data/games/tokenimages");
+        Path targetDir = Paths.get(IMG_DIR);
         Files.createDirectories(targetDir);
 
         String uniqueName = "image-" + selectedImage.getName();
