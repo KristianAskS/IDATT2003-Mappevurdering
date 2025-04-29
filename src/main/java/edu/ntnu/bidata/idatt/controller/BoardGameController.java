@@ -18,9 +18,11 @@ import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.animation.PathTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -131,6 +133,7 @@ public class BoardGameController {
       LOGGER.log(Level.SEVERE, "No players in the game");
       return;
     }
+    players.sort(Comparator.comparing(Player::getAge));
     turnOrder.addAll(players);
   }
 
