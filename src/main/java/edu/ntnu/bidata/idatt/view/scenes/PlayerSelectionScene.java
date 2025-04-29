@@ -199,6 +199,7 @@ public class PlayerSelectionScene {
     Label dobLabel = new Label("Birthday (optional");
     dobLabel.getStyleClass().add("label-sublabel");
     DatePicker dobPicker = new DatePicker();
+    dobPicker.getStyleClass().add("calendar-view");
     addScaleAnimation(dobPicker, 1.02, Duration.millis(200));
 
     Region spacer = new Region();
