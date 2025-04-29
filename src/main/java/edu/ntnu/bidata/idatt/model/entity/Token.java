@@ -9,6 +9,7 @@ public class Token {
 
   /**
    * Constructor for a token with a color and shape
+   *
    * @param color
    * @param shape
    */

@@ -14,8 +14,6 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 public final class BoardGameFactory {
-  private static final int COLUMNS = 10;
-
   private static final Logger logger = Logger.getLogger(BoardGameFactory.class.getName());
 
   private BoardGameFactory() {
@@ -40,8 +38,20 @@ public final class BoardGameFactory {
     return board;
   }
 
+  public static Board createLudoClassicBoard() {
+    return createBoardTiles("Classic Ludo", "Standard 52‑tile Ludo track", 52);
+  }
+
+  public static Board createLudoQuickBoard() {
+    return createBoardTiles("Quick Ludo", "32‑tile Ludo track for faster games", 32);
+  }
+
+  public static Board createLudoMegaBoard() {
+    return createBoardTiles("Mega Ludo", "80‑tile Ludo track that accommodates up to 8 players",
+        80);
+  }
+
   public static void addRandomLadders(Board board, int count) {
-    //int maxTile = board.getTiles().size();
     int placed = 0;
     while (placed < count) {
       int startId = (int) (Math.random() * 88) + 1;
@@ -51,8 +61,8 @@ public final class BoardGameFactory {
         Tile startTile = board.getTile(startId);
         if (startTile.getLandAction() == null) {
           startTile.setNextTile(board.getTile(endId));
-          startTile.setLandAction(new LadderAction(endId,
-              "Ladder from " + startId + " to " + endId));
+          startTile.setLandAction(
+              new LadderAction(endId, "Ladder from " + startId + " to " + endId));
           placed++;
           logger.log(Level.INFO, startTile.getLandAction().getDescription());
         }
@@ -60,13 +70,6 @@ public final class BoardGameFactory {
     }
   }
 
-  /**
-   * Manual ladder creation
-   *
-   * @param board
-   * @param start
-   * @param end
-   */
   public static void createLadder(Board board, int start, int end) {
     if (!LadderView.isValidLadder(start, end)) {
       return;
@@ -74,8 +77,7 @@ public final class BoardGameFactory {
     Tile s = board.getTile(start), e = board.getTile(end);
     if (s != null && e != null) {
       s.setNextTile(e);
-      s.setLandAction(new LadderAction(end,
-          "Ladder from " + start + " to " + end));
+      s.setLandAction(new LadderAction(end, "Ladder from " + start + " to " + end));
     }
   }
 
@@ -86,24 +88,22 @@ public final class BoardGameFactory {
     Tile s = board.getTile(start), e = board.getTile(end);
     if (s != null && e != null) {
       s.setNextTile(e);
-      s.setLandAction(new SnakeAction(end,
-          "Snake from " + start + " to " + end));
+      s.setLandAction(new SnakeAction(end, "Snake from " + start + " to " + end));
     }
   }
 
-
   public static Board createClassicBoard() {
-    Board board = createBoardTiles("Classic Board", "90-tile board with 5 ladders", 90);
+    Board board = createBoardTiles("Classic Board", "90‑tile board with 10 ladders", 90);
     addRandomLadders(board, 10);
     return board;
   }
 
   public static Board createSmallBoard() {
-    return createBoardTiles("Small Board", "30-tile board", 30);
+    return createBoardTiles("Small Board", "30‑tile board", 30);
   }
 
   public static Board createBoardNoLaddersAndSnakes() {
-    return createBoardTiles("Flat Board", "90-tile board without actions", 90);
+    return createBoardTiles("Flat Board", "90‑tile board without actions", 90);
   }
 
   public static List<Board> createBoardFromJSON(String filePath) throws IOException {

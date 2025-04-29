@@ -74,7 +74,7 @@ public class BoardGameController {
     }
 
     row = rows - 1 - row;
-    return new int[]{row, col};
+    return new int[] {row, col};
   }
 
   public void initializePlayers(List<Player> players) {
@@ -196,7 +196,7 @@ public class BoardGameController {
   }
 
   private void animateLadderMovement(Player player, int fromTileId, int toTileId,
-      Runnable onDoneCallback) {
+                                     Runnable onDoneCallback) {
     TileView startTileView = lookupTileView(fromTileId);
     TileView endTileView = lookupTileView(toTileId);
     Node token = player.getToken();

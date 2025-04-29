@@ -74,7 +74,7 @@ public class BoardGameScene implements BoardGameObserver {
     VBox ioContainer = createIOContainer();
     rootPane.setLeft(ioContainer);
 
-    Board board = BoardGameSelectionScene.getSelectedBoard();
+    Board board = BoardSelectionScene.getSelectedBoard();
     this.boardGridPane = BoardView.createBoardGUI(board);
     boardGridPane.setId("boardGridPane");
 
