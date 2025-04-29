@@ -4,6 +4,7 @@ import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.controller.SceneManager;
+import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Token;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
@@ -57,12 +58,15 @@ import javafx.util.Duration;
 public class PlayerSelectionScene {
 
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
+
   private static final TableView<Player> playerTable = new TableView<>();
   private static final ObservableList<Player> selectedPlayers = FXCollections.observableArrayList();
   private static final Label playersCountLabel = new Label("Players: 0/0");
   private static final String IMG_DIR = "data/games/tokenimages";
   private static Integer totalPlayerCount = null;
   private static ColorPicker playerColorPicker;
+  private final String selectedGame = GameSelectionScene.getSelectedGame();
+  private final Board selectedBoard = BoardSelectionScene.getSelectedBoard();
   private final PlayerService playerService = new PlayerService();
   private final Scene scene;
   private final int PANEL_WIDTH = 300;
@@ -72,10 +76,8 @@ public class PlayerSelectionScene {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTBLUE);
     scene.getStylesheets().add(
-        Objects.requireNonNull(
-                getClass().getResource("/edu/ntnu/bidata/idatt/styles/PlayerSelectionSceneStyles.css"))
-            .toExternalForm()
-    );
+        Objects.requireNonNull(getClass().getResource(
+            "/edu/ntnu/bidata/idatt/styles/PlayerSelectionSceneStyles.css")).toExternalForm());
 
     HBox centerLayout = new HBox(20);
     centerLayout.setPadding(new Insets(10));
@@ -95,21 +97,30 @@ public class PlayerSelectionScene {
     playersCountLabel.getStyleClass().add("label-count");
     addScaleAnimation(playersCountLabel, 1.1, Duration.millis(300));
 
-    logger.log(Level.INFO, "PlayerSelectionScene initialized");
+    logger.log(Level.INFO, "PlayerSelectionScene initialised for game: {0}", selectedGame);
   }
 
   public static void showTotalPlayerSelectionDialog() {
-    List<Integer> choices = new ArrayList<>();
-    IntStream.range(1, 6).forEach(choices::add);
+    boolean isLudo = "LUDO".equalsIgnoreCase(GameSelectionScene.getSelectedGame());
+    int minPlayers = isLudo ? 2 : 1;
+    int maxPlayers;
+    if (isLudo) {
+      Board board = BoardSelectionScene.getSelectedBoard();
+      maxPlayers = (board != null && board.getName().toLowerCase().contains("mega")) ? 8 : 4;
+    } else {
+      maxPlayers = 5;
+    }
 
-    Integer defaultValue =
-        (totalPlayerCount != null && choices.contains(totalPlayerCount)) ? totalPlayerCount :
-            choices.getFirst();
+    List<Integer> choices = new ArrayList<>();
+    IntStream.rangeClosed(minPlayers, maxPlayers).forEach(choices::add);
+
+    Integer defaultValue = (totalPlayerCount != null && choices.contains(totalPlayerCount))
+        ? totalPlayerCount : choices.getFirst();
 
     ChoiceDialog<Integer> dialog = new ChoiceDialog<>(defaultValue, choices);
     dialog.setTitle("Total player selection");
     dialog.setHeaderText("Select total players");
-    dialog.setContentText("Choose your number:");
+    dialog.setContentText("Choose number:");
 
     Optional<Integer> result;
     do {
@@ -120,9 +131,9 @@ public class PlayerSelectionScene {
     while (selectedPlayers.size() > totalPlayerCount) {
       selectedPlayers.removeLast();
     }
-
     updatePlayersCountLabel();
   }
+
 
   public static int getTotalPlayerCount() {
     return totalPlayerCount == null ? 0 : totalPlayerCount;
@@ -132,13 +143,12 @@ public class PlayerSelectionScene {
     return playerColorPicker.getValue();
   }
 
-  private static void updatePlayersCountLabel() {
-    playersCountLabel.setText(
-        "Players: " + selectedPlayers.size() + "/" + getTotalPlayerCount());
-  }
-
   public static ObservableList<Player> getSelectedPlayers() {
     return selectedPlayers;
+  }
+
+  private static void updatePlayersCountLabel() {
+    playersCountLabel.setText("Players: " + selectedPlayers.size() + "/" + getTotalPlayerCount());
   }
 
   private VBox createPlayerInputPanel() {
@@ -154,6 +164,7 @@ public class PlayerSelectionScene {
     Label shapeLabel = new Label("Choose Shape");
     shapeLabel.getStyleClass().add("label-sublabel");
     ComboBox<String> shapeComboBox = new ComboBox<>();
+
     shapeComboBox.getItems().addAll("Circle", "Square", "Triangle");
     shapeComboBox.getStyleClass().add("text-field-combobox");
     addScaleAnimation(shapeComboBox, 1.02, Duration.millis(200));
@@ -164,7 +175,7 @@ public class PlayerSelectionScene {
     playerColorPicker.getStyleClass().add("colorpicker");
     addScaleAnimation(playerColorPicker, 1.02, Duration.millis(200));
 
-    Label imgLabel = new Label("Choose Image (optional)");
+    Label imgLabel = new Label("Choose Image");
     imgLabel.setWrapText(true);
     imgLabel.setTextAlignment(TextAlignment.CENTER);
     imgLabel.getStyleClass().add("label-sublabel");
@@ -177,24 +188,8 @@ public class PlayerSelectionScene {
     imgBtn.setMinWidth(Region.USE_PREF_SIZE);
     imgResetBtn.setMinWidth(Region.USE_PREF_SIZE);
 
-    imgBtn.setOnAction(e -> {
-      FileChooser fc = new FileChooser();
-      fc.getExtensionFilters().add(
-          new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
-      );
-      File f = fc.showOpenDialog(scene.getWindow());
-      if (f != null) {
-        selectedImage = f;
-        imgPath.setText(f.getName());
-
-        shapeComboBox.getSelectionModel().select("circle");
-        shapeComboBox.setDisable(true);
-      }
-    });
-
-    imgResetBtn.setOnAction(e ->
-        resetSelectedImage(shapeComboBox, imgPath)
-    );
+    imgBtn.setOnAction(e -> handleBrowseImage(shapeComboBox, imgPath));
+    imgResetBtn.setOnAction(e -> resetSelectedImage(shapeComboBox, imgPath));
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
     addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox));
@@ -210,17 +205,21 @@ public class PlayerSelectionScene {
         spacer,
         addPlayerBtn
     );
-
     return inputPanel;
   }
 
-  private void resetSelectedImage(ComboBox<String> shapeComboBox, Label imgPathLabel) {
-    selectedImage = null;
-    imgPathLabel.setText("");
-    shapeComboBox.setDisable(false);
-    shapeComboBox.getSelectionModel().clearSelection();
+  private void handleBrowseImage(ComboBox<String> shapeComboBox, Label imgPath) {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.getExtensionFilters()
+        .add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
+    File file = fileChooser.showOpenDialog(scene.getWindow());
+    if (file != null) {
+      selectedImage = file;
+      imgPath.setText(file.getName());
+      //shapeComboBox.getSelectionModel().select("Circle");
+      shapeComboBox.setDisable(true);
+    }
   }
-
 
   private VBox createPlayerTablePanel() {
     VBox tablePanel = createPanel("Players added to the game");
@@ -230,16 +229,14 @@ public class PlayerSelectionScene {
     playersBox.setStyle("-fx-background-color: transparent;");
     playersBox.setFillWidth(true);
 
-    Runnable refreshCards = () -> {
-      playersBox.getChildren().setAll(
-          selectedPlayers.stream()
-              .map(p -> new SelectedPlayerCard(p, pl -> {
-                selectedPlayers.remove(pl);
-                updatePlayersCountLabel();
-              }))
-              .toList()
-      );
-    };
+    Runnable refreshCards = () -> playersBox.getChildren().setAll(
+        selectedPlayers.stream()
+            .map(player -> new SelectedPlayerCard(player, pl -> {
+              selectedPlayers.remove(pl);
+              updatePlayersCountLabel();
+            }))
+            .toList()
+    );
     refreshCards.run();
     selectedPlayers.addListener((ListChangeListener<Player>) c -> refreshCards.run());
 
@@ -249,14 +246,16 @@ public class PlayerSelectionScene {
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
-    editCountBtn.setOnAction(e -> showTotalPlayerSelectionDialog());
+    editCountBtn.setOnAction(event -> showTotalPlayerSelectionDialog());
 
     tablePanel.getChildren().addAll(playersBox, spacer, playersCountLabel, editCountBtn);
     return tablePanel;
   }
 
   private VBox createAvailablePlayersPanel() throws IOException {
-    VBox availablePanel = createPanel("Existing players");
+    String heading =
+        "LUDO".equalsIgnoreCase(selectedGame) ? "Saved Ludo players" : "Existing players";
+    VBox availablePanel = createPanel(heading);
 
     ObservableList<Player> availablePlayers = FXCollections.observableArrayList(
         playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
@@ -266,50 +265,181 @@ public class PlayerSelectionScene {
     playersBox.setStyle("-fx-background-color: transparent;");
     playersBox.setFillWidth(true);
 
-    availablePlayers.forEach(p -> playersBox.getChildren().add(
-        new AvailablePlayerCard(p, chosen -> {
+    availablePlayers.forEach(player -> playersBox.getChildren().add(
+        new AvailablePlayerCard(player, chosenPlayer -> {
           if (isAtMaxPlayers()) {
-            showAlert(Alert.AlertType.WARNING, "Maximum of players",
-                "Exceeded maximum players: " + getTotalPlayerCount());
+            showAlert(Alert.AlertType.WARNING, "Maximum players reached",
+                "Limit: " + getTotalPlayerCount());
             return;
           }
-          selectedPlayers.add(new Player(
-              chosen.getName(),
+          selectedPlayers.add(new Player(chosenPlayer.getName(),
               new TokenView(Token.token(
-                  chosen.getToken().getTokenColor(),
-                  chosen.getToken().getTokenShape(),
-                  chosen.getToken().getImagePath()
-              )))
-          );
+                  chosenPlayer.getToken().getTokenColor(),
+                  chosenPlayer.getToken().getTokenShape(),
+                  chosenPlayer.getToken().getImagePath()))));
           updatePlayersCountLabel();
-        })
-    ));
+        })));
 
     VBox.setVgrow(playersBox, Priority.ALWAYS);
     availablePanel.getChildren().add(playersBox);
     return availablePanel;
   }
 
-  private ListView<Player> createAvailablePlayersList(ObservableList<Player> players) {
-    ListView<Player> listView = createPlayerListView(players);
-    listView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, selected) -> {
-      if (selected != null) {
-        if (isAtMaxPlayers()) {
-          showAlert(Alert.AlertType.WARNING, "Maximum of players",
-              "Exceeded maximum players: " + getTotalPlayerCount());
-        } else {
-          selectedPlayers.add(new Player(
-              selected.getName(),
-              new TokenView(Token.token(
-                  selected.getToken().getTokenColor(),
-                  selected.getToken().getTokenShape(),
-                  selected.getToken().getImagePath()
-              ))));
-          updatePlayersCountLabel();
+  private HBox createBottomButtonContainer() {
+    HBox container = new HBox(20);
+    container.setAlignment(Pos.CENTER);
+    container.setPadding(new Insets(10, 20, 10, 20));
+
+    Region spacerLeft = new Region();
+    Region spacerRight = new Region();
+    HBox.setHgrow(spacerLeft, Priority.ALWAYS);
+    HBox.setHgrow(spacerRight, Priority.ALWAYS);
+
+    Button backBtn = Buttons.getBackBtn("Back");
+    backBtn.setOnAction(event -> SceneManager.showBoardSelectionScene());
+
+    Button startGameBtn = Buttons.getSmallPrimaryBtn(
+        "Start " + ("LUDO".equalsIgnoreCase(selectedGame) ? "Ludo" : "Game"));
+    startGameBtn.setOnAction(event -> {
+      if (totalPlayerCount == null) {
+        showTotalPlayerSelectionDialog();
+      } else if (selectedPlayers.size() < getTotalPlayerCount()) {
+        showAlert(Alert.AlertType.WARNING, "Not enough players",
+            "You need " + getTotalPlayerCount() + " players. You have " + selectedPlayers.size());
+      } else {
+        try {
+          SceneManager.showBoardGameScene();
+        } catch (IOException exception) {
+          throw new RuntimeException(exception);
         }
       }
     });
-    return listView;
+
+    Button mainPageBtn = Buttons.getExitBtn("To Main Page");
+    mainPageBtn.setOnAction(event -> SceneManager.showLandingScene());
+
+    container.getChildren().addAll(backBtn, spacerLeft, startGameBtn, spacerRight, mainPageBtn);
+    return container;
+  }
+
+  private void resetSelectedImage(ComboBox<String> shapeComboBox, Label imgPathLabel) {
+    selectedImage = null;
+    imgPathLabel.setText("");
+    if (!"LUDO".equalsIgnoreCase(selectedGame)) {
+      shapeComboBox.setDisable(false);
+      shapeComboBox.getSelectionModel().clearSelection();
+    }
+  }
+
+  private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox) {
+    String name = nameField.getText();
+    String shape = shapeComboBox.getValue();
+    Color color = playerColorPicker.getValue();
+    File selectedImage = this.selectedImage;
+
+    if (isAtMaxPlayers()) {
+      showAlert(Alert.AlertType.WARNING, "Maximum players reached",
+          "Limit: " + getTotalPlayerCount());
+      resetInputs(nameField, shapeComboBox);
+      return;
+    }
+
+    if (shape == null || selectedImage != null) {
+      shape = "circle";
+    }
+
+    if (name == null || name.isBlank() || color == null) {
+      showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
+      return;
+    }
+
+    String storedImgPath = null;
+    try {
+      if (selectedImage != null) {
+        Path targetDir = Paths.get(IMG_DIR);
+        Files.createDirectories(targetDir);
+
+        String uniqueName = "image-" + selectedImage.getName();
+        Path destination = targetDir.resolve(uniqueName);
+
+        Files.copy(selectedImage.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
+        storedImgPath = destination.toUri().toString();
+        logger.log(Level.INFO, "Token image saved to {0}", destination);
+      }
+    } catch (IOException exception) {
+      logger.log(Level.SEVERE, "Failed to copy token image: {0}", exception.getMessage());
+      showAlert(Alert.AlertType.ERROR, "Image error", "Could not save the chosen image.");
+      return;
+    }
+
+    TokenView token = new TokenView(Token.token(color, shape, storedImgPath));
+    Player newPlayer = new Player(name, token);
+    selectedPlayers.add(newPlayer);
+    updatePlayersCountLabel();
+    resetInputs(nameField, shapeComboBox);
+    this.selectedImage = null;
+    logger.log(Level.INFO, "Added player: {0} (img={1})", new Object[] {name, storedImgPath});
+  }
+
+  private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox) {
+    nameField.clear();
+    if (!"LUDO".equalsIgnoreCase(selectedGame)) {
+      shapeComboBox.getSelectionModel().clearSelection();
+    }
+    playerColorPicker.setValue(Color.WHITE);
+  }
+
+  private boolean isAtMaxPlayers() {
+    return selectedPlayers.size() >= getTotalPlayerCount();
+  }
+
+  private VBox createPanel(String headingText) {
+    VBox panel = new VBox(10);
+    panel.setPadding(new Insets(10));
+    panel.setAlignment(Pos.TOP_CENTER);
+    panel.getStyleClass().add("vbox-panel");
+    addPanelHoverAnimation(panel);
+
+    Label heading = createHeadingLabel(headingText);
+    panel.getChildren().add(heading);
+    return panel;
+  }
+
+  private Label createHeadingLabel(String text) {
+    Label heading = new Label(text);
+    heading.setWrapText(true);
+    heading.getStyleClass().add("label-heading");
+    addHeadingAnimation(heading);
+    return heading;
+  }
+
+  private void addHeadingAnimation(Label label) {
+    label.setOnMouseEntered(e -> new Timeline(new KeyFrame(Duration.millis(300),
+        new KeyValue(label.translateXProperty(), 5),
+        new KeyValue(label.opacityProperty(), 0.9))).play());
+    label.setOnMouseExited(e -> new Timeline(new KeyFrame(Duration.millis(300),
+        new KeyValue(label.translateXProperty(), 0),
+        new KeyValue(label.opacityProperty(), 1.0))).play());
+  }
+
+  private void addPanelHoverAnimation(VBox panel) {
+    panel.setOnMouseEntered(e -> new Timeline(new KeyFrame(Duration.millis(300),
+        new KeyValue(panel.scaleXProperty(), 1.02),
+        new KeyValue(panel.scaleYProperty(), 1.02),
+        new KeyValue(panel.opacityProperty(), 0.90))).play());
+    panel.setOnMouseExited(e -> new Timeline(new KeyFrame(Duration.millis(300),
+        new KeyValue(panel.scaleXProperty(), 1.0),
+        new KeyValue(panel.scaleYProperty(), 1.0),
+        new KeyValue(panel.opacityProperty(), 1.0))).play());
+  }
+
+  private void addScaleAnimation(javafx.scene.Node node, double targetScale, Duration duration) {
+    node.setOnMouseEntered(e -> new Timeline(new KeyFrame(duration,
+        new KeyValue(node.scaleXProperty(), targetScale),
+        new KeyValue(node.scaleYProperty(), targetScale))).play());
+    node.setOnMouseExited(e -> new Timeline(new KeyFrame(duration,
+        new KeyValue(node.scaleXProperty(), 1),
+        new KeyValue(node.scaleYProperty(), 1))).play());
   }
 
   private ListView<Player> createPlayerListView(ObservableList<Player> players) {
@@ -342,196 +472,6 @@ public class PlayerSelectionScene {
     return listView;
   }
 
-
-  private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox) {
-    String name = nameField.getText();
-    String shape = shapeComboBox.getValue();
-    Color color = playerColorPicker.getValue();
-    File selectedImage = this.selectedImage;
-
-    if (isAtMaxPlayers()) {
-      showAlert(Alert.AlertType.WARNING, "Maximum of players",
-          "Exceeded maximum players: " + getTotalPlayerCount());
-      resetInputs(nameField, shapeComboBox);
-      return;
-    }
-    if (shape == null || selectedImage != null) {
-      shape = "circle";
-    }
-
-    if (name == null || name.isBlank() || color == null) {
-      showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
-      return;
-    }
-
-    String storedImgPath = null;
-    try {
-      if (selectedImage != null) {
-        Path targetDir = Paths.get(IMG_DIR);
-        Files.createDirectories(targetDir);
-
-        String uniqueName = "image" + "-" + selectedImage.getName();
-        Path dest = targetDir.resolve(uniqueName);
-
-        Files.copy(selectedImage.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
-        storedImgPath = dest.toUri().toString();
-
-        logger.log(Level.INFO, "Token image saved to {0}", dest);
-      }
-    } catch (IOException ex) {
-      logger.log(Level.SEVERE, "Failed to copy token image: {0}", ex.getMessage());
-      showAlert(Alert.AlertType.ERROR, "Image error", "Could not save the chosen image.");
-      return;
-    }
-
-    TokenView token = new TokenView(Token.token(color, shape, storedImgPath));
-    Player newPlayer = new Player(name, token);
-    selectedPlayers.add(newPlayer);
-    updatePlayersCountLabel();
-    resetInputs(nameField, shapeComboBox);
-    selectedImage = null;
-
-    logger.log(Level.INFO, "Added player: {0} with image {1}",
-        new Object[]{name, storedImgPath});
-  }
-
-  private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox) {
-    nameField.clear();
-    shapeComboBox.getSelectionModel().clearSelection();
-    playerColorPicker.setValue(Color.WHITE);
-  }
-
-  private HBox createBottomButtonContainer() {
-    HBox container = new HBox(20);
-    container.setAlignment(Pos.CENTER);
-    container.setPadding(new Insets(10, 20, 10, 20));
-
-    Region spacerLeft = new Region();
-    Region spacerRight = new Region();
-    HBox.setHgrow(spacerLeft, Priority.ALWAYS);
-    HBox.setHgrow(spacerRight, Priority.ALWAYS);
-
-    Button backBtn = Buttons.getBackBtn("Back");
-    backBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
-
-    Button startGameBtn = Buttons.getSmallPrimaryBtn("Start Game!");
-    startGameBtn.setOnAction(e -> {
-      if (totalPlayerCount == null) {
-        showTotalPlayerSelectionDialog();
-      } else if (selectedPlayers.size() < getTotalPlayerCount()) {
-        showAlert(Alert.AlertType.WARNING, "Not enough players",
-            "You need " + getTotalPlayerCount() + " players. You have " + selectedPlayers.size() +
-                " players");
-      } else {
-        try {
-          SceneManager.showBoardGameScene();
-        } catch (IOException ex) {
-          throw new RuntimeException(ex);
-        }
-      }
-    });
-
-    Button mainPageBtn = Buttons.getExitBtn("To Main Page");
-    mainPageBtn.setOnAction(e -> SceneManager.showLandingScene());
-
-    container.getChildren().addAll(backBtn, spacerLeft, startGameBtn, spacerRight, mainPageBtn);
-    return container;
-  }
-
-  public Scene getScene() {
-    return scene;
-  }
-
-  private VBox createPanel(String headingText) {
-    VBox panel = new VBox(10);
-    panel.setPadding(new Insets(10));
-    panel.setAlignment(Pos.TOP_CENTER);
-    panel.getStyleClass().add("vbox-panel");
-    addPanelHoverAnimation(panel);
-
-    Label heading = createHeadingLabel(headingText);
-    panel.getChildren().add(heading);
-    return panel;
-  }
-
-  private Label createHeadingLabel(String text) {
-    Label heading = new Label(text);
-    heading.setWrapText(true);
-    heading.getStyleClass().add("label-heading");
-    addHeadingAnimation(heading);
-    return heading;
-  }
-
-  private void addHeadingAnimation(Label label) {
-    label.setOnMouseEntered(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(label.translateXProperty(), 5),
-              new KeyValue(label.opacityProperty(), 0.9)
-          )
-      );
-      anim.play();
-    });
-    label.setOnMouseExited(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(label.translateXProperty(), 0),
-              new KeyValue(label.opacityProperty(), 1.0)
-          )
-      );
-      anim.play();
-    });
-  }
-
-  private void addPanelHoverAnimation(VBox panel) {
-    panel.setOnMouseEntered(e -> {
-      Timeline enterAnim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(panel.scaleXProperty(), 1.02),
-              new KeyValue(panel.scaleYProperty(), 1.02),
-              new KeyValue(panel.opacityProperty(), 0.90)
-          )
-      );
-      enterAnim.play();
-    });
-    panel.setOnMouseExited(e -> {
-      Timeline exitAnim = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(panel.scaleXProperty(), 1.0),
-              new KeyValue(panel.scaleYProperty(), 1.0),
-              new KeyValue(panel.opacityProperty(), 1.0)
-          )
-      );
-      exitAnim.play();
-    });
-  }
-
-  private void addScaleAnimation(javafx.scene.Node node, double targetScale,
-      Duration duration) {
-    node.setOnMouseEntered(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(duration,
-              new KeyValue(node.scaleXProperty(), targetScale),
-              new KeyValue(node.scaleYProperty(), targetScale)
-          )
-      );
-      anim.play();
-    });
-    node.setOnMouseExited(e -> {
-      Timeline anim = new Timeline(
-          new KeyFrame(duration,
-              new KeyValue(node.scaleXProperty(), 1),
-              new KeyValue(node.scaleYProperty(), 1)
-          )
-      );
-      anim.play();
-    });
-  }
-
-  private boolean isAtMaxPlayers() {
-    return selectedPlayers.size() >= getTotalPlayerCount();
-  }
-
   private String capitalize(String input) {
     if (input == null || input.isBlank()) {
       return "";
@@ -544,5 +484,9 @@ public class PlayerSelectionScene {
     alert.setTitle(title);
     alert.setContentText(message);
     alert.showAndWait();
+  }
+
+  public Scene getScene() {
+    return scene;
   }
 }

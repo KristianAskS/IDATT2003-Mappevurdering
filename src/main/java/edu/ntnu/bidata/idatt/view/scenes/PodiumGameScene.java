@@ -42,7 +42,7 @@ public class PodiumGameScene {
     podium.getStyleClass().add("podium-container");
 
     Button playAgain = Buttons.getSmallPrimaryBtn("Play again");
-    playAgain.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
+    playAgain.setOnAction(e -> SceneManager.showBoardSelectionScene());
 
     Button mainMenu = Buttons.getExitBtn("Main menu");
     mainMenu.setOnAction(e -> SceneManager.showLandingScene());

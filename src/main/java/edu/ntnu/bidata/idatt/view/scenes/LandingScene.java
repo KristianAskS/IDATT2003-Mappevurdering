@@ -35,8 +35,8 @@ public class LandingScene {
     rootPane.setBottom(exitBox);
     BorderPane.setMargin(exitBox, new Insets(10));
 
-    choseGameBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
-    exitBtn.setOnAction(e -> System.exit(0));
+    choseGameBtn.setOnAction(event -> SceneManager.showGameSelectionScene());
+    exitBtn.setOnAction(event -> System.exit(0));
 
     logger.log(Level.INFO, "LandingScene created");
   }
