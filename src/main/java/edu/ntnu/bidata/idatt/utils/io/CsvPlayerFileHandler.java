@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,7 +27,6 @@ import javafx.scene.paint.Color;
 public class CsvPlayerFileHandler implements FileHandler<Player> {
 
   private static final String IMG_DIR = "data/games/tokenimages";
-
   Logger logger = Logger.getLogger(CsvPlayerFileHandler.class.getName());
 
   /**
@@ -40,10 +40,13 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
       for (Player player : players) {
         TokenView token = player.getToken();
 
+        String dob = player.getDateOfBirth() == null ? "" : player.getDateOfBirth().toString();
+
         String writeLine = String.join(",",
             player.getName(),
             toRgbString(token.getTokenColor()),
             token.getTokenShape(),
+            dob,
             token.getImagePath() == null ? "" : token.getImagePath()
         );
 
@@ -66,26 +69,38 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
   @Override
   public List<Player> readFromFile(String filePath) throws IOException {
     List<Player> players = new ArrayList<>();
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+    try (BufferedReader in = new BufferedReader(new FileReader(filePath))) {
       String line;
-      while ((line = bufferedReader.readLine()) != null) {
-        String[] playerData = line.split(",", -1);
-        if (playerData.length >= 3) {
-          String name = playerData[0].trim();
-          Color color = Color.web(playerData[1].trim());
-          String shape = playerData[2].trim();
+      while ((line = in.readLine()) != null) {
+        String[] data = line.split(",", -1);
 
-          String imgRel = playerData.length > 3 ? playerData[3].trim() : "";
-          String imgAbs = imgRel.isBlank() ? null : toFileUri(imgRel);
-
-          // String img = playerData.length > 3 ? playerData[3].trim() : null;
-
-          TokenView token = new TokenView(Token.token(color, shape, imgAbs));
-          players.add(new Player(name, token));
+        if (data.length < 4) {
+          continue;
         }
+
+        String name = data[0].trim();
+        Color color = Color.web(data[1].trim());
+        String shape = data[2].trim().toLowerCase();
+
+        LocalDate dob = null;
+
+        if (!data[3].isBlank()) {
+          try {
+            dob = LocalDate.parse(data[3].trim());
+          } catch (Exception e) {
+            logger.log(Level.WARNING,
+                "Invalid date for player {0}: {1}", new Object[]{name, data[3]});
+          }
+        }
+
+        String imageRel = data.length > 4 ? data[4].trim() : "";
+        String imageAbs = imageRel.isBlank() ? null : toFileUri(imageRel);
+
+        // String img = playerData.length > 3 ? playerData[3].trim() : null;
+
+        TokenView token = new TokenView(Token.token(color, shape, imageAbs));
+        players.add(new Player(name, token, dob));
       }
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "Error reading from the file: " + e.getMessage());
     }
     return players;
   }
