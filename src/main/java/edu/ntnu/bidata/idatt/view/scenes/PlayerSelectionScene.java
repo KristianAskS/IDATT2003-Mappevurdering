@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -352,7 +353,7 @@ public class PlayerSelectionScene {
     if (isAtMaxPlayers()) {
       showAlert(Alert.AlertType.WARNING, "Maximum players reached",
           "Limit: " + getTotalPlayerCount());
-      resetInputs(nameField, shapeComboBox);
+      resetInputs(nameField, shapeComboBox, dobPicker);
       return;
     }
 
@@ -391,11 +392,18 @@ public class PlayerSelectionScene {
       dob = randomBirthDate();
     }
 
+    int age = Period.between(dob, LocalDate.now()).getYears();
+    if (age < 3) {
+      showAlert(Alert.AlertType.INFORMATION, "Too Young",
+          "This game is designed for players 3 years and above.");
+      return;
+    }
+
     Player newPlayer = new Player(name, token, dob);
 
     selectedPlayers.add(newPlayer);
     updatePlayersCountLabel();
-    resetInputs(nameField, shapeComboBox);
+    resetInputs(nameField, shapeComboBox, dobPicker);
     this.selectedImage = null;
     logger.log(Level.INFO, "Added player: {0} (img={1})", new Object[]{name, storedImgPath});
   }
@@ -407,12 +415,14 @@ public class PlayerSelectionScene {
     return LocalDate.ofEpochDay(randomDay);
   }
 
-  private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox) {
+  private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox,
+      DatePicker dobPicker) {
     nameField.clear();
     if (!"LUDO".equalsIgnoreCase(selectedGame)) {
       shapeComboBox.getSelectionModel().clearSelection();
     }
     playerColorPicker.setValue(Color.WHITE);
+    dobPicker.setValue(null);
   }
 
   private boolean isAtMaxPlayers() {
