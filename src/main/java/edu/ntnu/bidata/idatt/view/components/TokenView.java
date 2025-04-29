@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
@@ -49,7 +50,7 @@ public class TokenView extends StackPane {
           getChildren().add(square);
         }
         case "triangle" -> {
-          javafx.scene.shape.Polygon triangle = new javafx.scene.shape.Polygon(
+          Polygon triangle = new Polygon(
               0.0, -TRI_OFFSET,
               -TRI_OFFSET, TRI_OFFSET,
               TRI_OFFSET, TRI_OFFSET
