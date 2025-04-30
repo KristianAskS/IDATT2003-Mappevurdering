@@ -4,7 +4,9 @@ import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.controller.SceneManager;
-import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardGameFactory;
+import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardFactory;
+import edu.ntnu.bidata.idatt.controller.patterns.factory.LadderBoardFactory;
+import edu.ntnu.bidata.idatt.controller.patterns.factory.LudoBoardFactory;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
@@ -38,6 +40,8 @@ public class BoardSelectionScene {
   private final String selectedGame = GameSelectionScene.getSelectedGame();
   private Label detailsTitle;
   private Label detailsDescription;
+  LudoBoardFactory ludoBoardFactory = new LudoBoardFactory();
+  LadderBoardFactory ladderBoardFactory = new LadderBoardFactory();
 
   public BoardSelectionScene() {
     BorderPane root = SceneManager.getRootPane();
@@ -110,7 +114,7 @@ public class BoardSelectionScene {
 
   private void addLudoButtons(VBox parent) {
     Button classic = Buttons.getSecondaryBtn("Classic Ludo");
-    classic.setOnAction(e -> load(BoardGameFactory.createLudoClassicBoard()));
+    classic.setOnAction(e -> load(ludoBoardFactory.createDefaultBoard()));
 
     //TODO: make more ludo board variants
     parent.getChildren().addAll(classic);
@@ -118,13 +122,13 @@ public class BoardSelectionScene {
 
   private void addSnakesAndLaddersButtons(VBox parent) {
     Button small = Buttons.getSecondaryBtn("Small Board");
-    small.setOnAction(e -> load(BoardGameFactory.createSmallBoard()));
+    small.setOnAction(e -> load(ladderBoardFactory.createSmallBoard()));
 
     Button classic = Buttons.getSecondaryBtn("Classic Board");
-    classic.setOnAction(e -> load(BoardGameFactory.createClassicBoard()));
+    classic.setOnAction(e -> load(ladderBoardFactory.createClassicBoard()));
 
     Button none = Buttons.getSecondaryBtn("No Snakes / Ladders");
-    none.setOnAction(e -> load(BoardGameFactory.createBoardNoLaddersAndSnakes()));
+    none.setOnAction(e -> load(ladderBoardFactory.createBoardNoLaddersAndSnakes()));
 
     parent.getChildren().addAll(small, classic, none);
   }

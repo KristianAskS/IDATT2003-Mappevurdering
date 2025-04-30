@@ -197,7 +197,7 @@ public class PlayerSelectionScene {
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
 
-    Label dobLabel = new Label("Birthday (optional");
+    Label dobLabel = new Label("Birthday");
     dobLabel.getStyleClass().add("label-sublabel");
     DatePicker dobPicker = new DatePicker();
     dobPicker.getStyleClass().add("calendar-view");
