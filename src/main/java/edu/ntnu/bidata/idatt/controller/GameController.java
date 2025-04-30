@@ -44,9 +44,9 @@ public abstract class GameController {
   protected final Board board;
   protected final Dice dice;
   protected final Die die;
+  final GameRules gameRules;
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
-  private final GameRules gameRules;
   private int currentIndex = 0;
 
   protected GameController(BoardGameScene boardGameScene,
@@ -86,20 +86,23 @@ public abstract class GameController {
     initializeTurnOrder();
     dice.setRollResult(steps);
 
-    if (turnOrder.isEmpty()) return;
+    if (turnOrder.isEmpty()) {
+      return;
+    }
 
     Player player = turnOrder.get(currentIndex);
 
     if (!gameRules.canEnterTrack(player, steps)) {
-      currentIndex = (currentIndex + 1) % turnOrder.size();
+      advanceToNextPlayer();
       return;
     }
 
     int maxTileId = board.getTiles().size();
     int destinationTileId = gameRules.destinationTile(player, steps, maxTileId);
 
-    if(destinationTileId <0){
-      currentIndex = (currentIndex + 1) % turnOrder.size();
+    if (destinationTileId < 0) {
+      advanceToNextPlayer();
+
       return;
     }
 
@@ -117,7 +120,7 @@ public abstract class GameController {
         if (shouldFinish(player)) {
           finishPlayer(player);
         } else {
-          currentIndex = (currentIndex + 1) % turnOrder.size();
+          afterTurnLogic(player);
         }
       });
     });
@@ -138,7 +141,12 @@ public abstract class GameController {
     for (int next = startTileId + 1; next <= targetTileId; next++) {
       sequentialTransition.getChildren().add(getHopTransition(player, next, token));
     }
-    sequentialTransition.setOnFinished(event -> onDoneCallback.run());
+    sequentialTransition.setOnFinished(event -> {
+      Tile landed = board.getTile(targetTileId);
+      landed.addPlayer(player);
+      onDoneCallback.run();
+
+    });
     sequentialTransition.play();
   }
 
@@ -228,4 +236,14 @@ public abstract class GameController {
       currentIndex = 0;
     }
   }
+
+  protected void advanceToNextPlayer() {
+    currentIndex = (currentIndex + 1) % turnOrder.size();
+  }
+
+  protected void afterTurnLogic(Player current) {
+    advanceToNextPlayer();
+  }
+
+  ;
 }

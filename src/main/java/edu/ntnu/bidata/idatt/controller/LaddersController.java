@@ -20,12 +20,12 @@ public final class LaddersController extends GameController {
   }
 
   @Override
-  public int[] tileToGridPosition(Tile t, Board b) {
+  public int[] tileToGridPosition(Tile tile, Board board) {
     int cols = 10;
-    int rows = (int) Math.ceil(b.getTiles().size() / (double) cols);
-    int id = t.getTileId() - 1;
-    int r = id / cols,
-        c = r % 2 == 0 ? id % cols : cols - 1 - id % cols;
+    int rows = (int) Math.ceil(board.getTiles().size() / (double) cols);
+    int id = tile.getTileId() - 1;
+    int r = id / cols;
+    int c = r % 2 == 0 ? id % cols : cols - 1 - id % cols;
     return new int[] {rows - 1 - r, c};
   }
 

@@ -2,13 +2,14 @@ package edu.ntnu.bidata.idatt.model.entity;
 
 import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * The type Tile.
  */
 public class Tile {
+  private final List<Player> playersOnTile = new ArrayList<>();
   private int tileId;
   private int nextTileId;
   private Tile nextTile;
@@ -16,7 +17,6 @@ public class Tile {
   private boolean safe;
   private boolean homeEntry;
   private boolean homeColumn;
-  private final List<Player> playersOnTile = new ArrayList<>();
 
   public Tile(int tileId) {
     this.tileId = tileId;
@@ -84,6 +84,12 @@ public class Tile {
   public List<Player> getPlayersOnTile() {
     return Collections.unmodifiableList(playersOnTile);
   }
-  void addPlayer(Player player){ playersOnTile.add(player); }
-  void removePlayer(Player player){ playersOnTile.remove(player); }
+
+  public void addPlayer(Player player) {
+    playersOnTile.add(player);
+  }
+
+  public void removePlayer(Player player) {
+    playersOnTile.remove(player);
+  }
 }
