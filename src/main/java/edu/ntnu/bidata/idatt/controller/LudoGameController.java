@@ -1,5 +1,6 @@
 package edu.ntnu.bidata.idatt.controller;
 
+import edu.ntnu.bidata.idatt.controller.rules.LudoRules;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
@@ -10,7 +11,7 @@ public class LudoGameController extends GameController {
   public LudoGameController(BoardGameScene scene,
                             Board board,
                             int dice) throws IOException {
-    super(scene, board, dice);
+    super(scene, board, dice, new LudoRules());
   }
 
   @Override

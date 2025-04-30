@@ -6,6 +6,7 @@ import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
 
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
+import edu.ntnu.bidata.idatt.controller.rules.GameRules;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Die;
@@ -43,18 +44,19 @@ public abstract class GameController {
   protected final Board board;
   protected final Dice dice;
   protected final Die die;
-
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
+  private final GameRules gameRules;
   private int currentIndex = 0;
 
   protected GameController(BoardGameScene boardGameScene,
                            Board board,
-                           int numberOfDice) throws IOException {
+                           int numberOfDice, GameRules gameRules) throws IOException {
     this.boardGameScene = boardGameScene;
     this.board = board;
     this.dice = new Dice(numberOfDice);
     this.die = new Die();
+    this.gameRules = gameRules;
 
     boardService.setBoard(board);
     boardService.writeBoardToFile(List.of(board), BOARD_FILE_PATH);
@@ -62,7 +64,7 @@ public abstract class GameController {
 
   public abstract int[] tileToGridPosition(Tile tile, Board board);
 
-  protected void applyPostLandAction(Player p, Tile landed, Runnable onDone) {
+  protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
     onDone.run();
   }
 
@@ -81,24 +83,37 @@ public abstract class GameController {
   }
 
   public void handlePlayerTurn(int steps) {
-    initTurnOrderIfNeeded();
+    initializeTurnOrder();
     dice.setRollResult(steps);
 
-    if (turnOrder.isEmpty()) {
+    if (turnOrder.isEmpty()) return;
+
+    Player player = turnOrder.get(currentIndex);
+
+    if (!gameRules.canEnterTrack(player, steps)) {
+      currentIndex = (currentIndex + 1) % turnOrder.size();
       return;
     }
 
-    Player player = turnOrder.get(currentIndex);
-    int originId = player.getCurrentTileId();
-    Tile originTile = originId == 0 ? null : board.getTile(originId);
+    int maxTileId = board.getTiles().size();
+    int destinationTileId = gameRules.destinationTile(player, steps, maxTileId);
 
-    movePlayerAlongTiles(player, steps, () -> {
+    if(destinationTileId <0){
+      currentIndex = (currentIndex + 1) % turnOrder.size();
+      return;
+    }
+
+    int originTileId = player.getCurrentTileId();
+    Tile originTile = originTileId == 0 ? null : board.getTile(originTileId);
+    int hopCount = destinationTileId - originTileId;
+
+    movePlayerAlongTiles(player, hopCount, () -> {
       Tile landed = board.getTile(player.getCurrentTileId());
 
       boardGameScene.onEvent(new BoardGameEvent(
           BoardGameEventType.PLAYER_MOVED, player, originTile, landed));
 
-      applyPostLandAction(player, landed, () -> {
+      applyLandAction(player, landed, () -> {
         if (shouldFinish(player)) {
           finishPlayer(player);
         } else {
@@ -184,7 +199,7 @@ public abstract class GameController {
     return (TileView) boardGameScene.getScene().lookup("#tile" + tileId);
   }
 
-  private void initTurnOrderIfNeeded() {
+  private void initializeTurnOrder() {
     if (!turnOrder.isEmpty()) {
       return;
     }

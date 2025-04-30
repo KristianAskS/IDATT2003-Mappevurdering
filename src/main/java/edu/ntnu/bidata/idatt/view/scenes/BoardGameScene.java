@@ -99,6 +99,11 @@ public class BoardGameScene implements BoardGameObserver {
     ladderOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
     ladderOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
 
+
+    StackPane boardStack = new StackPane(boardGridPane, ladderOverlay, tokenLayerPane);
+    tokenLayerPane.toFront();
+    rootPane.setCenter(boardStack);
+
     int numbOfDice = 1;  // should be an argument value or static or based on isLudo
     if (isLudo) {
       gameController = new LudoGameController(this, board, numbOfDice);
@@ -106,11 +111,7 @@ public class BoardGameScene implements BoardGameObserver {
       gameController = new LaddersController(this, board, numbOfDice);
     }
 
-    StackPane boardStack = new StackPane(boardGridPane, ladderOverlay, tokenLayerPane);
-    tokenLayerPane.toFront();
-    rootPane.setCenter(boardStack);
-
-    if (isLudo) {
+    if (!isLudo) {
       Platform.runLater(() ->
           LadderView.drawLadders(board, boardGridPane, ladderOverlay, gameController)
       );

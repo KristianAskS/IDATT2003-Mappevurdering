@@ -4,6 +4,7 @@ package edu.ntnu.bidata.idatt.controller;
 
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
+import edu.ntnu.bidata.idatt.controller.rules.LaddersRules;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
@@ -15,7 +16,7 @@ public final class LaddersController extends GameController {
   public LaddersController(BoardGameScene scene,
                            Board board,
                            int dice) throws IOException {
-    super(scene, board, dice);
+    super(scene, board, dice, new LaddersRules());
   }
 
   @Override
@@ -29,7 +30,7 @@ public final class LaddersController extends GameController {
   }
 
   @Override
-  protected void applyPostLandAction(Player player, Tile landed, Runnable onDone) {
+  protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
     if (landed.getLandAction() == null) {
       onDone.run();
       return;
