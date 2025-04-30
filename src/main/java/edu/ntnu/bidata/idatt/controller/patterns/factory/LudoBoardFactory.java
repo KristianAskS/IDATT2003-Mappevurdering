@@ -2,7 +2,7 @@ package edu.ntnu.bidata.idatt.controller.patterns.factory;
 
 import edu.ntnu.bidata.idatt.model.entity.Board;
 
-public class LudoBoardFactory extends BoardFactory{
+public class LudoBoardFactory extends BoardFactory {
 
   @Override
   public Board createDefaultBoard() {

@@ -4,7 +4,6 @@ import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.controller.SceneManager;
-import edu.ntnu.bidata.idatt.controller.patterns.factory.BoardFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.LadderBoardFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.LudoBoardFactory;
 import edu.ntnu.bidata.idatt.model.entity.Board;
@@ -38,10 +37,10 @@ public class BoardSelectionScene {
   private final Scene scene;
   private final BoardService boardService = new BoardService();
   private final String selectedGame = GameSelectionScene.getSelectedGame();
-  private Label detailsTitle;
-  private Label detailsDescription;
   LudoBoardFactory ludoBoardFactory = new LudoBoardFactory();
   LadderBoardFactory ladderBoardFactory = new LadderBoardFactory();
+  private Label detailsTitle;
+  private Label detailsDescription;
 
   public BoardSelectionScene() {
     BorderPane root = SceneManager.getRootPane();

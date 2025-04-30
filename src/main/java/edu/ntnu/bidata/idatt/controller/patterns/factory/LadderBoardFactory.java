@@ -11,17 +11,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
-public class LadderBoardFactory extends BoardFactory{
+public class LadderBoardFactory extends BoardFactory {
   private static final Logger logger = Logger.getLogger(LadderBoardFactory.class.getName());
 
   public LadderBoardFactory() {
   }
+
   @Override
   public Board createDefaultBoard() {
     Board board = createBoardTiles("Classic Board", "90-tile board", 90);
-    addRandomLadders(board,10);
+    addRandomLadders(board, 10);
     return board;
   }
 

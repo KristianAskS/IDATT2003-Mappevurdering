@@ -8,7 +8,9 @@ import static edu.ntnu.bidata.idatt.model.entity.Ladder.VISUAL_CORRECTION;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LADDER;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LUDO;
 
-import edu.ntnu.bidata.idatt.controller.BoardGameController;
+import edu.ntnu.bidata.idatt.controller.GameController;
+import edu.ntnu.bidata.idatt.controller.LaddersController;
+import edu.ntnu.bidata.idatt.controller.LudoGameController;
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
@@ -64,7 +66,9 @@ public class BoardGameScene implements BoardGameObserver {
   private final Pane tokenLayerPane = new Pane();
   private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
       FXCollections.observableArrayList();
-  private final BoardGameController boardGameController;
+  private final GameController gameController;
+  private final boolean isLudo =
+      "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame()));
   private List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private HBox stagingArea;
   private boolean isGameFinished = false;
@@ -77,7 +81,7 @@ public class BoardGameScene implements BoardGameObserver {
     rootPane.setLeft(ioContainer);
 
     Board board = BoardSelectionScene.getSelectedBoard();
-    if ("LUDO".equalsIgnoreCase(GameSelectionScene.getSelectedGame())) {
+    if (isLudo) {
       this.boardGridPane = new LudoBoardView().createBoardGUI(board);
     } else {
       this.boardGridPane = new LaddersBoardView().createBoardGUI(board);
@@ -95,23 +99,31 @@ public class BoardGameScene implements BoardGameObserver {
     ladderOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
     ladderOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
 
+    int numbOfDice = 1;  // should be an argument value or static or based on isLudo
+    if (isLudo) {
+      gameController = new LudoGameController(this, board, numbOfDice);
+    } else {
+      gameController = new LaddersController(this, board, numbOfDice);
+    }
+
     StackPane boardStack = new StackPane(boardGridPane, ladderOverlay, tokenLayerPane);
     tokenLayerPane.toFront();
     rootPane.setCenter(boardStack);
 
-    Platform.runLater(() ->
-        LadderView.drawLadders(board, boardGridPane, ladderOverlay)
-    );
+    if (isLudo) {
+      Platform.runLater(() ->
+          LadderView.drawLadders(board, boardGridPane, ladderOverlay, gameController)
+      );
+    }
 
-    int numbOfDice = 1;  // should be an argument value or static
-    boardGameController = new BoardGameController(this, board, numbOfDice);
 
     StackPane container = new StackPane(rootPane);
     scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    boardGameController.initializePlayers(players);
+    gameController.initializePlayers(players);
 
-    logger.log(Level.INFO, "BoardGameScene initialized");
+    logger.log(Level.INFO, "BoardGameScene initialized. Game = {0}",
+        GameSelectionScene.getSelectedGame());
   }
 
   private static double[][] getTokenOffsets(int tokenCount) {
@@ -132,7 +144,6 @@ public class BoardGameScene implements BoardGameObserver {
     return new double[] {x, y};
   }
 
-
   public void setupPlayersUI(List<Player> players) {
     this.players = players;
     players.forEach(player -> player.setCurrentTileId(0));
@@ -148,8 +159,7 @@ public class BoardGameScene implements BoardGameObserver {
     List<Node> tokens = tile.getChildren().stream()
         .filter(node -> node instanceof TokenView).toList();
     double[][] offsets = getTokenOffsets(tokens.size());
-    int tileSize = "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame())) ?
-        TILE_SIZE_LUDO : TILE_SIZE_LADDER;
+    int tileSize = isLudo ? TILE_SIZE_LUDO : TILE_SIZE_LADDER;
     IntStream.range(0, tokens.size())
         .forEach(i -> {
           Node tokenNode = tokens.get(i);
@@ -176,7 +186,7 @@ public class BoardGameScene implements BoardGameObserver {
   @Override
   public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
-      var pl = event.player();
+      Player player = event.player();
       //int rolled = boardGameController.getLastRolledValue();
       //eventLog.appendText(String.format("%s rolled a %d%n", pl.getName(), rolled));
 
@@ -186,19 +196,19 @@ public class BoardGameScene implements BoardGameObserver {
       switch (event.eventType()) {
         case PLAYER_MOVED -> {
           eventLog.appendText(
-              String.format("%s moved from %d to %d%n", pl.getName(), oldId, newId)
+              String.format("%s moved from %d to %d%n", player.getName(), oldId, newId)
           );
           repositionTokenOnTile();
         }
         case PLAYER_LADDER_ACTION -> {
           eventLog.appendText(
-              String.format("%s climbed a ladder from %d to %d%n", pl.getName(), oldId, newId)
+              String.format("%s climbed a ladder from %d to %d%n", player.getName(), oldId, newId)
           );
           repositionTokenOnTile();
         }
         case PLAYER_FINISHED -> {
           eventLog.appendText(
-              String.format("Player %s finished!%n", pl.getName())
+              String.format("Player %s finished!%n", player.getName())
           );
           repositionTokenOnTile();
         }
@@ -272,7 +282,7 @@ public class BoardGameScene implements BoardGameObserver {
       rollBtn.setDisable(true);
       Timeline timeline = diceView.createRollDiceAnimation(() -> {
         int result = diceView.rollResultProperty().get();
-        boardGameController.handlePlayerTurn(result);
+        gameController.handlePlayerTurn(result);
         rollBtn.setDisable(false);
       });
       timeline.play();
