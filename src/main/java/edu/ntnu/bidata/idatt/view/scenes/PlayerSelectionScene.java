@@ -197,7 +197,7 @@ public class PlayerSelectionScene {
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
 
-    Label dobLabel = new Label("Birthday (optional");
+    Label dobLabel = new Label("Birthday");
     dobLabel.getStyleClass().add("label-sublabel");
     DatePicker dobPicker = new DatePicker();
     dobPicker.getStyleClass().add("calendar-view");
@@ -344,7 +344,7 @@ public class PlayerSelectionScene {
   }
 
   private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox,
-      DatePicker dobPicker) {
+                               DatePicker dobPicker) {
     String name = nameField.getText();
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
@@ -405,7 +405,7 @@ public class PlayerSelectionScene {
     updatePlayersCountLabel();
     resetInputs(nameField, shapeComboBox, dobPicker);
     this.selectedImage = null;
-    logger.log(Level.INFO, "Added player: {0} (img={1})", new Object[]{name, storedImgPath});
+    logger.log(Level.INFO, "Added player: {0} (img={1})", new Object[] {name, storedImgPath});
   }
 
   private LocalDate randomBirthDate() {
@@ -416,7 +416,7 @@ public class PlayerSelectionScene {
   }
 
   private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox,
-      DatePicker dobPicker) {
+                           DatePicker dobPicker) {
     nameField.clear();
     if (!"LUDO".equalsIgnoreCase(selectedGame)) {
       shapeComboBox.getSelectionModel().clearSelection();

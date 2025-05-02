@@ -1,7 +1,7 @@
 [
   {
     "name": "Classic Ludo",
-    "description": "Standard 52‑tile Ludo track",
+    "description": "Standard 52-tile board",
     "tiles": [
       {
         "tileId": 1,

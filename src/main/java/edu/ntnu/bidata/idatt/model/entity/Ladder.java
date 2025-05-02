@@ -1,7 +1,8 @@
 package edu.ntnu.bidata.idatt.model.entity;
 
-import edu.ntnu.bidata.idatt.controller.BoardGameController;
+import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.view.components.LaddersBoardView;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -22,8 +23,11 @@ public class Ladder {
   private static final double RUNG_SPACING = 15;
 
   private final List<Line> ladders = new ArrayList<>();
+  private final GameController gameController;
 
-  public Ladder(Tile startTile, Tile endTile, Board board, GridPane boardGrid) {
+  public Ladder(Tile startTile, Tile endTile, Board board, GridPane boardGrid,
+                GameController gameController) throws IOException {
+    this.gameController = gameController;
     drawLadder(boardGrid, startTile, endTile, board);
   }
 
@@ -34,10 +38,11 @@ public class Ladder {
     return new double[] {x, y};
   }
 
-  private void drawLadder(GridPane boardGrid, Tile startTile, Tile endTile, Board board) {
+  private void drawLadder(GridPane boardGrid, Tile startTile, Tile endTile, Board board)
+      throws IOException {
     // Get the position of tile relative to the whole scene
-    int[] startPos = BoardGameController.tileToGridPosition(startTile, board);
-    int[] endPos = BoardGameController.tileToGridPosition(endTile, board);
+    int[] startPos = gameController.tileToGridPosition(startTile, board);
+    int[] endPos = gameController.tileToGridPosition(endTile, board);
     logTilePositions(startPos, endPos);
 
     Node startNode = LaddersBoardView.getTileNodeAt(boardGrid, startPos[0], startPos[1]);

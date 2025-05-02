@@ -11,39 +11,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
-public final class BoardGameFactory {
-  private static final Logger logger = Logger.getLogger(BoardGameFactory.class.getName());
+public class LadderBoardFactory extends BoardFactory {
+  private static final Logger logger = Logger.getLogger(LadderBoardFactory.class.getName());
 
-  private BoardGameFactory() {
+  public LadderBoardFactory() {
   }
 
-  public static Board createBoardTiles(String name, String description, int numberOfTiles) {
-    Board board = new Board(name, description);
-
-    IntStream.rangeClosed(1, numberOfTiles)
-        .mapToObj(Tile::new)
-        .forEach(board::addTile);
-
-    IntStream.rangeClosed(1, numberOfTiles - 1)
-        .forEach(i -> {
-          Tile current = board.getTile(i);
-          Tile next = board.getTile(i + 1);
-          if (current != null && next != null) {
-            current.setNextTile(next);
-          }
-        });
-
+  @Override
+  public Board createDefaultBoard() {
+    Board board = createBoardTiles("Classic Board", "90-tile board", 90);
+    addRandomLadders(board, 10);
     return board;
   }
 
-  public static Board createLudoClassicBoard() {
-    return createBoardTiles("Classic Ludo", "Standard 52‑tile Ludo track", 52);
-  }
-
   //TODO: make more ludo board variants
-  public static void addRandomLadders(Board board, int count) {
+  private void addRandomLadders(Board board, int count) {
     int placed = 0;
     while (placed < count) {
       int startId = (int) (Math.random() * 88) + 1;
@@ -62,7 +45,7 @@ public final class BoardGameFactory {
     }
   }
 
-  public static void createLadder(Board board, int start, int end) {
+  private void createLadder(Board board, int start, int end) {
     if (!LadderView.isValidLadder(start, end)) {
       return;
     }
@@ -73,7 +56,7 @@ public final class BoardGameFactory {
     }
   }
 
-  public static void createSnake(Board board, int start, int end) {
+  private void createSnake(Board board, int start, int end) {
     if (start <= end) {
       return;
     }
@@ -84,21 +67,21 @@ public final class BoardGameFactory {
     }
   }
 
-  public static Board createClassicBoard() {
+  public Board createClassicBoard() {
     Board board = createBoardTiles("Classic Board", "90‑tile board with 10 ladders", 90);
     addRandomLadders(board, 10);
     return board;
   }
 
-  public static Board createSmallBoard() {
+  public Board createSmallBoard() {
     return createBoardTiles("Small Board", "30‑tile board", 30);
   }
 
-  public static Board createBoardNoLaddersAndSnakes() {
+  public Board createBoardNoLaddersAndSnakes() {
     return createBoardTiles("Flat Board", "90‑tile board without actions", 90);
   }
 
-  public static List<Board> createBoardFromJSON(String filePath) throws IOException {
+  public List<Board> createBoardFromJSON(String filePath) throws IOException {
     FileHandler<Board> handler = new GsonBoardFileHandler();
     return handler.readFromFile(filePath);
   }

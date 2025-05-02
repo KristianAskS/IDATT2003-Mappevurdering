@@ -1,8 +1,10 @@
 package edu.ntnu.bidata.idatt.view.components;
 
+import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Ladder;
 import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
@@ -19,7 +21,8 @@ public class LadderView {
   private LadderView() {
   }
 
-  public static void drawLadders(Board board, GridPane boardGridPane, Pane overlayPane) {
+  public static void drawLadders(Board board, GridPane boardGridPane, Pane overlayPane,
+                                 GameController gameController) {
     overlayPane.getChildren().clear();
 
     board.getTiles().values().stream()
@@ -36,8 +39,13 @@ public class LadderView {
           }
 
           TileView endView = (TileView) boardGridPane.lookup("#tile" + endId);
-          overlayPane.getChildren().addAll(
-              new Ladder(startTile, board.getTile(endId), board, boardGridPane).getLadders());
+          try {
+            overlayPane.getChildren().addAll(
+                new Ladder(startTile, board.getTile(endId), board, boardGridPane,
+                    gameController).getLadders());
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
 
           TileView startView = (TileView) boardGridPane.lookup("#tile" + startId);
           if (startView != null) {
