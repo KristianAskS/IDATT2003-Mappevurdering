@@ -21,6 +21,7 @@ import edu.ntnu.bidata.idatt.view.components.DiceView;
 import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.view.components.LaddersBoardView;
 import edu.ntnu.bidata.idatt.view.components.LudoBoardView;
+import edu.ntnu.bidata.idatt.view.components.SnakeView;
 import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.IOException;
@@ -57,6 +58,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class BoardGameScene implements BoardGameObserver {
+
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
 
   private final Scene scene;
@@ -99,6 +101,11 @@ public class BoardGameScene implements BoardGameObserver {
     ladderOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
     ladderOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
 
+    Pane snakeOverlay = new Pane();
+    snakeOverlay.setPickOnBounds(false);
+    snakeOverlay.setMouseTransparent(true);
+    snakeOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
+    snakeOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
 
     StackPane boardStack = new StackPane(boardGridPane, ladderOverlay, tokenLayerPane);
     tokenLayerPane.toFront();
@@ -112,11 +119,11 @@ public class BoardGameScene implements BoardGameObserver {
     }
 
     if (!isLudo) {
-      Platform.runLater(() ->
-          LadderView.drawLadders(board, boardGridPane, ladderOverlay, gameController)
-      );
+      Platform.runLater(() -> {
+        LadderView.drawLadders(board, boardGridPane, ladderOverlay, gameController);
+        SnakeView.drawSnakes(board, boardGridPane, ladderOverlay, gameController);
+      });
     }
-
 
     StackPane container = new StackPane(rootPane);
     scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
@@ -129,11 +136,11 @@ public class BoardGameScene implements BoardGameObserver {
 
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
-      case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
-      case 3 -> new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
-      case 4 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
-      case 5 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
-      default -> new double[][] {{0.5, 0.5}};
+      case 2 -> new double[][]{{0.2, 0.5}, {0.8, 0.5}};
+      case 3 -> new double[][]{{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
+      case 4 -> new double[][]{{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
+      case 5 -> new double[][]{{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
+      default -> new double[][]{{0.5, 0.5}};
     };
   }
 
@@ -142,7 +149,7 @@ public class BoardGameScene implements BoardGameObserver {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
     logger.info(() -> "Center:(" + x + "," + y + ")");
-    return new double[] {x, y};
+    return new double[]{x, y};
   }
 
   public void setupPlayersUI(List<Player> players) {
@@ -295,7 +302,6 @@ public class BoardGameScene implements BoardGameObserver {
         diceView.rollResultProperty().asString("Roll result: %d")
     );
     ioContainer.getChildren().add(rollLbl);
-
 
     Label outputLbl = new Label("Output");
     outputLbl.setFont(Font.font("monospace", FontWeight.BOLD, 16));
