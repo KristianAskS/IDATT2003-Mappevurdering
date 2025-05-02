@@ -95,19 +95,13 @@ public class BoardGameScene implements BoardGameObserver {
     tokenLayerPane.prefWidthProperty().bind(boardGridPane.widthProperty());
     tokenLayerPane.prefHeightProperty().bind(boardGridPane.heightProperty());
 
-    Pane ladderOverlay = new Pane();
-    ladderOverlay.setPickOnBounds(false);
-    ladderOverlay.setMouseTransparent(true);
-    ladderOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
-    ladderOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
+    Pane overlay = new Pane();
+    overlay.setPickOnBounds(false);
+    overlay.setMouseTransparent(true);
+    overlay.prefWidthProperty().bind(boardGridPane.widthProperty());
+    overlay.prefHeightProperty().bind(boardGridPane.heightProperty());
 
-    Pane snakeOverlay = new Pane();
-    snakeOverlay.setPickOnBounds(false);
-    snakeOverlay.setMouseTransparent(true);
-    snakeOverlay.prefWidthProperty().bind(boardGridPane.widthProperty());
-    snakeOverlay.prefHeightProperty().bind(boardGridPane.heightProperty());
-
-    StackPane boardStack = new StackPane(boardGridPane, ladderOverlay, tokenLayerPane);
+    StackPane boardStack = new StackPane(boardGridPane, overlay, tokenLayerPane);
     tokenLayerPane.toFront();
     rootPane.setCenter(boardStack);
 
@@ -120,8 +114,8 @@ public class BoardGameScene implements BoardGameObserver {
 
     if (!isLudo) {
       Platform.runLater(() -> {
-        LadderView.drawLadders(board, boardGridPane, ladderOverlay, gameController);
-        SnakeView.drawSnakes(board, boardGridPane, ladderOverlay, gameController);
+        LadderView.drawLadders(board, boardGridPane, overlay, gameController);
+        SnakeView.drawSnakes(board, boardGridPane, overlay, gameController);
       });
     }
 
