@@ -7,12 +7,15 @@ import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import edu.ntnu.bidata.idatt.view.components.LadderView;
+import edu.ntnu.bidata.idatt.view.components.SnakeView;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class LadderBoardFactory extends BoardFactory {
+
   private static final Logger logger = Logger.getLogger(LadderBoardFactory.class.getName());
 
   public LadderBoardFactory() {
@@ -45,6 +48,51 @@ public class LadderBoardFactory extends BoardFactory {
     }
   }
 
+  private void addRandomSnakes(Board board, int count) {
+    HashSet<Object> reserved = new HashSet<>();
+    board.getTiles().values().forEach(t -> {
+      if (t.getLandAction() instanceof LadderAction la) {
+        reserved.add(t.getTileId());
+        reserved.add(la.getDestinationTileId());
+      } else if (t.getLandAction() instanceof SnakeAction sa) {
+        reserved.add(t.getTileId());
+        reserved.add(sa.getDestinationTileId());
+      }
+    });
+
+    int placed = 0;
+    while (placed < count) {
+
+      int head = 2 + (int) (Math.random() * 88);
+      int tail = 1 + (int) (Math.random() * (head - 1));
+
+      if (reserved.contains(head) || reserved.contains(tail)) {
+        continue;
+      }
+
+      if (!SnakeView.isValidSnake(head, tail)) {
+        continue;
+      }
+
+      Tile headTile = board.getTile(head);
+      Tile tailTile = board.getTile(tail);
+
+      if (headTile == null || tailTile == null) {
+        continue;
+      }
+
+      headTile.setNextTile(tailTile);
+      headTile.setLandAction(
+          new SnakeAction(tail, "Snake from " + head + " to " + tail));
+
+      reserved.add(head);
+      reserved.add(tail);
+      placed++;
+
+      logger.log(Level.INFO, headTile.getLandAction().getDescription());
+    }
+  }
+
   private void createLadder(Board board, int start, int end) {
     if (!LadderView.isValidLadder(start, end)) {
       return;
@@ -69,7 +117,8 @@ public class LadderBoardFactory extends BoardFactory {
 
   public Board createClassicBoard() {
     Board board = createBoardTiles("Classic Board", "90‑tile board with 10 ladders", 90);
-    addRandomLadders(board, 10);
+    addRandomLadders(board, 5);
+    addRandomSnakes(board, 5);
     return board;
   }
 
