@@ -18,7 +18,7 @@ public final class SnakeView {
   }
 
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlay,
-      GameController gc) {
+                                GameController gc) {
 
     board.getTiles().values().stream()
         .filter(t -> t.getLandAction() instanceof SnakeAction)

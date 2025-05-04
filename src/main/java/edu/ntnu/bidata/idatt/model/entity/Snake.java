@@ -22,7 +22,7 @@ public class Snake {
   private final List<Node> snakes = new ArrayList<>();
 
   public Snake(Tile startTile, Tile endTile, Board board, GridPane grid,
-      GameController controller) {
+               GameController controller) {
 
     double[] headC = tileCenter(grid, controller, board, startTile);
     double[] tailC = tileCenter(grid, controller, board, endTile);
@@ -65,7 +65,7 @@ public class Snake {
     Bounds b = BaseBoardView.getTileNodeAt(grid, rc[0], rc[1]).getBoundsInParent();
     double x = b.getMinX() + b.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = b.getMinY() + b.getHeight() * 0.5;
-    return new double[]{x, y};
+    return new double[] {x, y};
   }
 
   public List<Node> getSnakes() {
