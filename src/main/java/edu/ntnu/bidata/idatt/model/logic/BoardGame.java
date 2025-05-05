@@ -1,5 +1,3 @@
-// src/main/java/edu/ntnu/bidata/idatt/model/logic/BoardGame.java
-
 package edu.ntnu.bidata.idatt.model.logic;
 
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
@@ -82,19 +80,5 @@ public class BoardGame {
 
   private void notifyEvent(BoardGameEvent event) {
     observers.forEach(o -> o.onEvent(event));
-  }
-
-  public static class MoveResult {
-    public final Player player;
-    public final int steps;
-    public final Tile from;
-    public final Tile to;
-
-    public MoveResult(Player player, int steps, Tile from, Tile to) {
-      this.player = player;
-      this.steps = steps;
-      this.from = from;
-      this.to = to;
-    }
   }
 }
