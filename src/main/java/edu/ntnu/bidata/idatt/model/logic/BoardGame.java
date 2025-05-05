@@ -8,71 +8,25 @@ import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Game logic and state
+ * Facade for UI to interact with the board game logic.
  */
 public class BoardGame {
-  private final List<Player> players;
-  private final List<BoardGameObserver> observers;
+  private final Board board;
+  private final Dice dice;
+  private final List<Player> players = new ArrayList<>();
+  private final List<BoardGameObserver> observers = new ArrayList<>();
   private final Logger logger = Logger.getLogger(BoardGame.class.getName());
-  private Board board;
-  private Player currentPlayer;
-  private Dice dice;
-  private int currentPlayerIndex = 0;
+  private int currentIndex = 0;
+  private boolean started = false;
 
-  public BoardGame(Board board, List<Player> players, int numbOfDice) {
+  public BoardGame(Board board, int numOfDice) {
     this.board = board;
-    this.players = new ArrayList<>();
-    this.observers = new ArrayList<>();
-
-    setBoard(board);
-    createDice(numbOfDice);
-    addPlayers(players);
-  }
-
-  public void playTurn() {
-    if (players.isEmpty()) {
-      logger.log(Level.INFO, "players.isEmpty()");
-      return;
-    }
-
-    currentPlayer = players.get(currentPlayerIndex);
-    int steps = dice.roll();
-
-    Tile oldTile = board.getTile(currentPlayer.getCurrentTileId());
-    int nextTileId = Math.min(currentPlayer.getCurrentTileId() + steps, board.getTiles().size());
-    currentPlayer.setCurrentTileId(nextTileId);
-    Tile nextTile = board.getTile(nextTileId);
-
-    Tile finalNewTile = nextTile;
-    logger.info(() -> String.format(
-        "About to handle event PLAYER_MOVED: old=%s (id=%s), new=%s (id=%s)",
-        oldTile, oldTile == null ? "null" : oldTile.getTileId(),
-        finalNewTile, finalNewTile == null ? "null" : finalNewTile.getTileId()
-    ));
-
-    if (nextTile.getLandAction() != null) {
-      nextTile.getLandAction().perform(currentPlayer);
-      int destinationTileId = nextTile.getLandAction().getDestinationTileId();
-      nextTile = board.getTile(currentPlayer.getCurrentTileId());
-      currentPlayer.setCurrentTileId(destinationTileId);
-    }
-
-    notifyObservers(BoardGameEventType.PLAYER_MOVED, currentPlayer, oldTile, nextTile);
-
-    if (nextTileId >= board.getTiles().size()) {
-      notifyObservers(BoardGameEventType.GAME_FINISHED, currentPlayer, oldTile, nextTile);
-      return;
-    }
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-  }
-
-  public void movePlayer() {
-
+    this.dice = new Dice(numOfDice);
   }
 
   public void addObserver(BoardGameObserver observer) {
@@ -83,31 +37,48 @@ public class BoardGame {
     observers.remove(observer);
   }
 
-  private void notifyObservers(BoardGameEventType eventType, Player player, Tile oldTile,
-                               Tile newTile) {
-    for (BoardGameObserver observer : observers) {
-      observer.onEvent(new BoardGameEvent(eventType, player, oldTile, newTile));
+  public void addPlayer(Player player) {
+    if (started) {
+      throw new IllegalStateException("Cannot add players after the game has started");
     }
+    player.setCurrentTileId(0);
+    players.add(player);
   }
 
-  public void setBoard(Board board) {
-    this.board = board;
+  /**
+   * Start the game:
+   */
+  public void start() {
+    if (players.isEmpty()) {
+      throw new IllegalStateException("Add at least one player before starting the game");
+    }
+    started = true;
+    //Collections.shuffle(players);
+    notifyEvent(new BoardGameEvent(BoardGameEventType.PLAYER_MOVED, null, null, null));
   }
 
-  public void addPlayers(List<Player> players) {
-    players.forEach(player -> player.setCurrentTileId(1));
-    this.players.addAll(players);
+  public boolean hasWinner() {
+    return players.stream()
+        .anyMatch(player -> player.getCurrentTileId() == board.getTiles().size() - 1);
   }
 
-  public void createDice(int numbOfDice) {
-    dice = new Dice(numbOfDice);
+  public Player getWinner() {
+    return players.stream()
+        .filter(player -> player.getCurrentTileId() == board.getTiles().size() - 1)
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("No winner yet"));
   }
 
-  public Dice getDice() {
-    return dice;
+
+  public List<Player> getPlayers() {
+    return Collections.unmodifiableList(players);
   }
 
-  public Player getCurrentPlayer() {
-    return currentPlayer;
+  public Board getBoard() {
+    return board;
+  }
+
+  private void notifyEvent(BoardGameEvent event) {
+    observers.forEach(o -> o.onEvent(event));
   }
 }

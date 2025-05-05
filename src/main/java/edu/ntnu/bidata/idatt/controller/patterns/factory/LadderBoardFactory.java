@@ -70,7 +70,7 @@ public class LadderBoardFactory extends BoardFactory {
         continue;
       }
 
-      if (!SnakeView.isValidSnake(head, tail)) {
+      if (SnakeView.isValidSnake(head, tail)) {
         continue;
       }
 

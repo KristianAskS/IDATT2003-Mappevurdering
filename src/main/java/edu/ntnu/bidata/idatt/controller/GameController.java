@@ -102,7 +102,6 @@ public abstract class GameController {
 
     if (destinationTileId < 0) {
       advanceToNextPlayer();
-
       return;
     }
 

@@ -7,6 +7,7 @@ import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.util.List;
+import java.util.Objects;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -35,17 +36,17 @@ public class PodiumGameScene {
 
     scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
 
-    Label title = new Label("Final Podium:");
+    Label title = new Label("Congratulations:");
     title.getStyleClass().add("podium-title");
 
     HBox podium = createPodium(finalRanking);
     podium.getStyleClass().add("podium-container");
 
     Button playAgain = Buttons.getSmallPrimaryBtn("Play again");
-    playAgain.setOnAction(e -> SceneManager.showBoardSelectionScene());
+    playAgain.setOnAction(event -> SceneManager.showBoardSelectionScene());
 
     Button mainMenu = Buttons.getExitBtn("Main menu");
-    mainMenu.setOnAction(e -> SceneManager.showLandingScene());
+    mainMenu.setOnAction(event -> SceneManager.showLandingScene());
 
     HBox buttons = new HBox(30, playAgain, mainMenu);
     buttons.setAlignment(Pos.CENTER);
@@ -55,7 +56,9 @@ public class PodiumGameScene {
     root.setCenter(center);
 
     scene.getStylesheets().add(
-        getClass().getResource("/edu/ntnu/bidata/idatt/styles/PodiumScene.css").toExternalForm());
+        Objects.requireNonNull(
+                getClass().getResource("/edu/ntnu/bidata/idatt/styles/PodiumScene.css"))
+            .toExternalForm());
   }
 
   public static void setFinalRanking(List<Player> ranking) {
@@ -67,7 +70,7 @@ public class PodiumGameScene {
   }
 
   private HBox createPodium(List<Player> ranking) {
-    Player first = ranking.size() > 0 ? ranking.get(0) : null;
+    Player first = !ranking.isEmpty() ? ranking.get(0) : null;
     Player second = ranking.size() > 1 ? ranking.get(1) : null;
     Player third = ranking.size() > 2 ? ranking.get(2) : null;
 

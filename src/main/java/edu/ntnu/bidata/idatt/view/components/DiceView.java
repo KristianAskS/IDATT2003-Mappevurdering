@@ -13,25 +13,37 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
 public class DiceView implements BoardGameObserver {
+  public static final int NUMB_OF_DICE = 2;
   private static final Logger logger = Logger.getLogger(DiceView.class.getName());
-
   private static final String DICE_IMAGE_PATH = "/edu/ntnu/bidata/idatt/images/dice/";
-  private final ImageView diceImageView;
+  private final ImageView diceImageView1;
+  private final ImageView diceImageView2;
   private final Dice dice;
   private final IntegerProperty rollResult;
 
   public DiceView() {
-    diceImageView = new ImageView(new Image(
+    diceImageView1 = new ImageView(new Image(
         Objects.requireNonNull(getClass().getResourceAsStream(DICE_IMAGE_PATH + "1.png"))
     ));
-    diceImageView.setFitWidth(100);
-    diceImageView.setFitHeight(100);
+    diceImageView1.setFitWidth(100);
+    diceImageView1.setFitHeight(100);
 
-    dice = new Dice(1);
+    diceImageView2 = new ImageView(new Image(
+        Objects.requireNonNull(getClass().getResourceAsStream(DICE_IMAGE_PATH + "1.png"))
+    ));
+    diceImageView2.setFitWidth(100);
+    diceImageView2.setFitHeight(100);
+
+    dice = new Dice(NUMB_OF_DICE);
     rollResult = new SimpleIntegerProperty(0);
+  }
+
+  public HBox getDiceImageHBox() {
+    return new HBox(10, diceImageView1, diceImageView2);
   }
 
   public Timeline createRollDiceAnimation(Runnable onFinished) {
@@ -43,22 +55,32 @@ public class DiceView implements BoardGameObserver {
       KeyFrame keyFrame = new KeyFrame(
           Duration.millis(frameIntervalMillis * frameIndex),
           event -> {
-            int rollTempNumb = dice.roll();
-            String imagePath = DICE_IMAGE_PATH + rollTempNumb + ".png";
-            diceImageView.setImage(new Image(
-                Objects.requireNonNull(getClass().getResourceAsStream(imagePath))
+            int[] rollTempNumb = dice.rollDice();
+            diceImageView1.setImage(new Image(
+                Objects.requireNonNull(
+                    getClass().getResourceAsStream(DICE_IMAGE_PATH + rollTempNumb[0] + ".png"))
+            ));
+            diceImageView2.setImage(new Image(
+                Objects.requireNonNull(
+                    getClass().getResourceAsStream(DICE_IMAGE_PATH + rollTempNumb[1] + ".png"))
             ));
           }
       );
       rollAnimationTimeline.getKeyFrames().add(keyFrame);
     }
     rollAnimationTimeline.setOnFinished(event -> {
-      int rollResultFinal = dice.roll();
+      int[] diceRoll = dice.rollDice();
+      int rollResultFinal = diceRoll[0] + diceRoll[1];
       dice.setRollResult(rollResultFinal);
       rollResult.set(rollResultFinal);
-      diceImageView.setImage(new Image(
+      diceImageView1.setImage(new Image(
           Objects.requireNonNull(getClass().getResourceAsStream(
-              DICE_IMAGE_PATH + rollResultFinal + ".png"
+              DICE_IMAGE_PATH + diceRoll[0] + ".png"
+          ))
+      ));
+      diceImageView2.setImage(new Image(
+          Objects.requireNonNull(getClass().getResourceAsStream(
+              DICE_IMAGE_PATH + diceRoll[1] + ".png"
           ))
       ));
       if (onFinished != null) {
@@ -75,10 +97,6 @@ public class DiceView implements BoardGameObserver {
 
   public Button getRollDiceBtn() {
     return Buttons.getSecondaryBtn("Press to roll");
-  }
-
-  public ImageView getDiceImageView() {
-    return diceImageView;
   }
 
   @Override

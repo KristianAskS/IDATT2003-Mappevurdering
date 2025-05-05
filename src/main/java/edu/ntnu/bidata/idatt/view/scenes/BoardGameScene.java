@@ -130,11 +130,11 @@ public class BoardGameScene implements BoardGameObserver {
 
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
-      case 2 -> new double[][]{{0.2, 0.5}, {0.8, 0.5}};
-      case 3 -> new double[][]{{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
-      case 4 -> new double[][]{{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
-      case 5 -> new double[][]{{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
-      default -> new double[][]{{0.5, 0.5}};
+      case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
+      case 3 -> new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
+      case 4 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
+      case 5 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
+      default -> new double[][] {{0.5, 0.5}};
     };
   }
 
@@ -143,7 +143,7 @@ public class BoardGameScene implements BoardGameObserver {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
     logger.info(() -> "Center:(" + x + "," + y + ")");
-    return new double[]{x, y};
+    return new double[] {x, y};
   }
 
   public void setupPlayersUI(List<Player> players) {
@@ -276,7 +276,13 @@ public class BoardGameScene implements BoardGameObserver {
     DropShadow dropShadow = new DropShadow(10, Color.color(0, 0, 0, 0.3));
     ioContainer.setEffect(dropShadow);
 
-    ioContainer.getChildren().add(diceView.getDiceImageView());
+
+    HBox diceBox = diceView.getDiceImageHBox();
+    diceBox.setAlignment(Pos.CENTER);
+    StackPane diceContainer = new StackPane(diceBox);
+    diceContainer.setAlignment(Pos.CENTER);
+    ioContainer.getChildren().add(diceContainer);
+
     Button rollBtn = diceView.getRollDiceBtn();
     ioContainer.getChildren().add(rollBtn);
     rollBtn.setOnAction(event -> {
@@ -311,11 +317,11 @@ public class BoardGameScene implements BoardGameObserver {
     ioContainer.getChildren().add(stagingArea);
 
     Button back = Buttons.getBackBtn("Back");
-    back.setOnAction(e -> {
+    back.setOnAction(event -> {
       try {
         SceneManager.showPlayerSelectionScene();
-      } catch (IOException ex) {
-        throw new RuntimeException(ex);
+      } catch (IOException exception) {
+        throw new RuntimeException(exception);
       }
     });
     ioContainer.getChildren().add(back);
