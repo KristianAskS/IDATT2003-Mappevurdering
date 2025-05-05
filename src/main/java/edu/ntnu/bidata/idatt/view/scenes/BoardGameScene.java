@@ -317,11 +317,11 @@ public class BoardGameScene implements BoardGameObserver {
     ioContainer.getChildren().add(stagingArea);
 
     Button back = Buttons.getBackBtn("Back");
-    back.setOnAction(e -> {
+    back.setOnAction(event -> {
       try {
         SceneManager.showPlayerSelectionScene();
-      } catch (IOException ex) {
-        throw new RuntimeException(ex);
+      } catch (IOException exception) {
+        throw new RuntimeException(exception);
       }
     });
     ioContainer.getChildren().add(back);

@@ -11,31 +11,31 @@ import javafx.scene.paint.Color;
 
 public final class SnakeView {
 
-  private static final Logger log = Logger.getLogger(SnakeView.class.getName());
+  private static final Logger logger = Logger.getLogger(SnakeView.class.getName());
   private static final int COLUMNS = 10;
 
   private SnakeView() {
   }
 
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlay,
-                                GameController gc) {
+                                GameController gameController) {
 
     board.getTiles().values().stream()
-        .filter(t -> t.getLandAction() instanceof SnakeAction)
+        .filter(tile -> tile.getLandAction() instanceof SnakeAction)
         .forEach(start -> {
-          SnakeAction sa = (SnakeAction) start.getLandAction();
+          SnakeAction snakeAction = (SnakeAction) start.getLandAction();
           int startId = start.getTileId();
-          int endId = sa.getDestinationTileId();
-          if (!isValidSnake(startId, endId)) {
+          int endId = snakeAction.getDestinationTileId();
+          if (isValidSnake(startId, endId)) {
             return;
           }
 
           try {
             overlay.getChildren().addAll(
-                new Snake(start, board.getTile(endId), board, boardGrid, gc).getSnakes()
+                new Snake(start, board.getTile(endId), board, boardGrid, gameController).getSnakes()
             );
-          } catch (Exception ex) {
-            throw new RuntimeException(ex);
+          } catch (Exception exception) {
+            throw new RuntimeException(exception);
           }
 
           TileView startView = (TileView) boardGrid.lookup("#tile" + startId);
@@ -57,10 +57,10 @@ public final class SnakeView {
    */
   public static boolean isValidSnake(int headId, int tailId) {
     if (headId <= tailId) {
-      return false;
+      return true;
     }
     int headRow = (headId - 1) / COLUMNS;
     int tailRow = (tailId - 1) / COLUMNS;
-    return headRow != tailRow;
+    return headRow == tailRow;
   }
 }
