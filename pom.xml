@@ -3,7 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0␣http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <!-- TODO: Replace with your own groupID and artifactID -->
   <groupId>edu.ntnu.bidata.idatt</groupId>
   <artifactId>IDATT2003-Mappe-Boardgame</artifactId>
   <version>1.0-SNAPSHOT</version>
@@ -52,7 +51,6 @@
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.8</version>
         <configuration>
-          <!-- TODO: Replace with your own main-class -->
           <mainClass>edu.ntnu.bidata.idatt/edu.ntnu.bidata.idatt.MainApplication</mainClass>
         </configuration>
       </plugin>
