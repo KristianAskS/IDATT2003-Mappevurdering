@@ -6,7 +6,6 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameOb
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.Tile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
