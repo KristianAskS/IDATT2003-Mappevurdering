@@ -4,7 +4,6 @@ import static edu.ntnu.bidata.idatt.view.components.DiceView.NUMB_OF_DICE;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -16,7 +15,6 @@ import java.util.stream.IntStream;
  */
 public class Dice {
   private final List<Die> dice;
-  private final Random random = new Random();
   private int rollResult;
 
   public Dice(int numberOfDice) {
@@ -27,8 +25,8 @@ public class Dice {
 
   public int[] rollDice() {
     int[] results = new int[NUMB_OF_DICE];
-    for (int i = 0; i < NUMB_OF_DICE; i++) {
-      results[i] = random.nextInt(6) + 1;
+    for (int dieNumb = 0; dieNumb < NUMB_OF_DICE; dieNumb++) {
+      results[dieNumb] = dice.get(dieNumb).roll();
     }
     return results;
   }
