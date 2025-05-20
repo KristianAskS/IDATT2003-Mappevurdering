@@ -22,6 +22,7 @@ class TileTest {
   }
 
   private static class DummyTokenView extends TokenView {
+
     DummyTokenView() {
       super(Token.token(Color.WHITE, "", null));
     }

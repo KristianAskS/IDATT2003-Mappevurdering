@@ -7,6 +7,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 
 public class BackgroundImageView {
+
   public static javafx.scene.layout.BackgroundImage getBackgroundImage() {
     Image bgImage = new Image(
         Objects.requireNonNull(BackgroundImageView.class.getResource(

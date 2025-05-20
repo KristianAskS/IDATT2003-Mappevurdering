@@ -10,6 +10,7 @@ import java.util.List;
 import javafx.scene.paint.Color;
 
 public class PlayerService {
+
   public static final String PLAYER_FILE_PATH = "data/players.csv";
   private final FileHandler<Player> playerFileHandler = new CsvPlayerFileHandler();
   private List<Player> players = new ArrayList<>();

@@ -26,7 +26,7 @@ public class Snake {
   private final Random random = new Random();
 
   public Snake(Tile startTile, Tile endTile, Board board, GridPane grid,
-               GameController controller) {
+      GameController controller) {
 
     double[] headCenter = getTileCenter(grid, controller, board, startTile);
     double[] tailCenter = getTileCenter(grid, controller, board, endTile);
@@ -95,13 +95,13 @@ public class Snake {
   }
 
   private static double[] getTileCenter(GridPane grid, GameController gameController, Board board,
-                                        Tile tile) {
+      Tile tile) {
     int[] rowCol = gameController.tileToGridPosition(tile, board);
     Bounds bounds = Objects.requireNonNull(BaseBoardView.getTileNodeAt(grid, rowCol[0], rowCol[1]))
         .getBoundsInParent();
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
-    return new double[] {x, y};
+    return new double[]{x, y};
   }
 
   private Color getRandomSnakeColor() {

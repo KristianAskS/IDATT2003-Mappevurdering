@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 class PlayerTest {
 
   private static class DummyTokenView extends TokenView {
+
     private final String repr;
 
     DummyTokenView(String repr) {

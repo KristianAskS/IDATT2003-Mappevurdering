@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 
 public class GsonBoardFileHandler implements FileHandler<Board> {
+
   Logger logger = Logger.getLogger(GsonBoardFileHandler.class.getName());
 
   @Override

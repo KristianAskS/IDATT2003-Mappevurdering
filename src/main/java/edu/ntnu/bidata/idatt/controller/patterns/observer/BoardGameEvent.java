@@ -5,4 +5,5 @@ import edu.ntnu.bidata.idatt.model.entity.Tile;
 
 public record BoardGameEvent(BoardGameEventType eventType, Player player, Tile oldTile,
                              Tile newTile) {
+
 }

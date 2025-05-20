@@ -29,6 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class BoardSelectionScene {
+
   private static final Logger logger =
       Logger.getLogger(BoardSelectionScene.class.getName());
 

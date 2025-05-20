@@ -17,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
 public class DiceView implements BoardGameObserver {
+
   public static final int NUMB_OF_DICE = 2;
   private static final Logger logger = Logger.getLogger(DiceView.class.getName());
   private static final String DICE_IMAGE_PATH = "/edu/ntnu/bidata/idatt/images/dice/";

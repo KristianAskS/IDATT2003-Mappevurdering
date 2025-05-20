@@ -3,6 +3,7 @@ package edu.ntnu.bidata.idatt.model.entity;
 import java.util.Random;
 
 public class Die {
+
   private final Random random = new Random();
   private int lastRolledValue;
 

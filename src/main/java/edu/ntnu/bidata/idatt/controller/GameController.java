@@ -50,8 +50,8 @@ public abstract class GameController {
   private int currentIndex = 0;
 
   protected GameController(BoardGameScene boardGameScene,
-                           Board board,
-                           int numberOfDice, GameRules gameRules) throws IOException {
+      Board board,
+      int numberOfDice, GameRules gameRules) throws IOException {
     this.boardGameScene = boardGameScene;
     this.board = board;
     this.dice = new Dice(numberOfDice);
@@ -76,6 +76,8 @@ public abstract class GameController {
     players.forEach(player -> player.setCurrentTileId(0));
     playerService.setPlayers(players);
     boardGameScene.setupPlayersUI(players);
+
+    initializeTurnOrder();
   }
 
   public Die getDie() {
@@ -165,7 +167,7 @@ public abstract class GameController {
   }
 
   void animateLadderMovement(Player player, int fromTileId, int toTileId,
-                             Runnable onDoneCallback) {
+      Runnable onDoneCallback) {
     TileView startTileView = lookupTileView(fromTileId);
     TileView endTileView = lookupTileView(toTileId);
     Node token = player.getToken();
@@ -217,6 +219,7 @@ public abstract class GameController {
     }
     players.sort(Comparator.comparing(Player::getAge));
     turnOrder.addAll(players);
+    boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
   }
 
   private void finishPlayer(Player player) {
@@ -226,6 +229,15 @@ public abstract class GameController {
 
     boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_FINISHED, player, null,
         new Tile(player.getCurrentTileId())));
+
+    if (!turnOrder.isEmpty()) {
+      if (currentIndex >= turnOrder.size()) {
+        currentIndex = 0;
+      }
+      boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
+    } else {
+      boardGameScene.setCurrentPlayer(null);
+    }
 
     if (turnOrder.isEmpty()) {
       PodiumGameScene.setFinalRanking(finishedPlayers);
@@ -238,11 +250,11 @@ public abstract class GameController {
 
   protected void advanceToNextPlayer() {
     currentIndex = (currentIndex + 1) % turnOrder.size();
+    boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
   }
 
   protected void afterTurnLogic(Player current) {
     advanceToNextPlayer();
   }
 
-  ;
 }

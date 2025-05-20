@@ -10,6 +10,7 @@ import java.util.List;
  * @author Trile
  */
 public interface FileHandler<T> {
+
   /**
    * Writes a list of players objects to a file
    *

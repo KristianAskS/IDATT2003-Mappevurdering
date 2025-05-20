@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class GameSelectionScene {
+
   private static final Logger logger = Logger.getLogger(GameSelectionScene.class.getName());
 
   private static String selectedGame;
