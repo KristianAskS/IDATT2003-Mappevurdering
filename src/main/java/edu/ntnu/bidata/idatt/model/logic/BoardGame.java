@@ -15,12 +15,13 @@ import java.util.logging.Logger;
  * Facade for UI to interact with the board game logic.
  */
 public class BoardGame {
+
   private final Board board;
   private final Dice dice;
   private final List<Player> players = new ArrayList<>();
   private final List<BoardGameObserver> observers = new ArrayList<>();
   private final Logger logger = Logger.getLogger(BoardGame.class.getName());
-  private int currentIndex = 0;
+  private final int currentIndex = 0;
   private boolean started = false;
 
   public BoardGame(Board board, int numOfDice) {

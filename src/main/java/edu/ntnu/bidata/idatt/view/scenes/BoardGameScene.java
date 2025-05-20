@@ -63,6 +63,7 @@ public class BoardGameScene implements BoardGameObserver {
 
   private final Scene scene;
   private final TextArea eventLog = new TextArea("Game started! \n");
+  private final Label currentPlayerLabel = new Label("Current player: -");
   private final DiceView diceView;
   private final GridPane boardGridPane;
   private final Pane tokenLayerPane = new Pane();
@@ -130,11 +131,11 @@ public class BoardGameScene implements BoardGameObserver {
 
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
-      case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
-      case 3 -> new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
-      case 4 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
-      case 5 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
-      default -> new double[][] {{0.5, 0.5}};
+      case 2 -> new double[][]{{0.2, 0.5}, {0.8, 0.5}};
+      case 3 -> new double[][]{{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
+      case 4 -> new double[][]{{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
+      case 5 -> new double[][]{{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
+      default -> new double[][]{{0.5, 0.5}};
     };
   }
 
@@ -143,7 +144,7 @@ public class BoardGameScene implements BoardGameObserver {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
     logger.info(() -> "Center:(" + x + "," + y + ")");
-    return new double[] {x, y};
+    return new double[]{x, y};
   }
 
   public void setupPlayersUI(List<Player> players) {
@@ -276,7 +277,6 @@ public class BoardGameScene implements BoardGameObserver {
     DropShadow dropShadow = new DropShadow(10, Color.color(0, 0, 0, 0.3));
     ioContainer.setEffect(dropShadow);
 
-
     HBox diceBox = diceView.getDiceImageHBox();
     diceBox.setAlignment(Pos.CENTER);
     StackPane diceContainer = new StackPane(diceBox);
@@ -303,6 +303,10 @@ public class BoardGameScene implements BoardGameObserver {
     );
     ioContainer.getChildren().add(rollLbl);
 
+    currentPlayerLabel.setFont(Font.font("monospace", FontWeight.BOLD, 16));
+    currentPlayerLabel.setTextFill(Color.BLACK);
+    ioContainer.getChildren().add(currentPlayerLabel);
+
     Label outputLbl = new Label("Output");
     outputLbl.setFont(Font.font("monospace", FontWeight.BOLD, 16));
     outputLbl.setTextFill(Color.BLACK);
@@ -327,6 +331,12 @@ public class BoardGameScene implements BoardGameObserver {
     ioContainer.getChildren().add(back);
 
     return ioContainer;
+  }
+
+  public void setCurrentPlayer(Player player) {
+    String displayedText =
+        (player == null) ? "Current player: " : "Current player: " + player.getName();
+    currentPlayerLabel.setText(displayedText);
   }
 
   @SuppressWarnings("unused")

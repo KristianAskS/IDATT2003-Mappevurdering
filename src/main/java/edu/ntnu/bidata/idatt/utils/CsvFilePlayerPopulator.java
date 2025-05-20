@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CsvFilePlayerPopulator {
+
   private final static Logger logger = Logger.getLogger(CsvFilePlayerPopulator.class.getName());
   private static final PlayerService playerService = new PlayerService();
 

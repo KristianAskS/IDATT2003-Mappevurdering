@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
  * Renders the ladders defined in the Board model
  */
 public class LadderView {
+
   private static final Logger logger = Logger.getLogger(LadderView.class.getName());
   private static final int COLUMNS = 10;
 
@@ -22,13 +23,12 @@ public class LadderView {
   }
 
   public static void drawLadders(Board board, GridPane boardGridPane, Pane overlayPane,
-                                 GameController gameController) {
+      GameController gameController) {
     overlayPane.getChildren().clear();
 
     board.getTiles().values().stream()
         .filter(tile -> tile.getLandAction() instanceof LadderAction)
         .forEach(startTile -> {
-
 
           LadderAction ladder = (LadderAction) startTile.getLandAction();
           int startId = startTile.getTileId();

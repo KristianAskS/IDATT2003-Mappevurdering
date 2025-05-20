@@ -3,6 +3,7 @@ package edu.ntnu.bidata.idatt.model.entity;
 import javafx.scene.paint.Color;
 
 public class Token {
+
   private final Color color;
   private final String shape;
   private final String imagePath;

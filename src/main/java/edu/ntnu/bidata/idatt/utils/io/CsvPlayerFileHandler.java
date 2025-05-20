@@ -89,7 +89,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
             dob = LocalDate.parse(data[3].trim());
           } catch (Exception e) {
             logger.log(Level.WARNING,
-                "Invalid date for player {0}: {1}", new Object[] {name, data[3]});
+                "Invalid date for player {0}: {1}", new Object[]{name, data[3]});
           }
         }
 

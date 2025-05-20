@@ -12,6 +12,7 @@ import java.util.List;
 import javafx.scene.paint.Color;
 
 public class PlayerFactory {
+
   private PlayerFactory() {
     throw new IllegalStateException("Utility class");
   }

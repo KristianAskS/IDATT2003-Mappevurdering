@@ -9,6 +9,7 @@ import java.util.List;
  * The type Tile.
  */
 public class Tile {
+
   private final List<Player> playersOnTile = new ArrayList<>();
   private int tileId;
   private int nextTileId;

@@ -5,6 +5,7 @@ import edu.ntnu.bidata.idatt.model.entity.Tile;
 import java.util.stream.IntStream;
 
 public abstract class BoardFactory {
+
   protected Board createBoardTiles(String name, String description, int numberOfTiles) {
     Board board = new Board(name, description);
 

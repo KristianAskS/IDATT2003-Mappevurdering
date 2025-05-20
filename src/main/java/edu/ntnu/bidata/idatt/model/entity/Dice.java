@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
  * @version 2.0
  */
 public class Dice {
+
   private final List<Die> dice;
   private int rollResult;
 

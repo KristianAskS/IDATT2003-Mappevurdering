@@ -8,11 +8,12 @@ import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 import java.io.IOException;
 
 public class LudoGameController extends GameController {
+
   private final LudoRules ludoRules;
 
   public LudoGameController(BoardGameScene scene,
-                            Board board,
-                            int dice) throws IOException {
+      Board board,
+      int dice) throws IOException {
     super(scene, board, dice, new LudoRules());
     this.ludoRules = (LudoRules) super.gameRules;
   }
@@ -25,7 +26,7 @@ public class LudoGameController extends GameController {
 
   @Override
   public int[] tileToGridPosition(Tile tile, Board board) {
-    return new int[] {0, tile.getTileId() - 1};
+    return new int[]{0, tile.getTileId() - 1};
   }
 
   @Override
