@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -54,6 +55,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
 
 public class BoardGameScene implements BoardGameObserver {
 
@@ -73,6 +75,7 @@ public class BoardGameScene implements BoardGameObserver {
   private List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private HBox stagingArea;
   private boolean isGameFinished = false;
+  private Button rollBtn;
 
   public BoardGameScene() throws IOException {
     diceView = new DiceView();
@@ -221,7 +224,17 @@ public class BoardGameScene implements BoardGameObserver {
         }
         default -> repositionTokenOnTile();
       }
+      if (rollBtn.isDisabled() &&
+          switch (event.eventType()) {
+            case PLAYER_MOVED, PLAYER_LADDER_ACTION,
+                 PLAYER_FINISHED, GAME_FINISHED -> true;
+            default -> false;
+          }) {
+        rollBtn.setDisable(false);
+      }
     });
+
+
   }
 
   public Scene getScene() {
@@ -281,7 +294,7 @@ public class BoardGameScene implements BoardGameObserver {
     diceContainer.setAlignment(Pos.CENTER);
     ioContainer.getChildren().add(diceContainer);
 
-    Button rollBtn = diceView.getRollDiceBtn();
+    rollBtn = diceView.getRollDiceBtn();
     ioContainer.getChildren().add(rollBtn);
     rollBtn.setOnAction(event -> {
       //Sett den til false om du skal teste
@@ -289,7 +302,6 @@ public class BoardGameScene implements BoardGameObserver {
       Timeline timeline = diceView.createRollDiceAnimation(() -> {
         int result = diceView.rollResultProperty().get();
         gameController.handlePlayerTurn(result);
-        rollBtn.setDisable(false);
       });
       timeline.play();
     });
@@ -335,6 +347,7 @@ public class BoardGameScene implements BoardGameObserver {
     String displayedText =
         (player == null) ? "Current player: " : "Current player: " + player.getName();
     currentPlayerLabel.setText(displayedText);
+    if (rollBtn != null && rollBtn.isDisabled()) rollBtn.setDisable(false);
   }
 
   @SuppressWarnings("unused")
