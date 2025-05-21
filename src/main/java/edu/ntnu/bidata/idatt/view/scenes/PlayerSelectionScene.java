@@ -47,6 +47,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -75,6 +76,7 @@ public class PlayerSelectionScene {
   private final PlayerService playerService = new PlayerService();
   private final Scene scene;
   private final int PANEL_WIDTH = 300;
+  TextField nameInput = new TextField();
   private File selectedImage;
 
   public PlayerSelectionScene() throws IOException {
@@ -162,7 +164,6 @@ public class PlayerSelectionScene {
 
     Label nameLabel = new Label("Enter Name");
     nameLabel.getStyleClass().add("label-sublabel");
-    TextField nameInput = new TextField();
     nameInput.getStyleClass().add("text-field-combobox");
     addScaleAnimation(nameInput, 1.02, Duration.millis(200));
 
@@ -207,7 +208,13 @@ public class PlayerSelectionScene {
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
-    addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox, dobPicker));
+    addPlayerBtn.setOnAction(e -> {
+      try {
+        handleAddPlayer(nameInput, shapeComboBox, dobPicker);
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    });
 
     inputPanel.getChildren().addAll(
         imgLabel, new HBox(10, imgBtn, imgResetBtn), imgPath,
@@ -219,6 +226,26 @@ public class PlayerSelectionScene {
         addPlayerBtn
     );
     return inputPanel;
+  }
+
+  private void handleSavePlayers() {
+    String name = nameInput.getText();
+    if (selectedPlayers.isEmpty()) {
+      showAlert(Alert.AlertType.INFORMATION,
+          "Nothing to save", "No players have been added yet.");
+      return;
+    }
+    try {
+      playerService.addPlayers(new ArrayList<>(selectedPlayers));
+      showAlert(Alert.AlertType.INFORMATION,
+          "Player saved",
+          "Player(s) saved!");
+    } catch (RuntimeException runtimeException) {
+      logger.log(Level.SEVERE, "CSV append failed", runtimeException);
+      showAlert(Alert.AlertType.ERROR,
+          "Save failed",
+          "Could not save the players.");
+    }
   }
 
   private void handleBrowseImage(ComboBox<String> shapeComboBox, Label imgPath) {
@@ -261,27 +288,34 @@ public class PlayerSelectionScene {
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
     editCountBtn.setOnAction(event -> showTotalPlayerSelectionDialog());
 
-    tablePanel.getChildren().addAll(playersBox, spacer, playersCountLabel, editCountBtn);
+    Button savePlayerBtn = Buttons.getEditBtn("Save Player");
+    savePlayerBtn.setStyle("-fx-background-color: #008000");
+    savePlayerBtn.setOnAction(e -> handleSavePlayers());
+
+    tablePanel.getChildren()
+        .addAll(playersBox, spacer, playersCountLabel, editCountBtn, savePlayerBtn);
     return tablePanel;
   }
 
   private VBox createAvailablePlayersPanel() throws IOException {
-    String heading =
-        "LUDO".equalsIgnoreCase(selectedGame) ? "Saved Ludo players" : "Existing players";
+    String heading = "LUDO".equalsIgnoreCase(selectedGame)
+        ? "Saved Ludo players"
+        : "Existing players";
     VBox availablePanel = createPanel(heading);
+    availablePanel.setPrefWidth(PANEL_WIDTH);
 
     ObservableList<Player> availablePlayers = FXCollections.observableArrayList(
-        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
-    );
+        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH));
 
     VBox playersBox = new VBox(5);
-    playersBox.setStyle("-fx-background-color: transparent;");
     playersBox.setFillWidth(true);
+    playersBox.setStyle("-fx-background-color: transparent;");
 
     availablePlayers.forEach(player -> playersBox.getChildren().add(
         new AvailablePlayerCard(player, chosenPlayer -> {
           if (isAtMaxPlayers()) {
-            showAlert(Alert.AlertType.WARNING, "Maximum players reached",
+            showAlert(Alert.AlertType.WARNING,
+                "Maximum players reached",
                 "Limit: " + getTotalPlayerCount());
             return;
           }
@@ -293,8 +327,18 @@ public class PlayerSelectionScene {
           updatePlayersCountLabel();
         })));
 
-    VBox.setVgrow(playersBox, Priority.ALWAYS);
-    availablePanel.getChildren().add(playersBox);
+    ScrollPane scroll = new ScrollPane(playersBox);
+    scroll.getStyleClass().add("transparent-scroll");
+    scroll.setFitToWidth(true);
+    scroll.setPrefHeight(250);
+    scroll.setMaxHeight(650);
+    scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+    scroll.setStyle("-fx-background-color: transparent");
+
+    VBox.setVgrow(scroll, Priority.ALWAYS);
+    availablePanel.getChildren().add(scroll);
+
     return availablePanel;
   }
 
@@ -345,7 +389,7 @@ public class PlayerSelectionScene {
   }
 
   private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox,
-                               DatePicker dobPicker) {
+                               DatePicker dobPicker) throws IOException {
     String name = nameField.getText();
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
@@ -366,27 +410,17 @@ public class PlayerSelectionScene {
       showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
       return;
     }
+    String uniqueName = "image-" + selectedImage.getName();
+    String storedImgPath = IMG_DIR + "/" + uniqueName;
+    Path targetDir = Paths.get(IMG_DIR);
+    Files.createDirectories(targetDir);
+    Path destination = targetDir.resolve(uniqueName);
+    Files.copy(selectedImage.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
 
-    String storedImgPath = null;
-    try {
-      if (selectedImage != null) {
-        Path targetDir = Paths.get(IMG_DIR);
-        Files.createDirectories(targetDir);
+    String runtimeUri = destination.toUri().toString();
 
-        String uniqueName = "image-" + selectedImage.getName();
-        Path destination = targetDir.resolve(uniqueName);
-
-        Files.copy(selectedImage.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
-        storedImgPath = destination.toUri().toString();
-        logger.log(Level.INFO, "Token image saved to {0}", destination);
-      }
-    } catch (IOException exception) {
-      logger.log(Level.SEVERE, "Failed to copy token image: {0}", exception.getMessage());
-      showAlert(Alert.AlertType.ERROR, "Image error", "Could not save the chosen image.");
-      return;
-    }
-
-    TokenView token = new TokenView(Token.token(color, shape, storedImgPath));
+    TokenView token = new TokenView(
+        Token.token(color, shape, runtimeUri));
 
     LocalDate dob = dobPicker.getValue();
     if (dob == null) {

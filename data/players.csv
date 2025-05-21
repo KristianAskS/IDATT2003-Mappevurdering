@@ -1,15 +1,15 @@
-Lionel Messi,#ADD8E6FF,circle,1987-06-24,
-Cristiano Ronaldo,#DC143CFF,circle,1985-02-05,
-Kylian Mbappé,#00008BFF,triangle,1998-12-20
-Erling Haaland,#FFFF00FF,square,2000-06-21,data/games/tokenimages/Haaland.png
-Kevin De Bruyne,#87CEFAFF,triangle,1991-06-28
+Lionel Messi,#ADD8E6FF,circle,1987-06-24,data/games/tokenimages/goat.png
+Cristiano Ronaldo,#DC143CFF,circle,1985-02-05,data/games/tokenimages/blackDog.png
+Kevin De Bruyne,#87CEFAFF,triangle,1991-06-28,data/games/tokenimages/indianPlayer.png
 Virgil van Dijk,#006400FF,square,1991-06-08
+Erling Haaland,#FFFF00FF,square,2000-06-21,data/games/tokenimages/Haaland.png
 Luka Modrić,#F5F5F5FF,circle,1985-09-09
 Neymar Jr,#9932CCFF,triangle,1992-02-05,data/games/tokenimages/Neymar.png
 Robert Lewandowski,#CD5C5CFF,square,1988-08-21
-Mohamed Salah,#C71585FF,triangle,1992-06-15
+Mohamed Salah,#C71585FF,triangle,1992-06-15,data/games/tokenimages/rockCarry.png
 Karim Benzema,#DAA520FF,circle,1987-12-19
 Sadio Mané,#228B22FF,square,1992-05-10
+Kylian Mbappé,#00008BFF,triangle,1998-12-20,data/games/tokenimages/fireEmoji.png
 Heung-min Son,#6495EDFF,triangle,1992-07-08
 Toni Kroos,#C0C0C0FF,circle,1990-01-04
 Pedri,#FF69B4FF,square,2002-11-25
