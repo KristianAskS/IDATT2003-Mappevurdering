@@ -4,6 +4,7 @@ import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Ladder;
 import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
+import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +45,7 @@ public class LadderView {
                 new Ladder(startTile, board.getTile(endId), board, boardGridPane,
                     gameController).getLadders());
           } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GameUIException("Failed to draw ladder from tile " + startId + " to tile " + endId, e);
           }
 
           TileView startView = (TileView) boardGridPane.lookup("#tile" + startId);

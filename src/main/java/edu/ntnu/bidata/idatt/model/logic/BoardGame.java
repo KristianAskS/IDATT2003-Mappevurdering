@@ -6,6 +6,7 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameOb
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.utils.exceptions.InvalidGameStateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +39,7 @@ public class BoardGame {
 
   public void addPlayer(Player player) {
     if (started) {
-      throw new IllegalStateException("Cannot add players after the game has started");
+      throw new InvalidGameStateException("Cannot add players after the game has started");
     }
     player.setCurrentTileId(0);
     players.add(player);
@@ -49,7 +50,7 @@ public class BoardGame {
    */
   public void start() {
     if (players.isEmpty()) {
-      throw new IllegalStateException("Add at least one player before starting the game");
+      throw new InvalidGameStateException("Cannot start game without players");
     }
     started = true;
     //Collections.shuffle(players);

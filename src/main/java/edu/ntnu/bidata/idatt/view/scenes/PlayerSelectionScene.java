@@ -8,6 +8,7 @@ import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Token;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
+import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import edu.ntnu.bidata.idatt.view.components.AvailablePlayerCard;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.SelectedPlayerCard;
@@ -322,7 +323,7 @@ public class PlayerSelectionScene {
         try {
           SceneManager.showBoardGameScene();
         } catch (IOException exception) {
-          throw new RuntimeException(exception);
+          throw new GameUIException("Failed to load board game scene", exception);
         }
       }
     });
