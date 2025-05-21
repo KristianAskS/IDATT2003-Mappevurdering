@@ -13,7 +13,7 @@ public class ConsoleBoardGameObserver implements BoardGameObserver {
     switch (eventType.eventType()) {
       case PLAYER_MOVED -> {
         logger.log(Level.INFO, "{0} moved from {1} to {2}",
-            new Object[]{eventType.player().getName(), eventType.oldTile().getTileId(),
+            new Object[] {eventType.player().getName(), eventType.oldTile().getTileId(),
                 eventType.newTile().getTileId()});
         break;
       }

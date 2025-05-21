@@ -9,6 +9,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
+import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
 import edu.ntnu.bidata.idatt.utils.exceptions.BoardParsingException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -104,32 +106,38 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
   }
 
   public Board deserializeJsonToBoard(String jsonString) {
-    JsonElement jsonElement = JsonParser.parseString(jsonString);
-    if (jsonElement == null || !jsonElement.isJsonObject()) {
-      return null;
-    }
-    JsonObject jsonObject = jsonElement.getAsJsonObject();
-    JsonArray jsonArray = jsonObject.getAsJsonArray("tiles");
+    JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+    JsonArray tilesJsonArray = jsonObject.getAsJsonArray("tiles");
     Board board = new Board();
 
-    // create tiles
-    for (JsonElement tileJson : jsonArray) {
-      JsonObject tileJsonObject = tileJson.getAsJsonObject();
-      int tileId = tileJsonObject.get("tileId").getAsInt();
-      Tile tile = new Tile(tileId);
-      board.addTile(tile);
+    for (JsonElement jsonElement : tilesJsonArray) {
+      int id = jsonElement.getAsJsonObject().get("tileId").getAsInt();
+      board.addTile(new Tile(id));
     }
-    // asign nextTile references
-    for (JsonElement tileJson : jsonArray) {
-      JsonObject tileJsonObject = tileJson.getAsJsonObject();
-      int tileId = tileJsonObject.get("tileId").getAsInt();
+
+    for (JsonElement jsonElement2 : tilesJsonArray) {
+      JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
+      int tileId = jsonObject2.get("tileId").getAsInt();
       Tile tile = board.getTile(tileId);
-      if (tileJsonObject.has("nextTileId")) {
-        int nextTileId = tileJsonObject.get("nextTileId").getAsInt();
-        Tile nextTile = board.getTile(nextTileId);
-        tile.setNextTile(nextTile);
+
+      if (jsonObject2.has("nextTileId")) {
+        tile.setNextTile(board.getTile(jsonObject2.get("nextTileId").getAsInt()));
+      }
+
+      if (jsonObject2.has("landAction")) {
+        String actionClass = jsonObject2.get("landAction").getAsString();
+        int dest = jsonObject2.get("destination tile").getAsInt();
+        String desc = jsonObject2.has("description")
+            ? jsonObject2.get("description").getAsString() : "";
+
+        if (actionClass.endsWith("LadderAction")) {
+          tile.setLandAction(new LadderAction(dest, desc));
+        } else if (actionClass.endsWith("SnakeAction")) {
+          tile.setLandAction(new SnakeAction(dest, desc));
+        }
       }
     }
+
     board.setName(jsonObject.get("name").getAsString());
     board.setDescription(jsonObject.get("description").getAsString());
     return board;

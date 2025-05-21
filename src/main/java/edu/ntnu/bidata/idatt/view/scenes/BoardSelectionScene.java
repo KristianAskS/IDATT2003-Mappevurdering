@@ -106,6 +106,7 @@ public class BoardSelectionScene {
       addLudoButtons(box);
     } else {
       addSnakesAndLaddersButtons(box);
+      addJsonBoardButtons(box);
     }
 
     box.getChildren().add(0, title);
@@ -127,10 +128,15 @@ public class BoardSelectionScene {
     Button classic = Buttons.getSecondaryBtn("Classic Board");
     classic.setOnAction(e -> load(ladderBoardFactory.createClassicBoard()));
 
-    Button none = Buttons.getSecondaryBtn("No Snakes / Ladders");
-    none.setOnAction(e -> load(ladderBoardFactory.createBoardNoLaddersAndSnakes()));
+    parent.getChildren().addAll(small, classic);
+  }
 
-    parent.getChildren().addAll(small, classic, none);
+  private void addJsonBoardButtons(VBox parent) {
+    for (Board b : boardService.getBoards()) {
+      Button btn = Buttons.getSecondaryBtn(b.getName());
+      btn.setOnAction(e -> load(b));
+      parent.getChildren().add(btn);
+    }
   }
 
   private VBox createDetailsContainer() {

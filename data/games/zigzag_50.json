@@ -1,0 +1,237 @@
+[
+  {
+    "name": "ZigZag",
+    "description": "Ladders and snakes alternate.",
+    "tiles": [
+      {
+        "tileId": 1,
+        "nextTileId": 2
+      },
+      {
+        "tileId": 2,
+        "nextTileId": 3
+      },
+      {
+        "tileId": 3,
+        "nextTileId": 8,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 8,
+        "description": "Ladder 3 → 8"
+      },
+      {
+        "tileId": 4,
+        "nextTileId": 5
+      },
+      {
+        "tileId": 5,
+        "nextTileId": 6
+      },
+      {
+        "tileId": 6,
+        "nextTileId": 7
+      },
+      {
+        "tileId": 7,
+        "nextTileId": 8
+      },
+      {
+        "tileId": 8,
+        "nextTileId": 9
+      },
+      {
+        "tileId": 9,
+        "nextTileId": 15,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 15,
+        "description": "Ladder 9 → 15"
+      },
+      {
+        "tileId": 10,
+        "nextTileId": 11
+      },
+      {
+        "tileId": 11,
+        "nextTileId": 12
+      },
+      {
+        "tileId": 12,
+        "nextTileId": 5,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 5,
+        "description": "Snake 12 → 5"
+      },
+      {
+        "tileId": 13,
+        "nextTileId": 14
+      },
+      {
+        "tileId": 14,
+        "nextTileId": 15
+      },
+      {
+        "tileId": 15,
+        "nextTileId": 16
+      },
+      {
+        "tileId": 16,
+        "nextTileId": 17
+      },
+      {
+        "tileId": 17,
+        "nextTileId": 24,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 24,
+        "description": "Ladder 17 → 24"
+      },
+      {
+        "tileId": 18,
+        "nextTileId": 19
+      },
+      {
+        "tileId": 19,
+        "nextTileId": 20
+      },
+      {
+        "tileId": 20,
+        "nextTileId": 13,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 13,
+        "description": "Snake 20 → 13"
+      },
+      {
+        "tileId": 21,
+        "nextTileId": 22
+      },
+      {
+        "tileId": 22,
+        "nextTileId": 23
+      },
+      {
+        "tileId": 23,
+        "nextTileId": 24
+      },
+      {
+        "tileId": 24,
+        "nextTileId": 25
+      },
+      {
+        "tileId": 25,
+        "nextTileId": 33,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 33,
+        "description": "Ladder 25 → 33"
+      },
+      {
+        "tileId": 26,
+        "nextTileId": 27
+      },
+      {
+        "tileId": 27,
+        "nextTileId": 28
+      },
+      {
+        "tileId": 28,
+        "nextTileId": 18,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 18,
+        "description": "Snake 28 → 18"
+      },
+      {
+        "tileId": 29,
+        "nextTileId": 30
+      },
+      {
+        "tileId": 30,
+        "nextTileId": 31
+      },
+      {
+        "tileId": 31,
+        "nextTileId": 32
+      },
+      {
+        "tileId": 32,
+        "nextTileId": 33
+      },
+      {
+        "tileId": 33,
+        "nextTileId": 34
+      },
+      {
+        "tileId": 34,
+        "nextTileId": 35
+      },
+      {
+        "tileId": 35,
+        "nextTileId": 44,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 44,
+        "description": "Ladder 35 → 44"
+      },
+      {
+        "tileId": 36,
+        "nextTileId": 37
+      },
+      {
+        "tileId": 37,
+        "nextTileId": 38
+      },
+      {
+        "tileId": 38,
+        "nextTileId": 29,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 29,
+        "description": "Snake 38 → 29"
+      },
+      {
+        "tileId": 39,
+        "nextTileId": 40
+      },
+      {
+        "tileId": 40,
+        "nextTileId": 41
+      },
+      {
+        "tileId": 41,
+        "nextTileId": 42
+      },
+      {
+        "tileId": 42,
+        "nextTileId": 43
+      },
+      {
+        "tileId": 43,
+        "nextTileId": 44
+      },
+      {
+        "tileId": 44,
+        "nextTileId": 45
+      },
+      {
+        "tileId": 45,
+        "nextTileId": 46
+      },
+      {
+        "tileId": 46,
+        "nextTileId": 37,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 37,
+        "description": "Snake 46 → 37"
+      },
+      {
+        "tileId": 47,
+        "nextTileId": 48
+      },
+      {
+        "tileId": 48,
+        "nextTileId": 49
+      },
+      {
+        "tileId": 49,
+        "nextTileId": 50
+      },
+      {
+        "tileId": 50
+      }
+    ]
+  }
+]

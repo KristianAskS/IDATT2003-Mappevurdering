@@ -1,5 +1,3 @@
-// src/main/java/edu/ntnu/bidata/idatt/view/scenes/BoardGameScene.java
-
 package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
@@ -106,7 +104,7 @@ public class BoardGameScene implements BoardGameObserver {
     tokenLayerPane.toFront();
     rootPane.setCenter(boardStack);
 
-    int numbOfDice = 1;  // should be an argument value or static or based on isLudo
+    int numbOfDice = 2;  // should be an argument value or static or based on isLudo
     if (isLudo) {
       gameController = new LudoGameController(this, board, numbOfDice);
     } else {
@@ -131,11 +129,11 @@ public class BoardGameScene implements BoardGameObserver {
 
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
-      case 2 -> new double[][]{{0.2, 0.5}, {0.8, 0.5}};
-      case 3 -> new double[][]{{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
-      case 4 -> new double[][]{{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
-      case 5 -> new double[][]{{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
-      default -> new double[][]{{0.5, 0.5}};
+      case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
+      case 3 -> new double[][] {{0.2, 0.2}, {0.5, 0.5}, {0.8, 0.8}};
+      case 4 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}};
+      case 5 -> new double[][] {{0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, {0.5, 0.5}};
+      default -> new double[][] {{0.5, 0.5}};
     };
   }
 
@@ -144,7 +142,7 @@ public class BoardGameScene implements BoardGameObserver {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
     logger.info(() -> "Center:(" + x + "," + y + ")");
-    return new double[]{x, y};
+    return new double[] {x, y};
   }
 
   public void setupPlayersUI(List<Player> players) {

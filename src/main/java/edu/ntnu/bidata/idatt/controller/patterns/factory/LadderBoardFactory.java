@@ -4,13 +4,9 @@ import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
 import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
-import edu.ntnu.bidata.idatt.utils.io.FileHandler;
-import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.view.components.SnakeView;
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,13 +101,13 @@ public class LadderBoardFactory extends BoardFactory {
   }
 
   private void createSnake(Board board, int start, int end) {
-    if (start <= end) {
+    if (start < end) {
       return;
     }
-    Tile s = board.getTile(start), e = board.getTile(end);
-    if (s != null && e != null) {
-      s.setNextTile(e);
-      s.setLandAction(new SnakeAction(end, "Snake from " + start + " to " + end));
+    Tile tile = board.getTile(start), e = board.getTile(end);
+    if (tile != null && e != null) {
+      tile.setNextTile(e);
+      tile.setLandAction(new SnakeAction(end, "Snake from " + start + " to " + end));
     }
   }
 
@@ -123,15 +119,11 @@ public class LadderBoardFactory extends BoardFactory {
   }
 
   public Board createSmallBoard() {
-    return createBoardTiles("Small Board", "30‑tile board", 30);
-  }
-
-  public Board createBoardNoLaddersAndSnakes() {
-    return createBoardTiles("Flat Board", "90‑tile board without actions", 90);
-  }
-
-  public List<Board> createBoardFromJSON(String filePath) throws IOException {
-    FileHandler<Board> handler = new GsonBoardFileHandler();
-    return handler.readFromFile(filePath);
+    Board board = createBoardTiles("Small Board", "30‑tile board", 30);
+    createSnake(board, 9, 2);
+    createSnake(board, 26, 14);
+    createLadder(board, 5, 19);
+    createLadder(board, 12, 28);
+    return board;
   }
 }
