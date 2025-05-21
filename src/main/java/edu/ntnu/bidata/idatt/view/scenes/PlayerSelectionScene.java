@@ -75,6 +75,7 @@ public class PlayerSelectionScene {
   private final PlayerService playerService = new PlayerService();
   private final Scene scene;
   private final int PANEL_WIDTH = 300;
+  TextField nameInput = new TextField();
   private File selectedImage;
 
   public PlayerSelectionScene() throws IOException {
@@ -162,7 +163,6 @@ public class PlayerSelectionScene {
 
     Label nameLabel = new Label("Enter Name");
     nameLabel.getStyleClass().add("label-sublabel");
-    TextField nameInput = new TextField();
     nameInput.getStyleClass().add("text-field-combobox");
     addScaleAnimation(nameInput, 1.02, Duration.millis(200));
 
@@ -207,10 +207,13 @@ public class PlayerSelectionScene {
     Region spacer = new Region();
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
-    addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox, dobPicker));
-    Button savePlayerBtn = Buttons.getEditBtn("Save Player");
-    savePlayerBtn.setStyle("-fx-background-color: #008000");
-    savePlayerBtn.setOnAction(e -> handleSavePlayers(nameInput));
+    addPlayerBtn.setOnAction(e -> {
+      try {
+        handleAddPlayer(nameInput, shapeComboBox, dobPicker);
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    });
 
     inputPanel.getChildren().addAll(
         imgLabel, new HBox(10, imgBtn, imgResetBtn), imgPath,
@@ -218,13 +221,13 @@ public class PlayerSelectionScene {
         shapeLabel, shapeComboBox,
         colorLabel, playerColorPicker,
         dobLabel, dobPicker,
-        spacer, savePlayerBtn,
+        spacer,
         addPlayerBtn
     );
     return inputPanel;
   }
 
-  private void handleSavePlayers(TextField nameInput) {
+  private void handleSavePlayers() {
     String name = nameInput.getText();
     if (selectedPlayers.isEmpty()) {
       showAlert(Alert.AlertType.INFORMATION,
@@ -234,9 +237,8 @@ public class PlayerSelectionScene {
     try {
       playerService.addPlayers(new ArrayList<>(selectedPlayers));
       showAlert(Alert.AlertType.INFORMATION,
-          "Player: " + name + "saved",
-          "Saved " + name + " to "
-              + PlayerService.PLAYER_FILE_PATH);
+          "Player saved",
+          "Player(s) saved!");
     } catch (RuntimeException runtimeException) {
       logger.log(Level.SEVERE, "CSV append failed", runtimeException);
       showAlert(Alert.AlertType.ERROR,
@@ -285,7 +287,12 @@ public class PlayerSelectionScene {
     Button editCountBtn = Buttons.getEditBtn("Edit total players");
     editCountBtn.setOnAction(event -> showTotalPlayerSelectionDialog());
 
-    tablePanel.getChildren().addAll(playersBox, spacer, playersCountLabel, editCountBtn);
+    Button savePlayerBtn = Buttons.getEditBtn("Save Player");
+    savePlayerBtn.setStyle("-fx-background-color: #008000");
+    savePlayerBtn.setOnAction(e -> handleSavePlayers());
+
+    tablePanel.getChildren()
+        .addAll(playersBox, spacer, playersCountLabel, editCountBtn, savePlayerBtn);
     return tablePanel;
   }
 
@@ -381,7 +388,7 @@ public class PlayerSelectionScene {
   }
 
   private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox,
-                               DatePicker dobPicker) {
+                               DatePicker dobPicker) throws IOException {
     String name = nameField.getText();
     String shape = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
@@ -402,27 +409,17 @@ public class PlayerSelectionScene {
       showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
       return;
     }
+    String uniqueName = "image-" + selectedImage.getName();
+    String storedImgPath = IMG_DIR + "/" + uniqueName;
+    Path targetDir = Paths.get(IMG_DIR);
+    Files.createDirectories(targetDir);
+    Path destination = targetDir.resolve(uniqueName);
+    Files.copy(selectedImage.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
 
-    String storedImgPath = null;
-    try {
-      if (selectedImage != null) {
-        Path targetDir = Paths.get(IMG_DIR);
-        Files.createDirectories(targetDir);
+    String runtimeUri = destination.toUri().toString();
 
-        String uniqueName = "image-" + selectedImage.getName();
-        Path destination = targetDir.resolve(uniqueName);
-
-        Files.copy(selectedImage.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
-        storedImgPath = destination.toUri().toString();
-        logger.log(Level.INFO, "Token image saved to {0}", destination);
-      }
-    } catch (IOException exception) {
-      logger.log(Level.SEVERE, "Failed to copy token image: {0}", exception.getMessage());
-      showAlert(Alert.AlertType.ERROR, "Image error", "Could not save the chosen image.");
-      return;
-    }
-
-    TokenView token = new TokenView(Token.token(color, shape, storedImgPath));
+    TokenView token = new TokenView(
+        Token.token(color, shape, runtimeUri));
 
     LocalDate dob = dobPicker.getValue();
     if (dob == null) {

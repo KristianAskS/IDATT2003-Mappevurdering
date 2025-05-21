@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ import javafx.scene.paint.Color;
  * Class for handling CSV-files containing players
  *
  * @author Trile
- * @version 1.0
+ * @version 2.2
  * @since 1.0
  */
 public class CsvPlayerFileHandler implements FileHandler<Player> {
@@ -112,12 +113,23 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     TokenView token = player.getToken();
     String dob = player.getDateOfBirth() == null ? "" : player.getDateOfBirth().toString();
 
+    String img = "";
+    if (token.getImagePath() != null && !token.getImagePath().isBlank()) {
+      if (token.getImagePath().startsWith("file:")) {
+        Path p = Paths.get(URI.create(token.getImagePath()));
+        Path base = Paths.get("").toAbsolutePath().normalize();
+        img = base.relativize(p).toString().replace('\\', '/');
+      } else {
+        img = token.getImagePath();
+      }
+    }
+
     String line = String.join(",",
         player.getName(),
         toRgbString(token.getTokenColor()),
         token.getTokenShape(),
         dob,
-        token.getImagePath() == null ? "" : token.getImagePath()
+        img
     );
     bw.write(line);
     bw.newLine();
@@ -125,13 +137,14 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
 
 
   private String toFileUri(String csvPath) {
+    if (csvPath == null || csvPath.isBlank()) {
+      return null;
+    }
+
     if (csvPath.matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*")) {
       return csvPath;
     }
-    Path p = Paths.get(csvPath);
-    if (!p.isAbsolute()) {
-      p = Paths.get("").toAbsolutePath().resolve(p).normalize();
-    }
+    Path p = Path.of(csvPath).toAbsolutePath().normalize();
     return p.toUri().toString();
   }
 }
