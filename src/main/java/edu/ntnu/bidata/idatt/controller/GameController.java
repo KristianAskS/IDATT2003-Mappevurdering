@@ -1,7 +1,5 @@
 package edu.ntnu.bidata.idatt.controller;
 
-import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
-
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.rules.GameRules;
@@ -49,9 +47,9 @@ public abstract class GameController {
   private int currentIndex = 0;
 
   protected GameController(BoardGameScene boardGameScene,
-      Board board,
-      int numberOfDice,
-      GameRules gameRules) throws IOException {
+                           Board board,
+                           int numberOfDice,
+                           GameRules gameRules) throws IOException {
     this.boardGameScene = boardGameScene;
     this.board = board;
     this.dice = new Dice(numberOfDice);
@@ -59,7 +57,6 @@ public abstract class GameController {
     this.gameRules = gameRules;
 
     boardService.setBoard(board);
-    boardService.writeBoardToFile(List.of(board), BOARD_FILE_PATH);
   }
 
   public abstract int[] tileToGridPosition(Tile tile, Board board);
@@ -192,7 +189,7 @@ public abstract class GameController {
   }
 
   void animateLadderMovement(Player player, int fromTileId, int toTileId,
-      Runnable onDoneCallback) {
+                             Runnable onDoneCallback) {
     TileView startTileView = lookupTileView(fromTileId);
     TileView endTileView = lookupTileView(toTileId);
     Node token = player.getToken();

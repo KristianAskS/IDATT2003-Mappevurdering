@@ -140,10 +140,10 @@ public final class LudoRules implements GameRules {
     double min = Math.min(Math.min(b, g), Math.min(y, r));
     return min == b ? Base.BLUE
         : min == g ? Base.GREEN
-            : min == y ? Base.YELLOW
-                : Base.RED;
+        : min == y ? Base.YELLOW
+        : Base.RED;
   }
 
-  private enum Base {BLUE, GREEN, YELLOW, RED}
+  private enum Base { BLUE, GREEN, YELLOW, RED }
 
 }

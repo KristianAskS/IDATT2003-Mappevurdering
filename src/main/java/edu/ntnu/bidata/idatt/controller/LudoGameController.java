@@ -12,8 +12,8 @@ public class LudoGameController extends GameController {
   private final LudoRules rules;
 
   public LudoGameController(BoardGameScene scene,
-      Board board,
-      int dice) throws IOException {
+                            Board board,
+                            int dice) throws IOException {
     super(scene, board, dice, new LudoRules());
     this.rules = (LudoRules) super.gameRules;
   }
@@ -26,7 +26,7 @@ public class LudoGameController extends GameController {
 
   @Override
   public int[] tileToGridPosition(Tile tile, Board board) {
-    return new int[]{0, tile.getTileId() - 1};
+    return new int[] {0, tile.getTileId() - 1};
   }
 
   @Override

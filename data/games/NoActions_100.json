@@ -1,7 +1,7 @@
 [
   {
-    "name": "Classic Board",
-    "description": "Classic board with 90 tiles",
+    "name": "No obstacles",
+    "description": "Easy board with no ladder and snakes!",
     "tiles": [
       {
         "tileId": 1,
@@ -29,7 +29,7 @@
       },
       {
         "tileId": 7,
-        "nextTileId": 14
+        "nextTileId": 8
       },
       {
         "tileId": 8,
@@ -65,7 +65,7 @@
       },
       {
         "tileId": 16,
-        "nextTileId": 27
+        "nextTileId": 17
       },
       {
         "tileId": 17,
@@ -125,7 +125,7 @@
       },
       {
         "tileId": 31,
-        "nextTileId": 42
+        "nextTileId": 32
       },
       {
         "tileId": 32,
@@ -269,7 +269,7 @@
       },
       {
         "tileId": 67,
-        "nextTileId": 74
+        "nextTileId": 68
       },
       {
         "tileId": 68,
@@ -360,7 +360,48 @@
         "nextTileId": 90
       },
       {
-        "tileId": 90
+        "tileId": 90,
+        "nextTileId": 91
+      },
+      {
+        "tileId": 91,
+        "nextTileId": 92
+      },
+      {
+        "tileId": 92,
+        "nextTileId": 93
+      },
+      {
+        "tileId": 93,
+        "nextTileId": 94
+      },
+      {
+        "tileId": 94,
+        "nextTileId": 95
+      },
+      {
+        "tileId": 95,
+        "nextTileId": 96
+      },
+      {
+        "tileId": 96,
+        "nextTileId": 97
+      },
+      {
+        "tileId": 97,
+        "nextTileId": 98
+      },
+      {
+        "tileId": 98,
+        "nextTileId": 99
+      },
+      {
+        "tileId": 99,
+        "nextTileId": 100
+      },
+      {
+        "tileId": 100,
+        "nextTileId": 101
       }
     ]
   }

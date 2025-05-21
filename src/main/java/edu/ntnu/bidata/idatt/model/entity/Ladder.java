@@ -28,7 +28,7 @@ public class Ladder {
   private final GameController gameController;
 
   public Ladder(Tile startTile, Tile endTile, Board board, GridPane boardGrid,
-      GameController gameController) throws IOException {
+                GameController gameController) throws IOException {
     this.gameController = gameController;
     drawLadder(boardGrid, startTile, endTile, board);
   }
@@ -37,7 +37,7 @@ public class Ladder {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
     logger.info(() -> "Center (x,y): (" + x + "," + y + ")");
-    return new double[]{x, y};
+    return new double[] {x, y};
   }
 
   private void drawLadder(GridPane boardGrid, Tile startTile, Tile endTile, Board board)
@@ -103,7 +103,7 @@ public class Ladder {
 
   private double[] calculatePerpendicularUnitVector(double dx, double dy) {
     double length = Math.hypot(dx, dy);
-    return new double[]{-dy / length, dx / length};
+    return new double[] {-dy / length, dx / length};
   }
 
   private void flipDirection(double[] perp, int startRow, Board board) {
@@ -119,7 +119,7 @@ public class Ladder {
     double offX = perpUnit[0] * SIDE_OFFSET;
     double offY = perpUnit[1] * SIDE_OFFSET;
 
-    return new double[][]{
+    return new double[][] {
         {start[0] + offX, start[1] + offY},
         {end[0] + offX, end[1] + offY},
         {start[0] - offX, start[1] - offY},
