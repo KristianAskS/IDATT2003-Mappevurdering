@@ -46,6 +46,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -207,6 +208,9 @@ public class PlayerSelectionScene {
     VBox.setVgrow(spacer, Priority.ALWAYS);
 
     addPlayerBtn.setOnAction(e -> handleAddPlayer(nameInput, shapeComboBox, dobPicker));
+    Button savePlayerBtn = Buttons.getEditBtn("Save Player");
+    savePlayerBtn.setStyle("-fx-background-color: #008000");
+    savePlayerBtn.setOnAction(e -> handleSavePlayers(nameInput));
 
     inputPanel.getChildren().addAll(
         imgLabel, new HBox(10, imgBtn, imgResetBtn), imgPath,
@@ -214,10 +218,31 @@ public class PlayerSelectionScene {
         shapeLabel, shapeComboBox,
         colorLabel, playerColorPicker,
         dobLabel, dobPicker,
-        spacer,
+        spacer, savePlayerBtn,
         addPlayerBtn
     );
     return inputPanel;
+  }
+
+  private void handleSavePlayers(TextField nameInput) {
+    String name = nameInput.getText();
+    if (selectedPlayers.isEmpty()) {
+      showAlert(Alert.AlertType.INFORMATION,
+          "Nothing to save", "No players have been added yet.");
+      return;
+    }
+    try {
+      playerService.addPlayers(new ArrayList<>(selectedPlayers));
+      showAlert(Alert.AlertType.INFORMATION,
+          "Player: " + name + "saved",
+          "Saved " + name + " to "
+              + PlayerService.PLAYER_FILE_PATH);
+    } catch (RuntimeException runtimeException) {
+      logger.log(Level.SEVERE, "CSV append failed", runtimeException);
+      showAlert(Alert.AlertType.ERROR,
+          "Save failed",
+          "Could not save the players.");
+    }
   }
 
   private void handleBrowseImage(ComboBox<String> shapeComboBox, Label imgPath) {
@@ -265,22 +290,24 @@ public class PlayerSelectionScene {
   }
 
   private VBox createAvailablePlayersPanel() throws IOException {
-    String heading =
-        "LUDO".equalsIgnoreCase(selectedGame) ? "Saved Ludo players" : "Existing players";
+    String heading = "LUDO".equalsIgnoreCase(selectedGame)
+        ? "Saved Ludo players"
+        : "Existing players";
     VBox availablePanel = createPanel(heading);
+    availablePanel.setPrefWidth(PANEL_WIDTH);
 
     ObservableList<Player> availablePlayers = FXCollections.observableArrayList(
-        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
-    );
+        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH));
 
     VBox playersBox = new VBox(5);
-    playersBox.setStyle("-fx-background-color: transparent;");
     playersBox.setFillWidth(true);
+    playersBox.setStyle("-fx-background-color: transparent;");
 
     availablePlayers.forEach(player -> playersBox.getChildren().add(
         new AvailablePlayerCard(player, chosenPlayer -> {
           if (isAtMaxPlayers()) {
-            showAlert(Alert.AlertType.WARNING, "Maximum players reached",
+            showAlert(Alert.AlertType.WARNING,
+                "Maximum players reached",
                 "Limit: " + getTotalPlayerCount());
             return;
           }
@@ -292,8 +319,18 @@ public class PlayerSelectionScene {
           updatePlayersCountLabel();
         })));
 
-    VBox.setVgrow(playersBox, Priority.ALWAYS);
-    availablePanel.getChildren().add(playersBox);
+    ScrollPane scroll = new ScrollPane(playersBox);
+    scroll.getStyleClass().add("transparent-scroll");
+    scroll.setFitToWidth(true);
+    scroll.setPrefHeight(250);
+    scroll.setMaxHeight(650);
+    scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+    scroll.setStyle("-fx-background-color: transparent");
+
+    VBox.setVgrow(scroll, Priority.ALWAYS);
+    availablePanel.getChildren().add(scroll);
+
     return availablePanel;
   }
 

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -55,7 +54,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.util.Duration;
 
 public class BoardGameScene implements BoardGameObserver {
 
@@ -347,7 +345,9 @@ public class BoardGameScene implements BoardGameObserver {
     String displayedText =
         (player == null) ? "Current player: " : "Current player: " + player.getName();
     currentPlayerLabel.setText(displayedText);
-    if (rollBtn != null && rollBtn.isDisabled()) rollBtn.setDisable(false);
+    if (rollBtn != null && rollBtn.isDisabled()) {
+      rollBtn.setDisable(false);
+    }
   }
 
   @SuppressWarnings("unused")

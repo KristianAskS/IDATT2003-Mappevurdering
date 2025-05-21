@@ -256,3 +256,13 @@
     -fx-text-fill: rgba(0, 0, 0, 0.25);
     -fx-opacity: 0.4;
 }
+
+.transparent-scroll,
+.transparent-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.transparent-scroll .scroll-bar {
+    -fx-background-color: transparent;
+}

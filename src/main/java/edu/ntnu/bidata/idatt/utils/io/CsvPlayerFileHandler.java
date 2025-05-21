@@ -25,7 +25,6 @@ import javafx.scene.paint.Color;
  * @since 1.0
  */
 public class CsvPlayerFileHandler implements FileHandler<Player> {
-
   private static final String IMG_DIR = "data/games/tokenimages";
   Logger logger = Logger.getLogger(CsvPlayerFileHandler.class.getName());
 
@@ -38,20 +37,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
   public void writeToFile(List<Player> players, String filePath) throws IOException {
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
-        TokenView token = player.getToken();
-
-        String dob = player.getDateOfBirth() == null ? "" : player.getDateOfBirth().toString();
-
-        String writeLine = String.join(",",
-            player.getName(),
-            toRgbString(token.getTokenColor()),
-            token.getTokenShape(),
-            dob,
-            token.getImagePath() == null ? "" : token.getImagePath()
-        );
-
-        bufferedWriter.write(writeLine);
-        bufferedWriter.newLine();
+        serializer(bufferedWriter, player);
         logger.log(Level.FINE, "Player: " + player.getName() + " has been written to the file");
       }
     } catch (IOException e) {
@@ -112,6 +98,31 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     int alpha = (int) (color.getOpacity() * 255);
     return String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
   }
+
+  public void appendToFile(List<Player> players, String filePath) throws IOException {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
+      for (Player player : players) {
+        serializer(bw, player);
+        logger.log(Level.FINE, "Appended player " + player.getName());
+      }
+    }
+  }
+
+  private void serializer(BufferedWriter bw, Player player) throws IOException {
+    TokenView token = player.getToken();
+    String dob = player.getDateOfBirth() == null ? "" : player.getDateOfBirth().toString();
+
+    String line = String.join(",",
+        player.getName(),
+        toRgbString(token.getTokenColor()),
+        token.getTokenShape(),
+        dob,
+        token.getImagePath() == null ? "" : token.getImagePath()
+    );
+    bw.write(line);
+    bw.newLine();
+  }
+
 
   private String toFileUri(String csvPath) {
     if (csvPath.matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*")) {
