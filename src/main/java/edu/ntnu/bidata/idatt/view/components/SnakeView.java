@@ -42,11 +42,11 @@ public final class SnakeView {
           TileView startView = (TileView) boardGrid.lookup("#tile" + startId);
           TileView endView = (TileView) boardGrid.lookup("#tile" + endId);
           if (startView != null) {
-            startView.setStyle("-fx-background-color:#A5D6A7;");
+            startView.setStyle("-fx-background-color:red;");
             startView.addTileActionViewLbl("start", Color.RED);
           }
           if (endView != null) {
-            endView.setStyle("-fx-background-color:#EF9A9A;");
+            endView.setStyle("-fx-background-color:#FF474D;");
             endView.addTileActionViewLbl("end", Color.RED);
           }
 

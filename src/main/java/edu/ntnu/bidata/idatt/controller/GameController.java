@@ -32,7 +32,13 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
+/**
+ * Base controller that contains the core game‑flow logic that is shared across the different board
+ * games in the application.
+ */
 public abstract class GameController {
+
+  private static final double TOKEN_PIXELS_PER_SECOND = 400.0;
 
   protected final Logger logger = Logger.getLogger(getClass().getName());
   protected final PlayerService playerService = new PlayerService();
@@ -49,7 +55,7 @@ public abstract class GameController {
   protected GameController(BoardGameScene boardGameScene,
                            Board board,
                            int numberOfDice,
-                           GameRules gameRules) throws IOException {
+                           GameRules gameRules) {
     this.boardGameScene = boardGameScene;
     this.board = board;
     this.dice = new Dice(numberOfDice);
@@ -209,7 +215,10 @@ public abstract class GameController {
         new LineTo(endCenter.getX(), endCenter.getY())
     );
 
-    var trans = new PathTransition(Duration.seconds(0.5), path, token);
+    double distance = startCenter.distance(endCenter);
+    double durationSeconds = distance / TOKEN_PIXELS_PER_SECOND;
+
+    PathTransition trans = new PathTransition(Duration.seconds(durationSeconds), path, token);
     trans.setOnFinished(event -> {
       overlayPane.getChildren().remove(token);
       endTileView.getChildren().add(token);

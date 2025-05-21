@@ -50,11 +50,11 @@ public class LadderView {
 
           TileView startView = (TileView) boardGridPane.lookup("#tile" + startId);
           if (startView != null) {
-            startView.setStyle("-fx-background-color: #A5D6A7;");
+            startView.setStyle("-fx-background-color: #006400;");
             startView.addTileActionViewLbl("start", Color.RED);
           }
           if (endView != null) {
-            endView.setStyle("-fx-background-color: #EF9A9A;");
+            endView.setStyle("-fx-background-color: #90EE90;");
             endView.addTileActionViewLbl("end", Color.RED);
           }
 
