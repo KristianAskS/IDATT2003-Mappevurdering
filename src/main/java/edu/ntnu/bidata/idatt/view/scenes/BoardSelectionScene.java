@@ -8,6 +8,7 @@ import edu.ntnu.bidata.idatt.controller.patterns.factory.LadderBoardFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.LudoBoardFactory;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
+import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.io.IOException;
@@ -187,7 +188,7 @@ public class BoardSelectionScene {
         try {
           SceneManager.showPlayerSelectionScene();
         } catch (IOException ex) {
-          throw new RuntimeException(ex);
+          throw new GameUIException("Failed to navigate to player selection scene: ", ex);
         }
         PlayerSelectionScene.showTotalPlayerSelectionDialog();
       } else {

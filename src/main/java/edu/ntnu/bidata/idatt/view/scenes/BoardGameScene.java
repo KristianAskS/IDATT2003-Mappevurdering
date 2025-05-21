@@ -14,6 +14,7 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.DiceView;
 import edu.ntnu.bidata.idatt.view.components.LadderView;
@@ -335,7 +336,7 @@ public class BoardGameScene implements BoardGameObserver {
       try {
         SceneManager.showPlayerSelectionScene();
       } catch (IOException exception) {
-        throw new RuntimeException(exception);
+        throw new GameUIException("Failed to navigate to player selection scene", exception);
       }
     });
     ioContainer.getChildren().add(back);
