@@ -31,47 +31,56 @@ public class LudoBoardView extends BaseBoardView {
 
   private static final int GRID = 15;
 
+  private static final Color BLUE = Color.web("#2196F3");
+  private static final Color GREEN = Color.web("#4CAF50");
+  private static final Color YELLOW = Color.web("#FFEB3B");
+  private static final Color RED = Color.web("#F44336");
+
+  private static final int BLUE_SAFE = 52;
+  private static final int GREEN_SAFE = 13;
+  private static final int YELLOW_SAFE = 26;
+  private static final int RED_SAFE = 39;
+
   @Override
   protected void layout(Board board, GridPane grid) {
+
     for (int row = 0; row < GRID; row++) {
       for (int col = 0; col < GRID; col++) {
-        boolean isCentre = 6 <= row && row <= 8 && 6 <= col && col <= 8;
+        boolean centre = 6 <= row && row <= 8 && 6 <= col && col <= 8;
         Rectangle bg = new Rectangle(TILE_SIZE_LUDO, TILE_SIZE_LUDO, Color.WHITE);
-        bg.setStroke(isCentre ? null : Color.BLACK);
+        bg.setStroke(centre ? null : Color.BLACK);
         grid.add(bg, col, row);
       }
     }
 
-    // Four coloured home yards 6x6
-    paintBlock(grid, 0, 9, Color.web("#FFEB3B"));   // Yellow
-    paintBlock(grid, 0, 0, Color.web("#4CAF50"));   // Green
-    paintBlock(grid, 9, 9, Color.web("#F44336"));   // Red
-    paintBlock(grid, 9, 0, Color.web("#2196F3"));   // Blue
-
-    // Home path
-    paintColumn(grid, 7, 1, 5, Color.web("#2196F3")); // Blue up
-    paintColumn(grid, 7, 9, 5, Color.web("#FFEB3B")); // Yellow down
-    paintRow(grid, 1, 7, 5, Color.web("#4CAF50")); // Green left
-    paintRow(grid, 9, 7, 5, Color.web("#F44336")); // Red right
-
-    // Entry points
-    paintEntry(grid, 1, 8, Color.web("#2196F3"));  // Blue
-    paintEntry(grid, 6, 1, Color.web("#4CAF50"));  // Green
-    paintEntry(grid, 13, 6, Color.web("#FFEB3B"));  // Yellow
-    paintEntry(grid, 8, 13, Color.web("#F44336"));  // Red
+    paintBlock(grid, 0, 0, GREEN);
+    paintBlock(grid, 9, 0, BLUE);
+    paintBlock(grid, 0, 9, YELLOW);
+    paintBlock(grid, 9, 9, RED);
 
     paintStar(grid);
+
+    paintColumn(grid, 7, 1, 5, BLUE);
+    paintRow(grid, 1, 7, 5, GREEN);
+    paintColumn(grid, 7, 9, 5, YELLOW);
+    paintRow(grid, 9, 7, 5, RED);
+
+    paintEntry(grid, 1, 8, BLUE);
+    paintEntry(grid, 6, 1, GREEN);
+    paintEntry(grid, 13, 6, YELLOW);
+    paintEntry(grid, 8, 13, RED);
 
     for (int id = 1; id <= 52; id++) {
       Tile tile = board.getTile(id);
       if (tile == null) {
         continue;
       }
-      TileView view = new TileView(tile, TILE_SIZE_LUDO);
-      int[] path = TILES_PATH[id - 1];
-      grid.add(view, path[1], path[0]);
+      int[] pos = TILES_PATH[id - 1];
+      TileView tv = new TileView(tile, TILE_SIZE_LUDO);
+      grid.add(tv, pos[1], pos[0]);
     }
   }
+
 
   private void paintBlock(GridPane grid, int col, int row, Color color) {
     for (int r = row; r < row + 6; r++) {
@@ -92,34 +101,38 @@ public class LudoBoardView extends BaseBoardView {
   }
 
   private void paintRow(GridPane grid, int startCol, int row, int len, Color color) {
-    for (int column = startCol; column < startCol + len; column++) {
+    for (int c = startCol; c < startCol + len; c++) {
       Rectangle sq = new Rectangle(TILE_SIZE_LUDO, TILE_SIZE_LUDO, color);
       sq.setStroke(Color.BLACK);
-      grid.add(sq, column, row);
+      grid.add(sq, c, row);
     }
   }
 
+  private void paintEntry(GridPane grid, int row, int col, Color colour) {
+    Rectangle sq = new Rectangle(TILE_SIZE_LUDO, TILE_SIZE_LUDO, colour);
+    sq.setStroke(Color.BLACK);
+    grid.add(sq, col, row);
+  }
+
   private void paintStar(GridPane grid) {
-    double cell = TILE_SIZE_LUDO;
-    double size = cell * 3;
+    double size = (double) TILE_SIZE_LUDO * 3;
     double mid = size / 2;
 
     Pane star = new Pane();
     star.setMinSize(size, size);
     star.setPrefSize(size, size);
-    star.setMaxSize(size, size);
 
-    Polygon blue = new Polygon(0, 0, size, 0, mid, mid);
-    Polygon red = new Polygon(size, 0, size, size, mid, mid);
-    Polygon yellow = new Polygon(size, size, 0, size, mid, mid);
-    Polygon green = new Polygon(0, size, 0, 0, mid, mid);
+    Polygon pBlue = new Polygon(0, 0, size, 0, mid, mid);
+    Polygon pRed = new Polygon(size, 0, size, size, mid, mid);
+    Polygon pYellow = new Polygon(size, size, 0, size, mid, mid);
+    Polygon pGreen = new Polygon(0, size, 0, 0, mid, mid);
 
-    blue.setFill(Color.web("#2196F3")); // Blue
-    red.setFill(Color.web("#F44336")); // Red
-    yellow.setFill(Color.web("#FFEB3B")); // Yellow
-    green.setFill(Color.web("#4CAF50")); // Green
+    pBlue.setFill(BLUE);
+    pRed.setFill(RED);
+    pYellow.setFill(YELLOW);
+    pGreen.setFill(GREEN);
 
-    star.getChildren().addAll(blue, red, yellow, green);
+    star.getChildren().addAll(pBlue, pRed, pYellow, pGreen);
 
     GridPane.setRowSpan(star, 3);
     GridPane.setColumnSpan(star, 3);
@@ -127,13 +140,6 @@ public class LudoBoardView extends BaseBoardView {
     GridPane.setValignment(star, VPos.CENTER);
 
     grid.add(star, 6, 6);
-  }
-
-
-  private void paintEntry(GridPane grid, int row, int col, Color colour) {
-    Rectangle sq = new Rectangle(TILE_SIZE_LUDO, TILE_SIZE_LUDO, colour);
-    sq.setStroke(Color.BLACK);
-    grid.add(sq, col, row);
   }
 
   @Override

@@ -1,5 +1,3 @@
-// src/main/java/edu/ntnu/bidata/idatt/controller/AbstractBoardGameController.java
-
 package edu.ntnu.bidata.idatt.controller;
 
 import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
@@ -7,6 +5,7 @@ import static edu.ntnu.bidata.idatt.model.service.BoardService.BOARD_FILE_PATH;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.rules.GameRules;
+import edu.ntnu.bidata.idatt.controller.rules.LudoRules;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Die;
@@ -51,7 +50,8 @@ public abstract class GameController {
 
   protected GameController(BoardGameScene boardGameScene,
       Board board,
-      int numberOfDice, GameRules gameRules) throws IOException {
+      int numberOfDice,
+      GameRules gameRules) throws IOException {
     this.boardGameScene = boardGameScene;
     this.board = board;
     this.dice = new Dice(numberOfDice);
@@ -109,7 +109,7 @@ public abstract class GameController {
 
     int originTileId = player.getCurrentTileId();
     Tile originTile = originTileId == 0 ? null : board.getTile(originTileId);
-    int hopCount = destinationTileId - originTileId;
+    int hopCount = ((destinationTileId - originTileId) + maxTileId) % maxTileId;
 
     movePlayerAlongTiles(player, hopCount, () -> {
       Tile landed = board.getTile(player.getCurrentTileId());
@@ -128,27 +128,52 @@ public abstract class GameController {
   }
 
   private void movePlayerAlongTiles(Player player, int steps, Runnable onDoneCallback) {
-    int startTileId = player.getCurrentTileId();
-    int targetTileId = Math.min(startTileId + steps, board.getTiles().size());
-    Node token = player.getToken();
 
-    if (token == null) {
-      player.setCurrentTileId(targetTileId);
+    int start = player.getCurrentTileId();
+    int boardSize = board.getTiles().size();
+
+    steps = ((steps % boardSize) + boardSize) % boardSize;
+    if (steps == 0) {
       onDoneCallback.run();
       return;
     }
 
-    SequentialTransition sequentialTransition = new SequentialTransition();
-    for (int next = startTileId + 1; next <= targetTileId; next++) {
-      sequentialTransition.getChildren().add(getHopTransition(player, next, token));
+    int tmp = (start + steps) % boardSize;
+    if (tmp == 0) {
+      tmp = boardSize;
     }
-    sequentialTransition.setOnFinished(event -> {
-      Tile landed = board.getTile(targetTileId);
+    final int target = tmp;
+
+    Node token = player.getToken();
+    if (token == null) {
+      player.setCurrentTileId(target);
+      onDoneCallback.run();
+      return;
+    }
+
+    SequentialTransition seq = new SequentialTransition();
+
+    boolean isLudo = gameRules instanceof LudoRules;
+    boolean leaveYard = (start == 0) && isLudo;
+
+    if (leaveYard) {
+      seq.getChildren().add(getHopTransition(player, target, token));
+    } else {
+      for (int i = 1; i <= steps; i++) {
+        int nextId = (start + i) % boardSize;
+        if (nextId == 0) {
+          nextId = boardSize;
+        }
+        seq.getChildren().add(getHopTransition(player, nextId, token));
+      }
+    }
+
+    seq.setOnFinished(e -> {
+      Tile landed = board.getTile(target);
       landed.addPlayer(player);
       onDoneCallback.run();
-
     });
-    sequentialTransition.play();
+    seq.play();
   }
 
   private PauseTransition getHopTransition(Player player, int nextId, Node token) {
@@ -256,5 +281,4 @@ public abstract class GameController {
   protected void afterTurnLogic(Player current) {
     advanceToNextPlayer();
   }
-
 }

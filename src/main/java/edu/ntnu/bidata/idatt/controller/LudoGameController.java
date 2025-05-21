@@ -9,18 +9,18 @@ import java.io.IOException;
 
 public class LudoGameController extends GameController {
 
-  private final LudoRules ludoRules;
+  private final LudoRules rules;
 
   public LudoGameController(BoardGameScene scene,
       Board board,
       int dice) throws IOException {
     super(scene, board, dice, new LudoRules());
-    this.ludoRules = (LudoRules) super.gameRules;
+    this.rules = (LudoRules) super.gameRules;
   }
 
   @Override
   protected void applyLandAction(Player player, Tile tile, Runnable done) {
-    ludoRules.onLand(player, tile);
+    rules.onLand(player, tile);
     done.run();
   }
 
@@ -30,8 +30,13 @@ public class LudoGameController extends GameController {
   }
 
   @Override
+  protected boolean shouldFinish(Player p) {
+    return false;
+  }
+
+  @Override
   protected void afterTurnLogic(Player current) {
-    if (!ludoRules.isExtraTurn()) {
+    if (!rules.isExtraTurn()) {
       advanceToNextPlayer();
     }
   }
