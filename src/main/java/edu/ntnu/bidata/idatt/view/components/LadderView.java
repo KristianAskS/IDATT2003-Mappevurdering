@@ -45,12 +45,13 @@ public class LadderView {
                 new Ladder(startTile, board.getTile(endId), board, boardGridPane,
                     gameController).getLadders());
           } catch (IOException e) {
-            throw new GameUIException("Failed to draw ladder from tile " + startId + " to tile " + endId, e);
+            throw new GameUIException(
+                "Failed to draw ladder from tile " + startId + " to tile " + endId, e);
           }
 
           TileView startView = (TileView) boardGridPane.lookup("#tile" + startId);
           if (startView != null) {
-            startView.setStyle("-fx-background-color: #006400;");
+            startView.setStyle("-fx-background-color: green;");
             startView.addTileActionViewLbl("start", Color.RED);
           }
           if (endView != null) {

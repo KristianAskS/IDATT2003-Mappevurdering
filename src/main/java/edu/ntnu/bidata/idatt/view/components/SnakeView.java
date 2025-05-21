@@ -36,7 +36,8 @@ public final class SnakeView {
                 new Snake(start, board.getTile(endId), board, boardGrid, gameController).getSnakes()
             );
           } catch (Exception exception) {
-            throw new GameUIException("Failed to draw snake from tile " + startId + " to tile " + endId, exception);
+            throw new GameUIException(
+                "Failed to draw snake from tile " + startId + " to tile " + endId, exception);
           }
 
           TileView startView = (TileView) boardGrid.lookup("#tile" + startId);

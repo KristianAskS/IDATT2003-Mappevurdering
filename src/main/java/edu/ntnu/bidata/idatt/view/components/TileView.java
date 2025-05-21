@@ -15,6 +15,7 @@ public class TileView extends StackPane {
   public static final int TILE_SIZE_LADDER = 73;
   public static final int TILE_SIZE_LUDO = 50;
   private TileView tileView;
+  private static final String ACTION_LABEL_CLASS = "action-label";
 
   public TileView(Tile tile, int TILE_SIZE) {
     this.setId("tile" + tile.getTileId());
@@ -42,10 +43,17 @@ public class TileView extends StackPane {
     getChildren().addAll(rectangle, numb);
   }
 
-  public void addTileActionViewLbl(String description, Color color) {
-    Label tileActionViewLbl = new Label(description);
-    tileActionViewLbl.setTextFill(color);
-    tileActionViewLbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
-    this.getChildren().add(tileActionViewLbl);
+  public void addTileActionViewLbl(String text, Color color) {
+    // if we've already added an action‐label, bail out
+    if (this.lookup("." + ACTION_LABEL_CLASS) != null) {
+      return;
+    }
+
+    Label lbl = new Label(text);
+    lbl.getStyleClass().add(ACTION_LABEL_CLASS);
+    lbl.setTextFill(color);
+    lbl.setMouseTransparent(true);
+    // position, font etc...
+    getChildren().add(lbl);
   }
 }

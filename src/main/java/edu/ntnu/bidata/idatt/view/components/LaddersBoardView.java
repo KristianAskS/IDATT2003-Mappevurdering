@@ -31,7 +31,7 @@ public class LaddersBoardView extends BaseBoardView {
 
       if (tile.getLandAction() != null) {
         String desc = tile.getLandAction().getDescription();
-        desc = desc.length() < 7 ? desc : ""; // keep short
+        desc = desc.length() < 7 ? desc : "";
         view.addTileActionViewLbl(desc, Color.RED);
         int finalId = id;
         LOG.log(Level.INFO, () -> "Added action label to tile " + finalId);
