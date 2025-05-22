@@ -1,35 +1,90 @@
 package edu.ntnu.bidata.idatt.model.entity;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
+import java.time.LocalDate;
 import java.util.List;
 import javafx.scene.paint.Color;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-@DisplayName("Tile Tests")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("Tile Entity Tests")
 class TileTest {
+  private Tile tile;
+  private Tile otherTile;
+  private Player p1;
+  private Player p2;
+  private TileAction dummyAction;
 
-  private static Player createPlayer(String name) {
-    return new Player(name, new DummyTokenView());
+  @BeforeAll
+  void initAll() {
+    dummyAction = new DummyAction(99, "dummy");
+  }
+
+  @BeforeEach
+  void setUp() {
+    tile = new Tile(10);
+    otherTile = new Tile(20);
+    p1 = new Player("Tri", new DummyTokenView(), LocalDate.of(1990, 1, 1));
+    p2 = new Player("Kristian", new DummyTokenView(), LocalDate.of(1995, 5, 5));
+  }
+
+  private static class DummyAction implements TileAction {
+    private int dest;
+    private String desc;
+
+    DummyAction(int dest, String desc) {
+      this.dest = dest;
+      this.desc = desc;
+    }
+
+    @Override
+    public int getDestinationTileId() {
+      return dest;
+    }
+
+    @Override
+    public void setDestinationTileId(int d) {
+      dest = d;
+    }
+
+    @Override
+    public String description() {
+      return desc;
+    }
+
+    @Override
+    public void setDescription(String d) {
+      desc = d;
+    }
+
+    @Override
+    public void perform(Player p) {
+
+    }
   }
 
   private static class DummyTokenView extends TokenView {
-
     DummyTokenView() {
-      super(Token.token(Color.WHITE, "", null));
+      super(Token.token(Color.BLACK, "circle", null));
     }
 
     @Override
     public String toString() {
-      return "Dummy";
+      return "[TK]";
     }
   }
 
@@ -38,80 +93,129 @@ class TileTest {
   class PositiveTests {
 
     @Test
-    @DisplayName("constructor initializes defaults")
-    void constructorInitializesDefaults() {
-      Tile tile = new Tile(5);
-      assertEquals(5, tile.getTileId());
-      assertNull(tile.getNextTile());
-      assertEquals(0, tile.getNextTileId());
-      assertNull(tile.getLandAction());
-      assertTrue(tile.getPlayersOnTile().isEmpty());
+    @DisplayName("Constructor sets tileId and defaults")
+    void constructorAndDefaults() {
+      assertAll("defaults",
+          () -> assertEquals(10, tile.getTileId(), "tileId"),
+          () -> assertNull(tile.getNextTile(), "nextTile should be null"),
+          () -> assertEquals(0, tile.getNextTileId(), "nextTileId default"),
+          () -> assertNull(tile.getLandAction(), "landAction default"),
+          () -> assertTrue(tile.getPlayersOnTile().isEmpty(), "no players by default")
+      );
     }
 
     @Test
-    @DisplayName("tileId setter and getter work")
+    @DisplayName("setTileId and getTileId")
     void tileIdSetterGetter() {
-      Tile tile = new Tile(0);
-      tile.setTileId(7);
-      assertEquals(7, tile.getTileId());
+      int newId = 42;
+      tile.setTileId(newId);
+      assertEquals(newId, tile.getTileId());
     }
 
     @Test
-    @DisplayName("nextTile setter updates nextTile and nextTileId")
-    void nextTileSetterUpdatesFields() {
-      Tile tile1 = new Tile(1);
-      Tile tile2 = new Tile(2);
-      tile1.setNextTile(tile2);
-      assertSame(tile2, tile1.getNextTile());
-      assertEquals(2, tile1.getNextTileId());
+    @DisplayName("setNextTile links tile and id")
+    void linkNextTile() {
+      tile.setNextTile(otherTile);
+      assertAll("linking",
+          () -> assertSame(otherTile, tile.getNextTile(), "nextTile object"),
+          () -> assertEquals(20, tile.getNextTileId(), "nextTileId")
+      );
     }
 
     @Test
-    @DisplayName("nextTileId setter and getter work independently")
-    void nextTileIdSetterGetter() {
-      Tile tile = new Tile(3);
-      tile.setNextTileId(9);
-      assertEquals(9, tile.getNextTileId());
+    @DisplayName("setNextTile(null) clears link but retains id")
+    void clearNextTileKeepsId() {
+      tile.setNextTile(otherTile);
+      assertEquals(20, tile.getNextTileId());
+      tile.setNextTile(null);
+      assertAll("clearing",
+          () -> assertNull(tile.getNextTile(), "nextTile cleared"),
+          () -> assertEquals(20, tile.getNextTileId(), "nextTileId unchanged")
+      );
     }
 
+    @Test
+    @DisplayName("setNextTileId works independently")
+    void manualNextTileId() {
+      tile.setNextTileId(77);
+      assertAll("manual id",
+          () -> assertEquals(77, tile.getNextTileId()),
+          () -> assertNull(tile.getNextTile(), "nextTile still null")
+      );
+    }
 
     @Test
-    @DisplayName("addPlayer and removePlayer manage playersOnTile")
-    void addAndRemovePlayersOnTile() {
-      Tile tile = new Tile(6);
-      Player p1 = createPlayer("P1");
-      Player p2 = createPlayer("P2");
+    @DisplayName("setLandAction and getLandAction")
+    void landActionSetterGetter() {
+      tile.setLandAction(dummyAction);
+      assertSame(dummyAction, tile.getLandAction());
+    }
+
+    @Test
+    @DisplayName("setLandAction(null) resets action")
+    void clearLandAction() {
+      tile.setLandAction(dummyAction);
+      tile.setLandAction(null);
+      assertNull(tile.getLandAction());
+    }
+
+    @Test
+    @DisplayName("addPlayer and getPlayersOnTile")
+    void addAndListPlayers() {
       tile.addPlayer(p1);
       tile.addPlayer(p2);
-      List<Player> players = tile.getPlayersOnTile();
-      assertEquals(2, players.size());
-      assertTrue(players.contains(p1));
-      assertTrue(players.contains(p2));
+      List<Player> list = tile.getPlayersOnTile();
+      // Assert
+      assertAll("players list",
+          () -> assertEquals(2, list.size(), "two players added"),
+          () -> assertTrue(list.contains(p1), "contains p1"),
+          () -> assertTrue(list.contains(p2), "contains p2")
+      );
+    }
+
+    @Test
+    @DisplayName("removePlayer removes existing player")
+    void removeExistingPlayer() {
+      tile.addPlayer(p1);
       tile.removePlayer(p1);
-      assertEquals(1, tile.getPlayersOnTile().size());
-      assertFalse(tile.getPlayersOnTile().contains(p1));
+      assertTrue(tile.getPlayersOnTile().isEmpty(), "player removed");
+    }
+
+    @Test
+    @DisplayName("addPlayer(null) allowed and appears in list")
+    void addNullPlayer() {
+      tile.addPlayer(null);
+      assertNull(tile.getPlayersOnTile().get(0), "null entry present");
     }
   }
 
   @Nested
-  @DisplayName("Negative Tests")
+  @DisplayName("Negative & Edge Tests")
   class NegativeTests {
 
     @Test
     @DisplayName("getPlayersOnTile returns unmodifiable list")
-    void playersOnTileListUnmodifiable() {
-      Tile tile = new Tile(8);
+    void playersListUnmodifiable() {
+      tile.addPlayer(p1);
+      List<Player> list = tile.getPlayersOnTile();
       assertThrows(UnsupportedOperationException.class,
-          () -> tile.getPlayersOnTile().add(createPlayer("X")));
+          () -> list.add(p2),
+          "should not allow modification"
+      );
     }
 
     @Test
-    @DisplayName("removePlayer on non-existent player does nothing")
-    void removeNonExistentPlayerDoesNothing() {
-      Tile tile = new Tile(9);
-      Player p = createPlayer("P");
-      tile.removePlayer(p);
-      assertTrue(tile.getPlayersOnTile().isEmpty());
+    @DisplayName("removePlayer does nothing if player absent")
+    void removeAbsentPlayerNoError() {
+      assertDoesNotThrow(() -> tile.removePlayer(p1), "removing absent player");
+      assertTrue(tile.getPlayersOnTile().isEmpty(), "still empty");
+    }
+
+    @Test
+    @DisplayName("new Tile with negative ID retains negative ID")
+    void negativeTileIdAllowed() {
+      Tile t = new Tile(-5);
+      assertEquals(-5, t.getTileId(), "negative tileId preserved");
     }
   }
 }

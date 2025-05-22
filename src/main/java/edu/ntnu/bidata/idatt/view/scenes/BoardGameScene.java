@@ -120,7 +120,7 @@ public class BoardGameScene implements BoardGameObserver {
         highlightActionTiles(board, boardGridPane);
         highlightEndTile(board, boardGridPane);
         LadderView.drawLadders(board, boardGridPane, overlay, gameController);
-        SnakeView.drawSnakes(board, boardGridPane, overlay, gameController);
+        //SnakeView.drawSnakes(board, boardGridPane, overlay, gameController);
       });
     }
 
