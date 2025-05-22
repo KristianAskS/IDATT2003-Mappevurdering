@@ -44,9 +44,6 @@ class TileTest {
       assertEquals(5, tile.getTileId());
       assertNull(tile.getNextTile());
       assertEquals(0, tile.getNextTileId());
-      assertFalse(tile.isSafe());
-      assertFalse(tile.isHomeEntry());
-      assertFalse(tile.isHomeColumn());
       assertNull(tile.getLandAction());
       assertTrue(tile.getPlayersOnTile().isEmpty());
     }
@@ -77,17 +74,6 @@ class TileTest {
       assertEquals(9, tile.getNextTileId());
     }
 
-    @Test
-    @DisplayName("safe, homeEntry, homeColumn flags setters and getters work")
-    void flagsSetterGetter() {
-      Tile tile = new Tile(4);
-      tile.setSafe(true);
-      tile.setHomeEntry(true);
-      tile.setHomeColumn(true);
-      assertTrue(tile.isSafe());
-      assertTrue(tile.isHomeEntry());
-      assertTrue(tile.isHomeColumn());
-    }
 
     @Test
     @DisplayName("addPlayer and removePlayer manage playersOnTile")
