@@ -31,7 +31,7 @@ public class LudoGameController extends GameController {
 
   @Override
   protected boolean shouldFinish(Player p) {
-    return false;
+    return p.getAmountOfSteps() >= 50;
   }
 
   @Override

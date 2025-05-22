@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 public final class LudoRules implements GameRules {
 
   private static final int TRACK_LEN = 52;
+  private static final int HOME_LEN = 5;
   private static final Color BLUE = Color.web("#2196F3");
   private static final Color GREEN = Color.web("#4CAF50");
   private static final Color YELLOW = Color.web("#FFEB3B");
@@ -17,10 +18,10 @@ public final class LudoRules implements GameRules {
   private static final EnumMap<Base, Integer> START = new EnumMap<>(Base.class);
 
   static {
-    START.put(Base.BLUE, 50);
-    START.put(Base.GREEN, 11);
-    START.put(Base.YELLOW, 24);
-    START.put(Base.RED, 37);
+    START.put(Base.BLUE, 3);
+    START.put(Base.GREEN, 42);
+    START.put(Base.YELLOW, 29);
+    START.put(Base.RED, 16);
   }
 
   private final Map<String, Base> playerBase = new HashMap<>();
@@ -49,7 +50,8 @@ public final class LudoRules implements GameRules {
 
   private static boolean crossesStartCW(int cur, int dist, int start) {
     int end = cur + dist;
-    return (cur < start && end >= start) || (end > TRACK_LEN && (end % TRACK_LEN) >= start);
+    return (cur < start && end >= start)
+        || (end > TRACK_LEN && (end % TRACK_LEN) >= start);
   }
 
   private static double dist(Color a, Color b) {
@@ -66,24 +68,21 @@ public final class LudoRules implements GameRules {
 
   @Override
   public int destinationTile(Player p, int rolled, int ignored) {
-
     extraTurn = (rolled == 6);
-
     int cur = p.getCurrentTileId();
 
     if (cur == 0) {
-      return rolled == 6 ? start(p) : -1;
+      if (rolled == 6) {
+        return start(p);
+      }
+      return -1;
     }
-
     if (rolled == 0) {
       return cur;
     }
 
     boolean cw = rolled > 0;
     int dist = Math.abs(rolled) % TRACK_LEN;
-
-    int dest = cw ? cur + dist : cur - dist;
-    dest = wrap(dest);
 
     if (cw && !lapDone.getOrDefault(p.getName(), false)
         && crossesStartCW(cur, dist, start(p))) {
@@ -95,10 +94,21 @@ public final class LudoRules implements GameRules {
         ? distanceCW(cur, entry) <= dist
         : distanceCCW(cur, entry) <= dist;
 
+    int dest;
+    int stepsTaken;
+
     if (passesEntry && lapDone.getOrDefault(p.getName(), false)) {
       dest = entry;
+      stepsTaken = cw
+          ? distanceCW(cur, entry)
+          : distanceCCW(cur, entry);
+    } else {
+      int raw = cw ? cur + dist : cur - dist;
+      dest = wrap(raw);
+      stepsTaken = dist;
     }
 
+    p.setAmountOfSteps(p.getAmountOfSteps() + stepsTaken);
     return dest;
   }
 
@@ -111,7 +121,7 @@ public final class LudoRules implements GameRules {
   }
 
   public int entrySquare(Player p) {
-    return wrap(start(p) + 2);
+    return wrap(start(p) - 2);
   }
 
   public int finishEntry(Player p) {
@@ -140,10 +150,9 @@ public final class LudoRules implements GameRules {
     double min = Math.min(Math.min(b, g), Math.min(y, r));
     return min == b ? Base.BLUE
         : min == g ? Base.GREEN
-        : min == y ? Base.YELLOW
-        : Base.RED;
+            : min == y ? Base.YELLOW
+                : Base.RED;
   }
 
-  private enum Base { BLUE, GREEN, YELLOW, RED }
-
+  public enum Base {BLUE, GREEN, YELLOW, RED}
 }

@@ -12,6 +12,7 @@ public class Player {
   private int currentTileId;
   private LocalDate dateOfBirth;
   private Color color;
+  private int amountOfSteps;
 
   public Player(String name, TokenView token) {
     this(name, token, null);
@@ -23,6 +24,7 @@ public class Player {
     this.currentTileId = 0;
     this.dateOfBirth = dateOfBirth;
     this.color = token.getTokenColor();
+    this.amountOfSteps = 0;
   }
 
   public String getName() {
@@ -74,5 +76,13 @@ public class Player {
 
   public Color getColour() {
     return color;
+  }
+
+  public int getAmountOfSteps() {
+    return amountOfSteps;
+  }
+
+  public void setAmountOfSteps(int amountOfSteps) {
+    this.amountOfSteps = amountOfSteps;
   }
 }
