@@ -16,9 +16,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * <p>Factory that builds different game boards populated them with actions</p>
- *
+ * <p>Factory that builds different game boards and populated them with actions</p>
  * <p>Extends {@link BoardFactory}</p>
+ *
+ * @author Tri Tac Le
+ * @version 1.1
+ * @since 1.0
  */
 public class LadderBoardFactory extends BoardFactory {
 
