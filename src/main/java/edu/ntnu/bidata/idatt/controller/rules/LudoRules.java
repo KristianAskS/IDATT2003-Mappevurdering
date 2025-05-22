@@ -133,7 +133,7 @@ public final class LudoRules implements GameRules {
   }
 
   private Base pickBase(Player p) {
-    Base b = nearestBase(p.getColour());
+    Base b = nearestBase(p.getColor());
     for (int i = 0; i < Base.values().length; i++) {
       if (baseUsed.get(b) == 0) {
         break;
@@ -150,9 +150,9 @@ public final class LudoRules implements GameRules {
     double min = Math.min(Math.min(b, g), Math.min(y, r));
     return min == b ? Base.BLUE
         : min == g ? Base.GREEN
-            : min == y ? Base.YELLOW
-                : Base.RED;
+        : min == y ? Base.YELLOW
+        : Base.RED;
   }
 
-  public enum Base {BLUE, GREEN, YELLOW, RED}
+  public enum Base { BLUE, GREEN, YELLOW, RED }
 }

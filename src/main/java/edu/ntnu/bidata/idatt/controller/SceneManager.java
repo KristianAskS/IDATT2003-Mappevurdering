@@ -8,6 +8,7 @@ import edu.ntnu.bidata.idatt.view.scenes.LandingScene;
 import edu.ntnu.bidata.idatt.view.scenes.PlayerSelectionScene;
 import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.Scene;
@@ -15,62 +16,117 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+/**
+ * <p>Class that handles switching between the scenes.</p>
+ *
+ * <p>Holds a reference to the primary {@link Stage}.</p>
+ * @author Tri Tac Le
+ * @since 1.0
+ */
 public class SceneManager {
-
-  public final static int SCENE_WIDTH = 1200;
-  public final static int SCENE_HEIGHT = 800;
+  /**
+   * The fixed width (in pixels) for all scenes.
+   */
+  public static final int SCENE_WIDTH = 1200;
+  /**
+   * The fixed height (in pixels) for all scenes.
+   */
+  public static final int SCENE_HEIGHT = 800;
   private static final Logger logger = Logger.getLogger(SceneManager.class.getName());
-  private static final String BUTTONS_CSS_PATH = "/edu/ntnu/bidata/idatt/styles/ButtonsStyles.css";
+
+  private static final String BUTTONS_CSS_PATH =
+      "/edu/ntnu/bidata/idatt/styles/ButtonsStyles.css";
+
   private static Stage primaryStage;
 
+  /**
+   * <p>Initializes the SceneManager with the given primary stage.</p>
+   *
+   * @param primaryStage the JavaFX {@link Stage}
+   */
   public SceneManager(Stage primaryStage) {
     SceneManager.primaryStage = primaryStage;
   }
 
+  /**
+   * Displays the landing scene.
+   */
   public static void showLandingScene() {
-    Scene landingScene = loadBtnCss(new LandingScene().getScene());
-    primaryStage.setScene(landingScene);
-    logger.log(Level.INFO, "Switch scene to landing scene");
+    Scene scene = loadBtnCss(new LandingScene().getScene());
+    primaryStage.setScene(scene);
+    logger.log(Level.INFO, "Switched to LandingScene");
   }
 
+  /**
+   * Displays the game selection scene.
+   */
   public static void showGameSelectionScene() {
-    Scene gameSelecionScene = loadBtnCss(new GameSelectionScene().getScene());
-    primaryStage.setScene(gameSelecionScene);
-    logger.log(Level.INFO, "Switch scene to gameSelectionScene");
+    Scene scene = loadBtnCss(new GameSelectionScene().getScene());
+    primaryStage.setScene(scene);
+    logger.log(Level.INFO, "Switched to GameSelectionScene");
   }
 
+  /**
+   * Displays the board selection scene.
+   */
   public static void showBoardSelectionScene() {
-    Scene boardGameSelectionScene = loadBtnCss(new BoardSelectionScene().getScene());
-    primaryStage.setScene(boardGameSelectionScene);
-    logger.log(Level.INFO, "Switch scene to boardGameSelectionScene");
+    Scene scene = loadBtnCss(new BoardSelectionScene().getScene());
+    primaryStage.setScene(scene);
+    logger.log(Level.INFO, "Switched to BoardSelectionScene");
   }
 
+  /**
+   * Displays the player selection scene.
+   *
+   * @throws IOException if loading required resources fails
+   */
   public static void showPlayerSelectionScene() throws IOException {
-    Scene playerSelectionScene = loadBtnCss(new PlayerSelectionScene().getScene());
-    primaryStage.setScene(playerSelectionScene);
-    logger.log(Level.INFO, "Switch scene to showPlayerSelectionScene");
+    Scene scene = loadBtnCss(new PlayerSelectionScene().getScene());
+    primaryStage.setScene(scene);
+    logger.log(Level.INFO, "Switched to PlayerSelectionScene");
   }
 
+  /**
+   * Displays the main board game scene.
+   *
+   * @throws IOException if loading required resources fails
+   */
   public static void showBoardGameScene() throws IOException {
-    Scene boardGameScene = loadBtnCss(new BoardGameScene().getScene());
-    primaryStage.setScene(boardGameScene);
-    logger.log(Level.INFO, "Switch scene to showBoardGameScene");
+    Scene scene = loadBtnCss(new BoardGameScene().getScene());
+    primaryStage.setScene(scene);
+    logger.log(Level.INFO, "Switched to BoardGameScene");
   }
 
+  /**
+   * Displays the podium scene.
+   */
   public static void showPodiumGameScene() {
-    Scene podiumGameScene = loadBtnCss(new PodiumGameScene().getScene());
-    primaryStage.setScene(podiumGameScene);
-    logger.log(Level.INFO, "Switch scene to showPodiumGameScene");
+    Scene scene = loadBtnCss(new PodiumGameScene().getScene());
+    primaryStage.setScene(scene);
+    logger.log(Level.INFO, "Switched to PodiumGameScene");
   }
 
+  /**
+   * <p>Creates and returns a new {@link BorderPane} with the
+   * application background image.</p>
+   *
+   * @return a styled {@link BorderPane} to serve as the root for scenes
+   */
   public static BorderPane getRootPane() {
-    BorderPane rootPane = new BorderPane();
-    rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
-    return rootPane;
+    BorderPane root = new BorderPane();
+    root.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
+    return root;
   }
 
+  /**
+   * <p>Adds the button stylesheet to the given scene.</p>
+   *
+   * @param scene the {@link Scene} to style
+   * @return the same {@code scene} instance with button CSS applied
+   */
   private static Scene loadBtnCss(Scene scene) {
-    scene.getStylesheets().add(String.valueOf(SceneManager.class.getResource(BUTTONS_CSS_PATH)));
+    scene.getStylesheets()
+        .add(Objects.requireNonNull(SceneManager.class.getResource(BUTTONS_CSS_PATH)).toExternalForm());
     return scene;
   }
 }

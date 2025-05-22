@@ -24,11 +24,28 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ * <p>Handles serialization and deserialization of {@link Board} objects
+ * to and from JSON files using Gson.</p>
+ *
+ * <p>Supports writing a list of boards as a JSON array using pretty printed</p>
+ *
+ * @author Tri Tac Le
+ * @since 1.0
+ */
 public class GsonBoardFileHandler implements FileHandler<Board> {
+  private final Logger logger = Logger.getLogger(GsonBoardFileHandler.class.getName());
 
-  Logger logger = Logger.getLogger(GsonBoardFileHandler.class.getName());
-
+  /**
+   * Writes the given list of {@link Board} instances to the file.
+   * <p>Boards are serialized into a JSON array with pretty printing.</p>
+   *
+   * @param boards   the list of boards to write
+   * @param filePath the target JSON file path
+   * @throws IllegalArgumentException if {@code boards} is empty or {@code filePath} is invalid
+   * @throws IOException              if an I/O error occurs during writing
+   * @throws BoardParsingException    if a JSON syntax error occurs during serialization
+   */
   @Override
   public void writeToFile(List<Board> boards, String filePath) throws IOException {
     if (boards == null || boards.isEmpty() || filePath == null || filePath.isBlank()) {
@@ -50,6 +67,16 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
     }
   }
 
+  /**
+   * Reads one or more {@link Board} instances from the specified JSON file.
+   * <p>Accepts either a JSON array or a single JSON object.</p>
+   *
+   * @param filePath the source JSON file path; must be non-null and non-blank
+   * @return a list of deserialized {@link Board} objects
+   * @throws IllegalArgumentException if {@code filePath} is invalid
+   * @throws IOException              if an I/O error occurs during reading
+   * @throws BoardParsingException    if the JSON format is invalid or cannot be parsed
+   */
   @Override
   public List<Board> readFromFile(String filePath) throws IOException {
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
@@ -79,6 +106,12 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
     }
   }
 
+  /**
+   * Serializes a single {@link Board} into a {@link JsonElement}.
+   *
+   * @param board the board to serialize
+   * @return a {@link JsonObject} representing the board, or null if {@code board} is null
+   */
   public JsonElement serializeBoardToJson(Board board) {
     if (board == null) {
       return null;
@@ -107,6 +140,13 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
     return boardJson;
   }
 
+  /**
+   * Deserializes a JSON string into a {@link Board} object.
+   *
+   * @param jsonString the JSON representation of a single board
+   * @return the reconstructed {@link Board} instance
+   * @throws IllegalArgumentException if an unknown action type is encountered
+   */
   public Board deserializeJsonToBoard(String jsonString) {
     JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
     JsonArray tilesJsonArray = jsonObject.getAsJsonArray("tiles");
@@ -157,4 +197,3 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
     return board;
   }
 }
-

@@ -11,13 +11,20 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 /**
- * Compact, fully–transparent card that visualises a {@link Player}.
+ * <p>A card UI component that displays a selected {@link Player}</p>
+ * <p>Shows the player’s token, name, and an 'X' button.</p>
+ *
+ * @author Kristian Ask Selmer
+ * @since 1.0
  */
 public class SelectedPlayerCard extends HBox {
 
   /**
-   * @param player   the player to visualise
-   * @param onDelete callback executed when the remove button is pressed
+   * Constructs a new SelectedPlayerCard.
+   *
+   * @param player   the {@link Player}
+   * @param onDelete a callback executed when the delete button is pressed,
+   *                 receiving the player as argument
    */
   public SelectedPlayerCard(Player player, Consumer<Player> onDelete) {
     super(10);

@@ -21,11 +21,22 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+/**
+ * <p>Represents the podium scene displaying the top three players.</p>
+ *
+ * @author Kristian Ask Selmer
+ */
 public class PodiumGameScene {
 
   private static List<Player> finalRanking;
   private final Scene scene;
 
+  /**
+   * <p>Constructs the podium scene, applying styling,
+   * creating the podium layout, and setting up button event handlers.</p>
+   *
+   * @throws NullPointerException if the CSS stylesheet resource cannot be found
+   */
   public PodiumGameScene() {
     BorderPane root = SceneManager.getRootPane();
     root.setPadding(Insets.EMPTY);
@@ -61,18 +72,34 @@ public class PodiumGameScene {
             .toExternalForm());
   }
 
+  /**
+   * Sets the list of players to be displayed in final ranking order.
+   *
+   * @param ranking the list of players where index 0 = first place, 1 = second, 2 = third
+   */
   public static void setFinalRanking(List<Player> ranking) {
     finalRanking = ranking;
   }
 
+  /**
+   * Returns the scene for this podium display.
+   *
+   * @return the configured scene object
+   */
   public Scene getScene() {
     return scene;
   }
 
+  /**
+   * <p>HBox containing styled tiers for the top three players.</p>
+   *
+   * @param ranking the list of players in final order
+   * @return an HBox containing the second, first, and third place tiers
+   */
   private HBox createPodium(List<Player> ranking) {
-    Player first = !ranking.isEmpty() ? ranking.get(0) : null;
-    Player second = ranking.size() > 1 ? ranking.get(1) : null;
-    Player third = ranking.size() > 2 ? ranking.get(2) : null;
+    Player first = (ranking != null && !ranking.isEmpty()) ? ranking.get(0) : null;
+    Player second = (ranking != null && ranking.size() > 1) ? ranking.get(1) : null;
+    Player third = (ranking != null && ranking.size() > 2) ? ranking.get(2) : null;
 
     VBox firstBox = createTierBox(1, first);
     VBox secondBox = createTierBox(2, second);
@@ -87,6 +114,13 @@ public class PodiumGameScene {
     return h;
   }
 
+  /**
+   * <p>Creates a single podium box with place label and player name.</p>
+   *
+   * @param place  the rank position (1 for first, 2 for second, 3 for third)
+   * @param player the Player object to display
+   * @return a VBox styled as a podium pillar containing the place and name
+   */
   private VBox createTierBox(int place, Player player) {
     Label placeLbl = new Label(String.valueOf(place));
     placeLbl.getStyleClass().add("pillar-place");

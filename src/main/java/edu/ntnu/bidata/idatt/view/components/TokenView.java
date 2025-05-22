@@ -16,9 +16,21 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
+/**
+ * <p>Visual component that renders a {@link Token} in the game UI.</p>
+ *
+ * <p>If the token has an associated image path, an {@link ImageView} is shown;
+ * otherwise a shape (circle, square, or triangle) is drawn.
+ * The tokens size adapts to the selected game
+ * (“LUDO” uses {@code TILE_SIZE_LUDO}, otherwise {@code TILE_SIZE_LADDER}).</p>
+ *
+ * @author Tri Tac Le
+ * @since 1.0
+ */
 public class TokenView extends StackPane {
 
   private static final Logger logger = Logger.getLogger(TokenView.class.getName());
+
   private static final double SIZE = (
       "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame())) ?
           TILE_SIZE_LUDO : TILE_SIZE_LADDER) * 0.4;
@@ -26,6 +38,12 @@ public class TokenView extends StackPane {
   private static final double TRI_OFFSET = HALF_SIZE;
   private final Token token;
 
+  /**
+   * Constructs a TokenView for the given token.
+   * <p>Renders either an image or a colored shape.</p>
+   *
+   * @param token the {@link Token} to visualize
+   */
   public TokenView(Token token) {
     this.token = token;
 
@@ -72,6 +90,11 @@ public class TokenView extends StackPane {
         new Object[]{token.getColor(), token.getShape()});
   }
 
+  /**
+   * Configures stroke styling on the ellipse.
+   *
+   * @param token the {@link Ellipse} to style
+   */
   private static void setStrokeHandler(Ellipse token) {
     token.setStrokeType(StrokeType.CENTERED);
     token.setStroke(Color.BLACK);
@@ -79,14 +102,29 @@ public class TokenView extends StackPane {
     token.setSmooth(true);
   }
 
+  /**
+   * Returns the token’s display color.
+   *
+   * @return the {@link Color} of the token
+   */
   public Color getTokenColor() {
     return token.getColor();
   }
 
+  /**
+   * Returns the token’s shape.
+   *
+   * @return the shape string
+   */
   public String getTokenShape() {
     return token.getShape();
   }
 
+  /**
+   * Returns the token’s image path
+   *
+   * @return the image path, or null if the token is shape‑based
+   */
   public String getImagePath() {
     return token.getImagePath();
   }

@@ -15,13 +15,29 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * <p>Factory that builds different game boards and populated them with actions</p>
+ * <p>Extends {@link BoardFactory}</p>
+ *
+ * @author Tri Tac Le
+ * @version 1.1
+ * @since 1.0
+ */
 public class LadderBoardFactory extends BoardFactory {
 
   private static final Logger logger = Logger.getLogger(LadderBoardFactory.class.getName());
 
+  /**
+   * <p>Default constructor for the board factory.</p>
+   */
   public LadderBoardFactory() {
   }
 
+  /**
+   * <p>Creates the default "CLASSIC" board with a fixed size and a set number of ladders.</p>
+   *
+   * @return a {@link Board} named "CLASSIC" with 90 tiles and 10 randomly placed ladders
+   */
   @Override
   public Board createDefaultBoard() {
     Board board = createBoardTiles("CLASSIC", "90-tile board", 90);
@@ -29,15 +45,24 @@ public class LadderBoardFactory extends BoardFactory {
     return board;
   }
 
+  /**
+   * <p>Adds a specified number of ladders at random start and end tiles on the board.</p>
+   * <p>Ensures no tile or position is already used by another action
+   * and that the ladder positions are valid.</p>
+   *
+   * @param board the {@link Board} to modify
+   * @param count the number of ladders to place
+   */
   private void addRandomLadders(Board board, int count) {
     Set<Integer> reserved = board.getTiles().values().stream()
         .filter(t -> t.getLandAction() != null)
-        .flatMap(t -> Stream.of(t.getTileId(),
-            ((t.getLandAction() instanceof LadderAction la)
+        .flatMap(t -> Stream.of(
+            t.getTileId(),
+            t.getLandAction() instanceof LadderAction la
                 ? la.getDestinationTileId()
-                : (t.getLandAction() instanceof SnakeAction sa)
+                : t.getLandAction() instanceof SnakeAction sa
                 ? sa.getDestinationTileId()
-                : null)))
+                : null))
         .collect(Collectors.toSet());
 
     int placed = 0;
@@ -62,8 +87,15 @@ public class LadderBoardFactory extends BoardFactory {
     }
   }
 
+  /**
+   * <p>Adds a specified number of skip turn actions at random tiles.</p>
+   * <p>Ensures no tile is already used by another action.</p>
+   *
+   * @param board the {@link Board} to modify
+   * @param count the number of skip turn actions to place
+   */
   private void addRandomSkipTurns(Board board, int count) {
-    Set<Integer> reserved = collectReserved(board);
+    Set<Integer> reserved = retrieveTileWithAction(board);
     int placed = 0;
     while (placed < count) {
       int id = 2 + (int) (Math.random() * (board.getTiles().size() - 2));
@@ -78,8 +110,15 @@ public class LadderBoardFactory extends BoardFactory {
     }
   }
 
+  /**
+   * <p>Adds a specified number of back to start actions at random tiles.</p>
+   * <p>Ensures no tile is already used by another action.</p>
+   *
+   * @param board the {@link Board} to modify
+   * @param count the number of back-to-start actions to place
+   */
   private void addRandomBackToStart(Board board, int count) {
-    Set<Integer> reserved = collectReserved(board);
+    Set<Integer> reserved = retrieveTileWithAction(board);
     int placed = 0;
     while (placed < count) {
       int id = 2 + (int) (Math.random() * (board.getTiles().size() - 2));
@@ -94,7 +133,14 @@ public class LadderBoardFactory extends BoardFactory {
     }
   }
 
-  private Set<Integer> collectReserved(Board board) {
+  /**
+   * <p>Retrieve ids of tiles already used by any land action.</p>
+   * <p>Also includes both start and end ids for ladders and snakes.</p>
+   *
+   * @param board the {@link Board} to check
+   * @return a {@link Set} of tile ids that cannot be used for new actions
+   */
+  private Set<Integer> retrieveTileWithAction(Board board) {
     return board.getTiles().values().stream()
         .filter(tile -> tile.getLandAction() != null)
         .flatMap(tile -> {
@@ -110,6 +156,12 @@ public class LadderBoardFactory extends BoardFactory {
         .collect(Collectors.toSet());
   }
 
+  /**
+   * <p>Adds a specified number of snakes at random head and tail positions.</p>
+   *
+   * @param board the {@link Board} to modify
+   * @param count the number of snakes to place
+   */
   private void addRandomSnakes(Board board, int count) {
     HashSet<Object> reserved = new HashSet<>();
     board.getTiles().values().forEach(t -> {
@@ -155,6 +207,16 @@ public class LadderBoardFactory extends BoardFactory {
     }
   }
 
+  /**
+   * <p>Creates a ladder between two specified tiles if valid.</p>
+   * <p>Does not create if tiles are null, already have an action,
+   * or if ladder positions are invalid.</p>
+   *
+   * @param board the {@link Board} to modify
+   * @param start the starting tile id for the ladder
+   * @param end   the destination tile id for the ladder
+   */
+  @SuppressWarnings("unsued for no")
   private void createLadder(Board board, int start, int end) {
     Tile s = board.getTile(start), e = board.getTile(end);
     if (s == null || e == null
@@ -166,7 +228,16 @@ public class LadderBoardFactory extends BoardFactory {
     s.setLandAction(new LadderAction(end, "Ladder from " + start + " to " + end));
   }
 
-
+  /**
+   * <p>Creates a snake between two specified tiles if valid.</p>
+   * <p>Does not create if tiles are null, already have an action,
+   * or if snake positions are invalid.</p>
+   *
+   * @param board the {@link Board} to modify
+   * @param head  the head tile ID for the snake
+   * @param tail  the tail tile ID for the snake
+   */
+  @SuppressWarnings("unsued for no")
   private void createSnake(Board board, int head, int tail) {
     Tile h = board.getTile(head), t = board.getTile(tail);
     if (h == null || t == null
@@ -178,7 +249,11 @@ public class LadderBoardFactory extends BoardFactory {
     h.setLandAction(new SnakeAction(tail, "Snake from " + head + " to " + tail));
   }
 
-
+  /**
+   * <p>Creates a classic board with 90 tiles</p>
+   *
+   * @return a {@link Board} configured as a classic game board
+   */
   public Board createClassicBoard() {
     Board board = createBoardTiles("CLASSIC",
         "90‑tile board with obstacles", 90);
@@ -190,7 +265,17 @@ public class LadderBoardFactory extends BoardFactory {
     return board;
   }
 
-
+  /**
+   * <p>Creates a chaos board with a higher density of obstacles:</p>
+   * <ul>
+   *   <li>7 ladders</li>
+   *   <li>6 snakes</li>
+   *   <li>10 skip-turn actions</li>
+   *   <li>10 back-to-start actions</li>
+   * </ul>
+   *
+   * @return a {@link Board} configured as a chaos game board
+   */
   public Board createChaosBoard() {
     Board board = createBoardTiles("CHAOS BOARD", "100‑tile board with all obstacles!", 100);
     addRandomLadders(board, 7);

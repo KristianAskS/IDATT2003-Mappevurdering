@@ -4,7 +4,6 @@ import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 
 import edu.ntnu.bidata.idatt.controller.SceneManager;
-import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,18 +15,30 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
+/**
+ * <p>Represents the main landing scene of the application.</p>
+ * <p>This scene displays a button to choose a game and an exit button
+ * within a BorderPane.</p>
+ *
+ * @author Tri Tac Le
+ */
 public class LandingScene {
+  private static final Logger logger = Logger.getLogger(
+      LandingScene.class.getName());
 
-  private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private final Scene scene;
 
+  /**
+   * <p>Constructs and initializes the landing scene, including layout,
+   * buttons, and their event handlers.</p>
+   */
   public LandingScene() {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    Button choseGameBtn = Buttons.getPrimaryBtn("Choose game!");
+    Button chooseGameBtn = Buttons.getPrimaryBtn("Choose game!");
     Button exitBtn = Buttons.getExitBtn("Exit");
-    rootPane.setCenter(choseGameBtn);
+    rootPane.setCenter(chooseGameBtn);
 
     HBox exitBox = new HBox(20);
     exitBox.setAlignment(Pos.CENTER_RIGHT);
@@ -36,12 +47,17 @@ public class LandingScene {
     rootPane.setBottom(exitBox);
     BorderPane.setMargin(exitBox, new Insets(10));
 
-    choseGameBtn.setOnAction(event -> SceneManager.showGameSelectionScene());
+    chooseGameBtn.setOnAction(event -> SceneManager.showGameSelectionScene());
     exitBtn.setOnAction(event -> System.exit(0));
 
     logger.log(Level.INFO, "LandingScene created");
   }
 
+  /**
+   * Returns the scene for this landing view.
+   *
+   * @return the scene object
+   */
   public Scene getScene() {
     return scene;
   }
