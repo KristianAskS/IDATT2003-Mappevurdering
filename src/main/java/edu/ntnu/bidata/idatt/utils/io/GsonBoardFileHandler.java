@@ -9,7 +9,9 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction;
 import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
+import edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction;
 import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
 import edu.ntnu.bidata.idatt.utils.exceptions.BoardParsingException;
 import java.io.BufferedReader;
@@ -93,7 +95,7 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
       if (tile.getLandAction() != null) {
         tileJson.addProperty("landAction", tile.getLandAction().getClass().getName());
         tileJson.addProperty("destination tile", tile.getLandAction().getDestinationTileId());
-        tileJson.addProperty("description", tile.getLandAction().getDescription());
+        tileJson.addProperty("description", tile.getLandAction().description());
       }
       jsonArray.add(tileJson);
     });
@@ -130,10 +132,22 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
         String desc = jsonObject2.has("description")
             ? jsonObject2.get("description").getAsString() : "";
 
-        if (actionClass.endsWith("LadderAction")) {
-          tile.setLandAction(new LadderAction(dest, desc));
-        } else if (actionClass.endsWith("SnakeAction")) {
-          tile.setLandAction(new SnakeAction(dest, desc));
+        String actionName = actionClass.substring(actionClass.lastIndexOf('.') + 1);
+        switch (actionName) {
+          case "LadderAction":
+            tile.setLandAction(new LadderAction(dest, desc));
+            break;
+          case "SnakeAction":
+            tile.setLandAction(new SnakeAction(dest, desc));
+            break;
+          case "BackToStartAction":
+            tile.setLandAction(new BackToStartAction(desc));
+            break;
+          case "SkipTurnAction":
+            tile.setLandAction(new SkipTurnAction(1, desc));
+            break;
+          default:
+            throw new IllegalArgumentException("Unknown action (error): " + actionName);
         }
       }
     }

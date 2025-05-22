@@ -14,6 +14,10 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction;
+import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
+import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
+import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import edu.ntnu.bidata.idatt.view.components.DiceView;
@@ -37,8 +41,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -115,6 +117,8 @@ public class BoardGameScene implements BoardGameObserver {
 
     if (!isLudo) {
       Platform.runLater(() -> {
+        highlightActionTiles(board, boardGridPane);
+        highlightEndTile(board, boardGridPane);
         LadderView.drawLadders(board, boardGridPane, overlay, gameController);
         SnakeView.drawSnakes(board, boardGridPane, overlay, gameController);
       });
@@ -157,6 +161,39 @@ public class BoardGameScene implements BoardGameObserver {
     players.forEach(player -> stagingArea.getChildren().add(player.getToken()));
   }
 
+  private void highlightEndTile(Board board, GridPane boardGridPane) {
+    TileView tileView = (TileView) boardGridPane.lookup("#tile" + board.getTiles().size());
+    tileView.setStyle("-fx-background-color: #FFD700");
+    Label lbl = new Label("🏁");
+    lbl.setStyle("-fx-text-fill: black");
+    lbl.setFont(Font.font("Arial", 35));
+    tileView.getChildren().add(lbl);
+  }
+
+  private void highlightActionTiles(Board board, GridPane boardGridPane) {
+    board.getTiles().values().forEach(tile -> {
+      TileAction action = tile.getLandAction();
+      if (action == null
+          || action instanceof LadderAction
+          || action instanceof SnakeAction) {
+        return;
+      }
+
+      TileView tileView = (TileView) boardGridPane.lookup("#tile" + tile.getTileId());
+      if (tileView == null) {
+        return;
+      }
+
+      String bgColor = action instanceof BackToStartAction ? "#808080" : "#FFFFFF";
+      tileView.setStyle("-fx-background-color: " + bgColor + ";");
+
+      String text = action instanceof BackToStartAction ? "⏮" : "🛑";
+      Label lbl = new Label(text);
+      lbl.setStyle("-fx-text-fill: black");
+      lbl.setFont(Font.font("Arial", 28));
+      tileView.getChildren().add(lbl);
+    });
+  }
 
   public void setTokenPositionOnTile(TileView tile) {
     List<Node> tokens = tile.getChildren().stream()
@@ -209,6 +246,20 @@ public class BoardGameScene implements BoardGameObserver {
           );
           repositionTokenOnTile();
         }
+        case PLAYER_BACK_START_ACTION -> {
+          eventLog.appendText(
+              String.format("%s hit “Back to Start” on %d and jumped to %d%n",
+                  player.getName(), oldId, newId)
+          );
+          repositionTokenOnTile();
+        }
+        case PLAYER_SKIP_TURN_ACTION -> {
+          eventLog.appendText(
+              String.format("%s landed on “Skip Turn” at %d and will skip next turn%n",
+                  player.getName(), oldId)
+          );
+          repositionTokenOnTile();
+        }
         case PLAYER_FINISHED -> {
           eventLog.appendText(
               String.format("Player %s finished!%n", player.getName())
@@ -226,7 +277,8 @@ public class BoardGameScene implements BoardGameObserver {
       if (rollBtn.isDisabled() &&
           switch (event.eventType()) {
             case PLAYER_MOVED, PLAYER_LADDER_ACTION,
-                 PLAYER_FINISHED, GAME_FINISHED -> true;
+                 PLAYER_FINISHED, GAME_FINISHED,
+                 PLAYER_BACK_START_ACTION, PLAYER_SKIP_TURN_ACTION -> true;
             default -> false;
           }) {
         rollBtn.setDisable(false);
@@ -349,31 +401,5 @@ public class BoardGameScene implements BoardGameObserver {
     if (rollBtn != null && rollBtn.isDisabled()) {
       rollBtn.setDisable(false);
     }
-  }
-
-  @SuppressWarnings("unused")
-  private VBox createPerformanceMeter() {
-    VBox container = new VBox();
-    container.setFillWidth(true);
-
-    NumberAxis xAxis = new NumberAxis();
-    xAxis.setLabel("Turn");
-    xAxis.setTickUnit(1);
-    xAxis.setAnimated(true);
-    xAxis.setMinorTickVisible(false);
-
-    NumberAxis yAxis = new NumberAxis("Dice Number", 0, 7, 1);
-    yAxis.setAnimated(true);
-    yAxis.setMinorTickVisible(false);
-
-    LineChart<Number, Number> chart = new LineChart<Number, Number>(xAxis, yAxis);
-    chart.setTitle("Performance Meter");
-    chart.setMaxWidth(300);
-    chart.setData(dataSeries);
-    chart.setMaxHeight(225);
-    chart.setAnimated(true);
-
-    container.getChildren().add(chart);
-    return container;
   }
 }

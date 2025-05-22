@@ -9,6 +9,9 @@ import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Die;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction;
+import edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction;
+import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.TileView;
@@ -17,7 +20,9 @@ import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.PathTransition;
@@ -48,6 +53,13 @@ public abstract class GameController {
   protected final Dice dice;
   protected final Die die;
   final GameRules gameRules;
+
+  /**
+   * Players that must skip a number of upcoming turns. The value represents how many turns remain
+   * to be skipped.
+   */
+  private final Map<Player, Integer> skipTurnMap = new HashMap<>();
+
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
   private int currentIndex = 0;
@@ -55,7 +67,7 @@ public abstract class GameController {
   protected GameController(BoardGameScene boardGameScene,
                            Board board,
                            int numberOfDice,
-                           GameRules gameRules) {
+                           GameRules gameRules) throws IOException {
     this.boardGameScene = boardGameScene;
     this.board = board;
     this.dice = new Dice(numberOfDice);
@@ -68,6 +80,36 @@ public abstract class GameController {
   public abstract int[] tileToGridPosition(Tile tile, Board board);
 
   protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
+    TileAction action = landed.getLandAction();
+    switch (action) {
+      case null -> {
+        onDone.run();
+        return;
+      }
+      case BackToStartAction back -> {
+        logger.log(Level.INFO, "BackToStart");
+        back.perform(player);
+        animateLadderMovement(player, landed.getTileId(), 1, () -> {
+          boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_BACK_START_ACTION,
+              player, landed, board.getTile(1)));
+        });
+        onDone.run();
+        return;
+      }
+      case SkipTurnAction skipAct -> {
+        logger.log(Level.INFO, "SkipTurn");
+        int toSkip = skipAct.turnsToSkip();
+        skipTurnMap.merge(player, toSkip, Integer::sum);
+        boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_SKIP_TURN_ACTION,
+            player, landed, landed));
+        onDone.run();
+        return;
+      }
+      default -> {
+      }
+    }
+
+    action.perform(player);
     onDone.run();
   }
 
@@ -96,6 +138,15 @@ public abstract class GameController {
     }
 
     Player player = turnOrder.get(currentIndex);
+
+    int remainingSkips = skipTurnMap.getOrDefault(player, 0);
+    if (remainingSkips > 0) {
+      skipTurnMap.put(player, remainingSkips - 1);
+      logger.log(Level.INFO,
+          () -> player.getName() + " skips a turn (" + (remainingSkips - 1) + " left)");
+      advanceToNextPlayer();
+      return;
+    }
 
     if (!gameRules.canEnterTrack(player, steps)) {
       advanceToNextPlayer();

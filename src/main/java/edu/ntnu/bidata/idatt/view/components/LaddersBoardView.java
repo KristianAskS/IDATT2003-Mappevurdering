@@ -7,7 +7,6 @@ import edu.ntnu.bidata.idatt.model.entity.Tile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 
 public class LaddersBoardView extends BaseBoardView {
 
@@ -30,9 +29,6 @@ public class LaddersBoardView extends BaseBoardView {
       view.setStyle("-fx-background-color:" + color + ";");
 
       if (tile.getLandAction() != null) {
-        String desc = tile.getLandAction().getDescription();
-        desc = desc.length() < 7 ? desc : ""; // keep short
-        view.addTileActionViewLbl(desc, Color.RED);
         int finalId = id;
         LOG.log(Level.INFO, () -> "Added action label to tile " + finalId);
       }

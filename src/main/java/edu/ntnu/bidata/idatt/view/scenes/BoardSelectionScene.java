@@ -12,8 +12,8 @@ import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -31,16 +31,13 @@ import javafx.scene.paint.Color;
 
 public class BoardSelectionScene {
 
-  private static final Logger logger =
-      Logger.getLogger(BoardSelectionScene.class.getName());
-
   private static Board selectedBoard;
 
   private final Scene scene;
   private final BoardService boardService = new BoardService();
   private final String selectedGame = GameSelectionScene.getSelectedGame();
-  LudoBoardFactory ludoBoardFactory = new LudoBoardFactory();
-  LadderBoardFactory ladderBoardFactory = new LadderBoardFactory();
+  private final LudoBoardFactory ludoBoardFactory = new LudoBoardFactory();
+  private final LadderBoardFactory ladderBoardFactory = new LadderBoardFactory();
   private Label detailsTitle;
   private Label detailsDescription;
 
@@ -70,8 +67,6 @@ public class BoardSelectionScene {
     root.setBottom(bottom);
     BorderPane.setMargin(bottom, new Insets(10));
     BorderPane.setAlignment(bottom, Pos.BOTTOM_LEFT);
-
-    logger.log(Level.INFO, "BoardSelectionScene initialised for game: {0}", selectedGame);
   }
 
   public static Board getSelectedBoard() {
@@ -87,57 +82,58 @@ public class BoardSelectionScene {
     box.setAlignment(Pos.CENTER);
     box.setPadding(new Insets(20));
     box.setStyle(
-        "-fx-font-family: 'monospace';" +
-            "-fx-border-color: white;" +
-            "-fx-border-width: 2;" +
-            "-fx-background-color: rgba(0,0,0,0.5);" +
-            "-fx-border-radius: 10;" +
-            "-fx-background-radius: 10;"
+        "-fx-font-family: 'monospace';"
+            + "-fx-border-color: white;"
+            + "-fx-border-width: 2;"
+            + "-fx-background-color: rgba(0,0,0,0.5);"
+            + "-fx-border-radius: 10;"
+            + "-fx-background-radius: 10;"
     );
 
     Label title = new Label("Select a Board Variant");
     title.setStyle(
-        "-fx-font-size: 24px;" +
-            "-fx-font-weight: bold;" +
-            "-fx-text-fill: #ffffff;" +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0, 2, 2);"
+        "-fx-font-size: 24px;"
+            + "-fx-font-weight: bold;"
+            + "-fx-text-fill: #ffffff;"
+            + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0, 2, 2);"
     );
 
+    List<Button> buttons = new ArrayList<>();
     if ("LUDO".equalsIgnoreCase(selectedGame)) {
-      addLudoButtons(box);
+      Button classic = Buttons.getSecondaryBtn("CLASSIC");
+      classic.setOnAction(e -> load(ludoBoardFactory.createDefaultBoard()));
+      buttons.add(classic);
     } else {
-      addSnakesAndLaddersButtons(box);
-      addJsonBoardButtons(box);
+      Button classic = Buttons.getSecondaryBtn("CLASSIC");
+      classic.setOnAction(e -> load(ladderBoardFactory.createClassicBoard()));
+      Button chaos = Buttons.getSecondaryBtn("CHAOS");
+      chaos.setOnAction(e -> load(ladderBoardFactory.createChaosBoard()));
+      buttons.add(classic);
+      buttons.add(chaos);
+      //JSON
+      for (Board b : boardService.getBoards()) {
+        Button btn = Buttons.getSecondaryBtn(b.getName());
+        btn.setOnAction(e -> load(b));
+        buttons.add(btn);
+      }
+    }
+    HBox columns = new HBox(20);
+    columns.setAlignment(Pos.CENTER);
+    int total = buttons.size();
+    int mid = (int) Math.ceil(total / 2.0);
+    VBox col1 = new VBox(10);
+    col1.setAlignment(Pos.CENTER);
+    col1.getChildren().addAll(buttons.subList(0, mid));
+    VBox col2 = new VBox(10);
+    col2.setAlignment(Pos.CENTER);
+    if (mid < total) {
+      col2.getChildren().addAll(buttons.subList(mid, total));
     }
 
-    box.getChildren().add(0, title);
+    columns.getChildren().addAll(col1, col2);
+
+    box.getChildren().addAll(title, columns);
     return box;
-  }
-
-  private void addLudoButtons(VBox parent) {
-    Button classic = Buttons.getSecondaryBtn("Classic Ludo");
-    classic.setOnAction(e -> load(ludoBoardFactory.createDefaultBoard()));
-
-    //TODO: make more ludo board variants
-    parent.getChildren().addAll(classic);
-  }
-
-  private void addSnakesAndLaddersButtons(VBox parent) {
-    Button small = Buttons.getSecondaryBtn("Small Board");
-    small.setOnAction(e -> load(ladderBoardFactory.createSmallBoard()));
-
-    Button classic = Buttons.getSecondaryBtn("Classic Board");
-    classic.setOnAction(e -> load(ladderBoardFactory.createClassicBoard()));
-
-    parent.getChildren().addAll(small, classic);
-  }
-
-  private void addJsonBoardButtons(VBox parent) {
-    for (Board b : boardService.getBoards()) {
-      Button btn = Buttons.getSecondaryBtn(b.getName());
-      btn.setOnAction(e -> load(b));
-      parent.getChildren().add(btn);
-    }
   }
 
   private VBox createDetailsContainer() {
@@ -146,12 +142,12 @@ public class BoardSelectionScene {
     box.setPadding(new Insets(20));
     box.setPrefSize(300, 200);
     box.setStyle(
-        "-fx-font-family: 'monospace';" +
-            "-fx-border-color: white;" +
-            "-fx-border-width: 2;" +
-            "-fx-background-color: rgba(0,0,0,0.5);" +
-            "-fx-border-radius: 10;" +
-            "-fx-background-radius: 10;"
+        "-fx-font-family: 'monospace';"
+            + "-fx-border-color: white;"
+            + "-fx-border-width: 2;"
+            + "-fx-background-color: rgba(0,0,0,0.5);"
+            + "-fx-border-radius: 10;"
+            + "-fx-background-radius: 10;"
     );
 
     detailsTitle = new Label("Board Details");

@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 
 /**
  * Renders the ladders defined in the Board model
@@ -45,17 +44,16 @@ public class LadderView {
                 new Ladder(startTile, board.getTile(endId), board, boardGridPane,
                     gameController).getLadders());
           } catch (IOException e) {
-            throw new GameUIException("Failed to draw ladder from tile " + startId + " to tile " + endId, e);
+            throw new GameUIException(
+                "Failed to draw ladder from tile " + startId + " to tile " + endId, e);
           }
 
           TileView startView = (TileView) boardGridPane.lookup("#tile" + startId);
           if (startView != null) {
-            startView.setStyle("-fx-background-color: #006400;");
-            startView.addTileActionViewLbl("start", Color.RED);
+            startView.setStyle("-fx-background-color: green;");
           }
           if (endView != null) {
             endView.setStyle("-fx-background-color: #90EE90;");
-            endView.addTileActionViewLbl("end", Color.RED);
           }
 
           logger.log(Level.FINE, "Drew ladder from " + startId + " to " + endId);

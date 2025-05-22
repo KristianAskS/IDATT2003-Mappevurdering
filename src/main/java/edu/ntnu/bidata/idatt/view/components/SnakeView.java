@@ -8,7 +8,6 @@ import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 
 public final class SnakeView {
 
@@ -36,18 +35,17 @@ public final class SnakeView {
                 new Snake(start, board.getTile(endId), board, boardGrid, gameController).getSnakes()
             );
           } catch (Exception exception) {
-            throw new GameUIException("Failed to draw snake from tile " + startId + " to tile " + endId, exception);
+            throw new GameUIException(
+                "Failed to draw snake from tile " + startId + " to tile " + endId, exception);
           }
 
           TileView startView = (TileView) boardGrid.lookup("#tile" + startId);
           TileView endView = (TileView) boardGrid.lookup("#tile" + endId);
           if (startView != null) {
             startView.setStyle("-fx-background-color:red;");
-            startView.addTileActionViewLbl("start", Color.RED);
           }
           if (endView != null) {
             endView.setStyle("-fx-background-color:#FF474D;");
-            endView.addTileActionViewLbl("end", Color.RED);
           }
 
         });

@@ -27,7 +27,8 @@ public class LadderAction implements TileAction {
     this.destinationTileId = destinationTileId;
   }
 
-  public String getDescription() {
+  @Override
+  public String description() {
     return description;
   }
 
