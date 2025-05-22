@@ -1,5 +1,6 @@
 module:edu.ntnu.bidata.idatt
 edu.ntnu.bidata.idatt
-edu.ntnu.bidata.idatt.view
+edu.ntnu.bidata.idatt.controller
+edu.ntnu.bidata.idatt.model.entity
 edu.ntnu.bidata.idatt.view.components
 edu.ntnu.bidata.idatt.view.scenes
