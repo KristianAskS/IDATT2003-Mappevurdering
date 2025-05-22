@@ -11,11 +11,23 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 /**
- * Compact, fully–transparent card that visualises a {@link Player}.
+ * <p>A card UI component that displays a {@link Player}'s
+ * token and name, and invokes a callback function when selected.</p>
+ *
+ * <p>This card is fully transparent except for its contents and expands horizontally
+ * {@code onSelect} callback with the associated player.</p>
+ *
+ * @author Kristian Ask Selmer
+ * @since 1.0
  */
 public class AvailablePlayerCard extends HBox {
 
-
+  /**
+   * Constructs a new AvailablePlayerCard for the given player.
+   *
+   * @param player   the {@link Player} to visualize
+   * @param onSelect a callback invoked when this card is clicked, receiving the player
+   */
   public AvailablePlayerCard(Player player, Consumer<Player> onSelect) {
     super(10);
     setAlignment(Pos.CENTER_LEFT);
@@ -23,6 +35,7 @@ public class AvailablePlayerCard extends HBox {
     setCursor(Cursor.HAND);
 
     getStyleClass().add("available-card");
+
     Label nameLbl = new Label(player.getName());
     nameLbl.getStyleClass().add("label-listview");
     nameLbl.setMinWidth(90);
