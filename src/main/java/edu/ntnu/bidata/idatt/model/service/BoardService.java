@@ -47,6 +47,10 @@ public class BoardService {
     this.board = board;
   }
 
+  public FileHandler<Board> getBoardFileHandler() {
+    return boardFileHandler;
+  }
+
   public List<Board> getBoards() {
     if (boards == null) {
       boards = new ArrayList<>();

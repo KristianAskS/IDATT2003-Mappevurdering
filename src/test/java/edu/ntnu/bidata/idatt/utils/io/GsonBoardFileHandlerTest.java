@@ -1,6 +1,10 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.gson.JsonSyntaxException;
 import edu.ntnu.bidata.idatt.model.entity.Board;
@@ -20,10 +24,11 @@ import org.junit.jupiter.api.io.TempDir;
 
 @DisplayName("GsonBoardFileHandler Tests")
 class GsonBoardFileHandlerTest {
-  @TempDir Path tempDir;
-  private GsonBoardFileHandler handler;
   private static Board simpleBoard;
   private static Board linkedBoard;
+  @TempDir
+  Path tempDir;
+  private GsonBoardFileHandler handler;
 
   @BeforeAll
   static void createSampleBoards() {
@@ -128,10 +133,10 @@ class GsonBoardFileHandlerTest {
     @DisplayName("deserializeJsonToBoard rejects unknown action type")
     void deserializeUnknownActionThrows() {
       String json = """
-        {"name":"X","description":"desc","tiles":[
-          {"tileId":1,"landAction":"com.foo.Unknown","destination tile":5}
-        ]}
-        """;
+          {"name":"X","description":"desc","tiles":[
+            {"tileId":1,"landAction":"com.foo.Unknown","destination tile":5}
+          ]}
+          """;
       assertThrows(IllegalArgumentException.class,
           () -> handler.deserializeJsonToBoard(json));
     }

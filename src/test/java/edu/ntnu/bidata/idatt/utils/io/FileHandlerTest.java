@@ -1,12 +1,13 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +24,12 @@ class FileHandlerTest {
   private Path testFile;
   private FileHandler<String> handler;
 
+  @BeforeEach
+  void setUp() {
+    handler = new StringFileHandler();
+    testFile = tempDir.resolve("strings.txt");
+  }
+
   /**
    * A minimal FileHandler<String> implementation for testing.
    * Uses java.nio.Files to write and read plain text lines.
@@ -37,12 +44,6 @@ class FileHandlerTest {
     public List<String> readFromFile(String filePath) throws IOException {
       return Files.readAllLines(Path.of(filePath));
     }
-  }
-
-  @BeforeEach
-  void setUp() {
-    handler = new StringFileHandler();
-    testFile = tempDir.resolve("strings.txt");
   }
 
   @Nested
