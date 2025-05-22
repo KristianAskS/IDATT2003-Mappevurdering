@@ -117,7 +117,7 @@ public class PodiumGameScene {
   /**
    * <p>Creates a single podium box with place label and player name.</p>
    *
-   * @param place the rank position (1 for first, 2 for second, 3 for third)
+   * @param place  the rank position (1 for first, 2 for second, 3 for third)
    * @param player the Player object to display
    * @return a VBox styled as a podium pillar containing the place and name
    */
