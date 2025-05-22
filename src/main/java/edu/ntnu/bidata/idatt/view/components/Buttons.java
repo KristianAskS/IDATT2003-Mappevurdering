@@ -5,13 +5,24 @@ import javafx.animation.ScaleTransition;
 import javafx.scene.control.Button;
 import javafx.util.Duration;
 
+/**
+ * <p>Factory and utility methods for creating styled {@link Button} instances</p>
+ *
+ * @author Tri Tac Le
+ * @version 1.2
+ * @since 1.0
+ */
 public class Buttons {
-
   private static final double HOVER_SCALE = 1.1;
   private static final double ANIMATION_DURATION = 200;
 
+  /**
+   * <p>Attaches mouse event handlers to the given button to animate scale and rotation
+   * on hover, exit, press, and release.</p>
+   *
+   * @param btn the {@link Button} where the effects will be applied
+   */
   private static void applyButtonEffects(Button btn) {
-
     btn.setOnMouseEntered(e -> {
       ScaleTransition scaleUp = new ScaleTransition(Duration.millis(ANIMATION_DURATION), btn);
       scaleUp.setToX(HOVER_SCALE);
@@ -48,6 +59,12 @@ public class Buttons {
     });
   }
 
+  /**
+   * Creates a default "Back" button with appropriate CSS classes and animations.
+   *
+   * @param text the text to display on the button
+   * @return a styled {@link Button} instance
+   */
   public static Button getBackBtn(String text) {
     Button backBtn = new Button(text);
     backBtn.getStyleClass().addAll("button", "back-btn");
@@ -55,6 +72,12 @@ public class Buttons {
     return backBtn;
   }
 
+  /**
+   * Creates a default "Exit" button with appropriate CSS classes and animations.
+   *
+   * @param text the text to display on the button
+   * @return a styled {@link Button} instance
+   */
   public static Button getExitBtn(String text) {
     Button exitBtn = new Button(text);
     exitBtn.getStyleClass().addAll("button", "exit-btn");
@@ -62,6 +85,12 @@ public class Buttons {
     return exitBtn;
   }
 
+  /**
+   * Creates a large primary action button with CSS styling and animations.
+   *
+   * @param text the text to display on the button
+   * @return a styled {@link Button} instance
+   */
   public static Button getPrimaryBtn(String text) {
     Button primaryBtn = new Button(text);
     primaryBtn.getStyleClass().addAll("button", "primary-btn");
@@ -70,6 +99,12 @@ public class Buttons {
     return primaryBtn;
   }
 
+  /**
+   * Creates a small primary action button with CSS styling and animations.
+   *
+   * @param text the text to display on the button
+   * @return a styled {@link Button} instance
+   */
   public static Button getSmallPrimaryBtn(String text) {
     Button smallPrimaryBtn = new Button(text);
     smallPrimaryBtn.getStyleClass().addAll("button", "small-primary-btn");
@@ -77,6 +112,12 @@ public class Buttons {
     return smallPrimaryBtn;
   }
 
+  /**
+   * Creates a secondary action button with CSS styling and animations.
+   *
+   * @param text the text to display on the button
+   * @return a styled {@link Button} instance
+   */
   public static Button getSecondaryBtn(String text) {
     Button secondaryBtn = new Button(text);
     secondaryBtn.getStyleClass().addAll("button", "secondary-btn");
@@ -85,6 +126,12 @@ public class Buttons {
     return secondaryBtn;
   }
 
+  /**
+   * Creates an edit button with CSS styling.
+   *
+   * @param text the text to display on the button
+   * @return a styled {@link Button} instance
+   */
   public static Button getEditBtn(String text) {
     Button editBtn = new Button(text);
     editBtn.getStyleClass().addAll("button", "edit-btn");
