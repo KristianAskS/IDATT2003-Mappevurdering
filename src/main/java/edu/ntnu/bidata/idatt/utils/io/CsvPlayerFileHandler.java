@@ -19,48 +19,60 @@ import java.util.logging.Logger;
 import javafx.scene.paint.Color;
 
 /**
- * Class for handling CSV-files containing players
+ * <p>Handles reading and writing {@link Player} data to and from CSV files.</p>
  *
- * @author Trile
+ * @author Tri Tac Le
  * @version 2.2
  * @since 1.0
  */
 public class CsvPlayerFileHandler implements FileHandler<Player> {
   private static final String IMG_DIR = "data/games/tokenimages";
-  Logger logger = Logger.getLogger(CsvPlayerFileHandler.class.getName());
+  private final Logger logger = Logger.getLogger(CsvPlayerFileHandler.class.getName());
 
   /**
-   * @param players  List over players
-   * @param filePath the path to the CSV-file
-   * @throws IOException if writing to the file fails
+   * Writes the provided list of players to the CSV file at {@code filePath},
+   * overwriting any existing content.
+   *
+   * @param players  the list of {@link Player} objects to serialize
+   * @param filePath the path to the CSV file
+   * @throws IOException              if an I/O error occurs during writing
+   * @throws IllegalArgumentException if {@code filePath} is null or blank
    */
   @Override
   public void writeToFile(List<Player> players, String filePath) throws IOException {
+    if (filePath == null || filePath.isBlank()) {
+      throw new IllegalArgumentException("File path cannot be null or blank");
+    }
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
         serializer(bufferedWriter, player);
-        logger.log(Level.FINE, "Player: " + player.getName() + " has been written to the file");
+        logger.log(Level.FINE, "Player '{0}' written to file", player.getName());
       }
     } catch (IOException e) {
-      logger.log(Level.SEVERE, "Error writing to the file: " + e.getMessage());
+      logger.log(Level.SEVERE, "Error writing to file: {0}", e.getMessage());
+      throw e;
     }
   }
 
   /**
-   * Reads a list of players objects from a CSV-file
+   * Reads players from the CSV file at {@code filePath}, parsing each line into
+   * a {@link Player}.
    *
-   * @param filePath the path to the CSV-file
-   * @return a list of players objects
-   * @throws IOException if reading from the file fails
+   * @param filePath the path to the CSV file
+   * @return a list of {@link Player} instances parsed from the file
+   * @throws IOException              if an I/O error occurs during reading
+   * @throws IllegalArgumentException if {@code filePath} is null or blank
    */
   @Override
   public List<Player> readFromFile(String filePath) throws IOException {
+    if (filePath == null || filePath.isBlank()) {
+      throw new IllegalArgumentException("File path cannot be null or blank");
+    }
     List<Player> players = new ArrayList<>();
     try (BufferedReader in = new BufferedReader(new FileReader(filePath))) {
       String line;
       while ((line = in.readLine()) != null) {
         String[] data = line.split(",", -1);
-
         if (data.length < 4) {
           continue;
         }
@@ -70,7 +82,6 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
         String shape = data[2].trim().toLowerCase();
 
         LocalDate dob = null;
-
         if (!data[3].isBlank()) {
           try {
             dob = LocalDate.parse(data[3].trim());
@@ -83,8 +94,6 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
         String imageRel = data.length > 4 ? data[4].trim() : "";
         String imageAbs = imageRel.isBlank() ? null : toFileUri(imageRel);
 
-        // String img = playerData.length > 3 ? playerData[3].trim() : null;
-
         TokenView token = new TokenView(Token.token(color, shape, imageAbs));
         players.add(new Player(name, token, dob));
       }
@@ -92,35 +101,47 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     return players;
   }
 
-  private String toRgbString(Color color) {
-    int red = (int) (color.getRed() * 255);
-    int green = (int) (color.getGreen() * 255);
-    int blue = (int) (color.getBlue() * 255);
-    int alpha = (int) (color.getOpacity() * 255);
-    return String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
-  }
-
+  /**
+   * Adds the provided list of players to the CSV file at {@code filePath} without
+   * overriding it.
+   *
+   * @param players  the list of {@link Player} objects to append
+   * @param filePath the path to the CSV file
+   * @throws IOException              if an I/O error occurs during writing
+   * @throws IllegalArgumentException if {@code filePath} is null or blank
+   */
   public void appendToFile(List<Player> players, String filePath) throws IOException {
+    if (filePath == null || filePath.isBlank()) {
+      throw new IllegalArgumentException("File path cannot be null or blank");
+    }
     try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
       for (Player player : players) {
         serializer(bw, player);
-        logger.log(Level.FINE, "Appended player " + player.getName());
+        logger.log(Level.FINE, "Appended player '{0}'", player.getName());
       }
     }
   }
 
-  private void serializer(BufferedWriter bw, Player player) throws IOException {
+  /**
+   * Serializes a single {@link Player} to CSV format and writes it to the {@link BufferedWriter}.
+   *
+   * @param bufferedWriter the writer to which the CSV line is written
+   * @param player         the {@link Player} to serialize
+   * @throws IOException if an I/O error occurs during writing
+   */
+  private void serializer(BufferedWriter bufferedWriter, Player player) throws IOException {
     TokenView token = player.getToken();
     String dob = player.getDateOfBirth() == null ? "" : player.getDateOfBirth().toString();
 
     String img = "";
-    if (token.getImagePath() != null && !token.getImagePath().isBlank()) {
-      if (token.getImagePath().startsWith("file:")) {
-        Path p = Paths.get(URI.create(token.getImagePath()));
+    String path = token.getImagePath();
+    if (path != null && !path.isBlank()) {
+      if (path.startsWith("file:")) {
+        Path p = Paths.get(URI.create(path));
         Path base = Paths.get("").toAbsolutePath().normalize();
         img = base.relativize(p).toString().replace('\\', '/');
       } else {
-        img = token.getImagePath();
+        img = path;
       }
     }
 
@@ -131,20 +152,38 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
         dob,
         img
     );
-    bw.write(line);
-    bw.newLine();
+    bufferedWriter.write(line);
+    bufferedWriter.newLine();
   }
 
+  /**
+   * Converts a {@link Color} to a 8‑digit RGBA hex string.
+   *
+   * @param color the {@link Color} to convert
+   * @return a string in the format #RRGGBBAA
+   */
+  private String toRgbString(Color color) {
+    int red = (int) (color.getRed() * 255);
+    int green = (int) (color.getGreen() * 255);
+    int blue = (int) (color.getBlue() * 255);
+    int alpha = (int) (color.getOpacity() * 255);
+    return String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
+  }
 
+  /**
+   * Converts a file path to a file URI string.
+   *
+   * @param csvPath the path string from the CSV data
+   * @return a normalized file URI, or null if input is blank
+   */
   private String toFileUri(String csvPath) {
     if (csvPath == null || csvPath.isBlank()) {
       return null;
     }
-
     if (csvPath.matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*")) {
       return csvPath;
     }
-    Path p = Path.of(csvPath).toAbsolutePath().normalize();
-    return p.toUri().toString();
+    Path path = Path.of(csvPath).toAbsolutePath().normalize();
+    return path.toUri().toString();
   }
 }

@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.utils.exceptions;
 
 import com.google.gson.JsonSyntaxException;
 import edu.ntnu.bidata.idatt.model.entity.Board;
+
 /**
  * <p>Indicates that an error occurred while parsing a {@link Board}
  * from a JSON file.</p>
