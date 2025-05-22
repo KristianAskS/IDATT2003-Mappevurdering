@@ -3,6 +3,7 @@ package edu.ntnu.bidata.idatt.view.components;
 import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,13 +38,13 @@ public class SnakeRenderer {
   }
 
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlayPane,
-      GameController gameController) {
+                                GameController gameController) {
     board.getTiles().values().stream()
         .filter(
-            tile -> tile.getLandAction() instanceof edu.ntnu.bidata.idatt.model.logic.action.SnakeAction)
+            tile -> tile.getLandAction() instanceof SnakeAction)
         .forEach(startTile -> {
-          edu.ntnu.bidata.idatt.model.logic.action.SnakeAction snakeAction =
-              (edu.ntnu.bidata.idatt.model.logic.action.SnakeAction) startTile.getLandAction();
+          SnakeAction snakeAction =
+              (SnakeAction) startTile.getLandAction();
           int startId = startTile.getTileId();
           int endId = snakeAction.getDestinationTileId();
 

@@ -20,6 +20,7 @@ import javafx.stage.Stage;
  * <p>Class that handles switching between the scenes.</p>
  *
  * <p>Holds a reference to the primary {@link Stage}.</p>
+ *
  * @author Tri Tac Le
  * @since 1.0
  */
@@ -126,7 +127,8 @@ public class SceneManager {
    */
   private static Scene loadBtnCss(Scene scene) {
     scene.getStylesheets()
-        .add(Objects.requireNonNull(SceneManager.class.getResource(BUTTONS_CSS_PATH)).toExternalForm());
+        .add(Objects.requireNonNull(SceneManager.class.getResource(BUTTONS_CSS_PATH))
+            .toExternalForm());
     return scene;
   }
 }

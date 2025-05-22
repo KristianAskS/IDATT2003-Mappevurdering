@@ -18,7 +18,7 @@ public final class LadderView {
   }
 
   public static void drawLadders(Board board, GridPane boardGridPane, Pane overlayPane,
-      GameController gameController) {
+                                 GameController gameController) {
     LadderRenderer.drawLadders(board, boardGridPane, overlayPane, gameController);
   }
 

@@ -2,9 +2,9 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.model.entity.Board;
+import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import java.util.logging.Logger;
 
 public final class SnakeView {
 
@@ -15,7 +15,7 @@ public final class SnakeView {
   }
 
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlayPane,
-      GameController gameController) {
+                                GameController gameController) {
     SnakeRenderer.drawSnakes(board, boardGrid, overlayPane, gameController);
   }
 
