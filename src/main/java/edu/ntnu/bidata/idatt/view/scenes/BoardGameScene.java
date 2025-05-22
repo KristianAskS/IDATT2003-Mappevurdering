@@ -2,7 +2,7 @@ package edu.ntnu.bidata.idatt.view.scenes;
 
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
 import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
-import static edu.ntnu.bidata.idatt.model.entity.Ladder.VISUAL_CORRECTION;
+import static edu.ntnu.bidata.idatt.view.components.BoardViewUtils.VISUAL_CORRECTION;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LADDER;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LUDO;
 
