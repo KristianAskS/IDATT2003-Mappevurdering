@@ -2,6 +2,10 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Snake;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
+import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -14,6 +18,7 @@ public final class SnakeView {
   private SnakeView() {
   }
 
+  /*
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlay,
                                 GameController gameController) {
 
@@ -56,7 +61,7 @@ public final class SnakeView {
         });
 
   }
-
+   */
   public static boolean isValidSnake(int headId, int tailId) {
     if (headId <= tailId) {
       return false;
