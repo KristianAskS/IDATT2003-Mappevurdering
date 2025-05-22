@@ -43,7 +43,7 @@ import javafx.util.Duration;
  */
 public abstract class GameController {
 
-  private static final double TOKEN_PIXELS_PER_SECOND = 400.0; // animation speed (px/s)
+  private static final double TOKEN_PIXELS_PER_SECOND = 400.0;
 
   protected final Logger logger = Logger.getLogger(getClass().getName());
   protected final PlayerService playerService = new PlayerService();

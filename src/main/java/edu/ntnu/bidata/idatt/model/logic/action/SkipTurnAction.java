@@ -16,7 +16,7 @@ public record SkipTurnAction(int turnsToSkip, String description) implements Til
 
   @Override
   public int getDestinationTileId() {
-    return -1;
+    return 0;
   }
 
   @Override

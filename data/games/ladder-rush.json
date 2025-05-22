@@ -25,11 +25,17 @@
       },
       {
         "tileId": 6,
-        "nextTileId": 7
+        "nextTileId": 7,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 27,
+        "description": "Ladder 6 to 27"
       },
       {
         "tileId": 7,
-        "nextTileId": 8
+        "nextTileId": 8,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 57,
+        "description": "Ladder 7 to 57"
       },
       {
         "tileId": 8,
@@ -37,10 +43,7 @@
       },
       {
         "tileId": 9,
-        "nextTileId": 10,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 54,
-        "description": "Ladder 9 to 54"
+        "nextTileId": 10
       },
       {
         "tileId": 10,
@@ -52,10 +55,7 @@
       },
       {
         "tileId": 12,
-        "nextTileId": 13,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 60,
-        "description": "Ladder 12 to 60"
+        "nextTileId": 13
       },
       {
         "tileId": 13,
@@ -75,25 +75,25 @@
       },
       {
         "tileId": 17,
-        "nextTileId": 18
+        "nextTileId": 18,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 50,
+        "description": "Ladder 17 to 50"
       },
       {
         "tileId": 18,
-        "nextTileId": 19,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 55,
-        "description": "Ladder 18 to 55"
+        "nextTileId": 19
       },
       {
         "tileId": 19,
-        "nextTileId": 20
+        "nextTileId": 20,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 35,
+        "description": "Ladder 19 to 35"
       },
       {
         "tileId": 20,
-        "nextTileId": 21,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 37,
-        "description": "Ladder 20 to 37"
+        "nextTileId": 21
       },
       {
         "tileId": 21,
@@ -101,14 +101,14 @@
       },
       {
         "tileId": 22,
-        "nextTileId": 23,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 45,
-        "description": "Ladder 22 to 45"
+        "nextTileId": 23
       },
       {
         "tileId": 23,
-        "nextTileId": 24
+        "nextTileId": 24,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 58,
+        "description": "Ladder 23 to 58"
       },
       {
         "tileId": 24,
@@ -128,7 +128,10 @@
       },
       {
         "tileId": 28,
-        "nextTileId": 29
+        "nextTileId": 29,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 57,
+        "description": "Ladder 28 to 57"
       },
       {
         "tileId": 29,
@@ -136,7 +139,10 @@
       },
       {
         "tileId": 30,
-        "nextTileId": 31
+        "nextTileId": 31,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 52,
+        "description": "Ladder 30 to 52"
       },
       {
         "tileId": 31,
@@ -152,7 +158,10 @@
       },
       {
         "tileId": 34,
-        "nextTileId": 35
+        "nextTileId": 35,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 37,
+        "description": "Ladder 34 to 37"
       },
       {
         "tileId": 35,
@@ -170,8 +179,8 @@
         "tileId": 38,
         "nextTileId": 39,
         "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 48,
-        "description": "Ladder 38 to 48"
+        "destination tile": 58,
+        "description": "Ladder 38 to 58"
       },
       {
         "tileId": 39,
@@ -186,21 +195,18 @@
       },
       {
         "tileId": 41,
-        "nextTileId": 42,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 51,
-        "description": "Ladder 41 to 51"
+        "nextTileId": 42
       },
       {
         "tileId": 42,
-        "nextTileId": 43,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 59,
-        "description": "Ladder 42 to 59"
+        "nextTileId": 43
       },
       {
         "tileId": 43,
-        "nextTileId": 44
+        "nextTileId": 44,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 46,
+        "description": "Ladder 43 to 46"
       },
       {
         "tileId": 44,
@@ -214,8 +220,8 @@
         "tileId": 46,
         "nextTileId": 47,
         "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 49,
-        "description": "Ladder 46 to 49"
+        "destination tile": 56,
+        "description": "Ladder 46 to 56"
       },
       {
         "tileId": 47,
@@ -227,21 +233,21 @@
       },
       {
         "tileId": 49,
-        "nextTileId": 50,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 51,
-        "description": "Ladder 49 to 51"
+        "nextTileId": 50
       },
       {
         "tileId": 50,
-        "nextTileId": 51
+        "nextTileId": 51,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 54,
+        "description": "Ladder 50 to 54"
       },
       {
         "tileId": 51,
         "nextTileId": 52,
         "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 53,
-        "description": "Ladder 51 to 53"
+        "destination tile": 57,
+        "description": "Ladder 51 to 57"
       },
       {
         "tileId": 52,
@@ -253,10 +259,7 @@
       },
       {
         "tileId": 54,
-        "nextTileId": 55,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 59,
-        "description": "Ladder 54 to 59"
+        "nextTileId": 55
       },
       {
         "tileId": 55,
@@ -271,10 +274,7 @@
       },
       {
         "tileId": 57,
-        "nextTileId": 58,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
-        "destination tile": 58,
-        "description": "Ladder 57 to 58"
+        "nextTileId": 58
       },
       {
         "tileId": 58,
