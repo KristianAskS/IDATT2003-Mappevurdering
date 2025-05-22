@@ -22,6 +22,7 @@ public final class LaddersController extends GameController {
 
   @Override
   public int[] tileToGridPosition(Tile tile, Board board) {
+
     int cols = 10;
     int rows = (int) Math.ceil(board.getTiles().size() / (double) cols);
     int id = tile.getTileId() - 1;

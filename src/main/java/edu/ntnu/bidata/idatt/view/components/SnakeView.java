@@ -3,6 +3,7 @@ package edu.ntnu.bidata.idatt.view.components;
 import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Snake;
+import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
 import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import java.util.logging.Logger;
@@ -26,11 +27,19 @@ public final class SnakeView {
           SnakeAction snakeAction = (SnakeAction) start.getLandAction();
           int startId = start.getTileId();
           int endId = snakeAction.getDestinationTileId();
-          if (isValidSnake(startId, endId)) {
+          if (!isValidSnake(startId, endId)) {
             return;
           }
 
           try {
+            Tile tailTile = board.getTile(endId);
+            if (tailTile == null) {
+              logger.warning("Skipping snake with invalid tail: " + endId);
+              return;
+            }
+            overlay.getChildren().addAll(
+                new Snake(start, tailTile, board, boardGrid, gameController).getSnakes()
+            );
             overlay.getChildren().addAll(
                 new Snake(start, board.getTile(endId), board, boardGrid, gameController).getSnakes()
             );
@@ -56,10 +65,13 @@ public final class SnakeView {
    */
   public static boolean isValidSnake(int headId, int tailId) {
     if (headId <= tailId) {
-      return true;
+      return false;
+    }
+    if (tailId < 1) {
+      return false;
     }
     int headRow = (headId - 1) / COLUMNS;
     int tailRow = (tailId - 1) / COLUMNS;
-    return headRow == tailRow;
+    return headRow != tailRow;
   }
 }
