@@ -6,6 +6,7 @@ import edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction;
 import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
 import edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction;
 import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
+import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,10 +20,21 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * Generates different predefined board types and serializes each to its own JSON file.
+ * <p>Utility for generating predefined {@link Board} configurations
+ * and serializing each to a JSON file using {@link GsonBoardFileHandler}.</p>
+ *
+ * @author Tri Tac Le
+ * @since 1.0
  */
 public class GenerateBoardJson {
 
+  /**
+   * <p>Main entry point. Generates a list of boards and writes each one
+   * to a JSON file under the "./data/games" directory.</p>
+   * Chatgpt helped with the string manipulation
+   *
+   * @param args command-line arguments
+   */
   public static void main(String[] args) {
     String outputDir = "./data/games";
     List<Board> boards = List.of(
@@ -47,10 +59,15 @@ public class GenerateBoardJson {
     }
   }
 
+  /**
+   * Creates a 60-tile board named "LADDER RUSH" with 15 randomly placed ladders.
+   *
+   * @return the generated {@link Board}
+   */
   private static Board generateLadderRush() {
     Board board = new Board();
     board.setName("LADDER RUSH");
-    board.setDescription("60‑tile – 15 ladders, NO obstacles!");
+    board.setDescription("60-tile – 15 ladders, NO obstacles!");
     int tileCount = 60;
     makeTiles(board, tileCount);
 
@@ -60,21 +77,26 @@ public class GenerateBoardJson {
     Set<Integer> starts = new HashSet<>();
 
     while (ladders.size() < ladderCount) {
-      int start = random.nextInt(58) + 1;
+      int start = random.nextInt(tileCount - 2) + 1;
       int end = random.nextInt(tileCount - start) + start + 1;
       if (starts.add(start)) {
         ladders.put(start, end);
       }
     }
-    ladders = Collections.unmodifiableMap(ladders);
     applyLadders(board, ladders);
     return board;
   }
 
+  /**
+   * Creates a classic 100-tile Snakes And Ladders board with fixed snakes and ladders.
+   *
+   * @return the generated {@link Board}
+   */
+  @SuppressWarnings("Unused")
   private static Board generateClassicSnakesAndLadders() {
     Board board = new Board();
     board.setName("Classic Snakes & Ladders");
-    board.setDescription("100‑tile – traditional snakes and ladders");
+    board.setDescription("100-tile – traditional snakes and ladders");
     makeTiles(board, 100);
     Map<Integer, Integer> ladders = Map.of(
         4, 14, 9, 31, 20, 38, 28, 84, 40, 59,
@@ -89,10 +111,16 @@ public class GenerateBoardJson {
     return board;
   }
 
+  /**
+   * Creates a 100-tile board with actions; back-to-start, skip-turn,
+   * ladders and snakes
+   *
+   * @return the generated {@link Board}
+   */
   private static Board generateFunBoard() {
     Board board = new Board();
     board.setName("MORE CHAOS");
-    board.setDescription("100‑tile - with even more chaos!!!!!!");
+    board.setDescription("100-tile - with even more chaos!!!!!!");
     int size = 100;
     makeTiles(board, size);
     Random rnd = new Random();
@@ -114,28 +142,42 @@ public class GenerateBoardJson {
     return board;
   }
 
+  /**
+   * Creates a 73-tile board named "SKIP & BACK" with skip-turn every 4th tile
+   * and occasional back-to-start actions.
+   *
+   * @return the generated {@link Board}
+   */
   private static Board generateSkipAndBack() {
     Board board = new Board();
     board.setName("SKIP & BACK");
-    board.setDescription("100‑tile – mix of skip-turn and back-to-start");
+    board.setDescription("100-tile – mix of skip-turn and back-to-start");
     int totalTiles = 73;
     makeTiles(board, totalTiles);
     for (int i = 5; i <= totalTiles; i += 4) {
       board.getTile(i)
           .setLandAction(new SkipTurnAction(1, "Skip one turn on tile " + i));
-
-      board.getTile(i - (int) (Math.random() * 3) - 1)
-          .setLandAction(new BackToStartAction("Back to start on tile 30!"));
+      int backTile = i - (new Random().nextInt(3) + 1);
+      board.getTile(backTile)
+          .setLandAction(new BackToStartAction("Back to start on tile " + backTile));
     }
-
     return board;
   }
 
+  /**
+   * Creates a board with a specified number of tiles, and random ladders and snakes.
+   *
+   * @param tileCount   total number of tiles to generate
+   * @param ladderCount number of ladders
+   * @param snakeCount  number of snakes
+   * @return the generated {@link Board}
+   */
+  @SuppressWarnings("Unused")
   private static Board generateRandomBoard(int tileCount, int ladderCount, int snakeCount) {
     Board board = new Board();
     board.setName("Random Board");
     board.setDescription(String.format(
-        "%d‑tile – %d ladders, %d snakes randomly placed",
+        "%d-tile – %d ladders, %d snakes randomly placed",
         tileCount, ladderCount, snakeCount
     ));
     makeTiles(board, tileCount);
@@ -145,25 +187,30 @@ public class GenerateBoardJson {
       int start;
       do {
         start = rnd.nextInt(tileCount - 1) + 1;
-      } while (used.contains(start));
+      } while (!used.add(start));
       int end = rnd.nextInt(tileCount - start) + start + 1;
       applyAction(board, start, new LadderAction(end,
           "Ladder from " + start + " to " + end));
-      used.add(start);
     }
     for (int i = 0; i < snakeCount; i++) {
       int start;
       do {
         start = rnd.nextInt(tileCount - 1) + 2;
-      } while (used.contains(start));
+      } while (!used.add(start));
       int end = rnd.nextInt(start - 1) + 1;
       applyAction(board, start, new SnakeAction(end,
           "Snake from " + start + " to " + end));
-      used.add(start);
     }
     return board;
   }
 
+  /**
+   * Adds tiles numbered 1 through {@code count} to the {@link Board},
+   * linking each tile.
+   *
+   * @param board the {@link Board} to populate
+   * @param count the number of tiles to generate
+   */
   private static void makeTiles(Board board, int count) {
     for (int i = 1; i <= count; i++) {
       board.addTile(new Tile(i));
@@ -173,6 +220,12 @@ public class GenerateBoardJson {
     }
   }
 
+  /**
+   * Applies ladder actions based on the provided map of start to end positions.
+   *
+   * @param board   the {@link Board} to modify
+   * @param ladders a map where keys are start tile ids and values are end tile ids
+   */
   private static void applyLadders(Board board, Map<Integer, Integer> ladders) {
     ladders.forEach((start, end) ->
         applyAction(board, start,
@@ -180,6 +233,12 @@ public class GenerateBoardJson {
     );
   }
 
+  /**
+   * Applies snake actions based on the provided map of head to tail positions.
+   *
+   * @param board  the {@link Board} to modify
+   * @param snakes a map where keys are snake head ids and values are tail ids
+   */
   private static void applySnakes(Board board, Map<Integer, Integer> snakes) {
     snakes.forEach((start, end) ->
         applyAction(board, start,
@@ -187,6 +246,13 @@ public class GenerateBoardJson {
     );
   }
 
+  /**
+   * Sets the specified {@code action} on the tile with the given id.
+   *
+   * @param board  the {@link Board} containing the tiles
+   * @param tileId the id of the tile to modify
+   * @param action the action to apply; must be an instance of a {@link TileAction}
+   */
   private static void applyAction(Board board, int tileId, Object action) {
     Tile tile = board.getTile(tileId);
     if (tile == null) {
