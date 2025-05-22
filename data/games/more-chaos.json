@@ -1,0 +1,707 @@
+[
+  {
+    "name": "MORE CHAOS",
+    "description": "100‑tile - with even more chaos!!!!!!",
+    "tiles": [
+      {
+        "tileId": 1,
+        "nextTileId": 2,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 0,
+        "description": "Snake 1 to 0"
+      },
+      {
+        "tileId": 2,
+        "nextTileId": 3,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 1,
+        "description": "Snake 2 to 1"
+      },
+      {
+        "tileId": 3,
+        "nextTileId": 4,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 4,
+        "nextTileId": 5,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 5,
+        "nextTileId": 6,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 32,
+        "description": "Ladder 5 to 32"
+      },
+      {
+        "tileId": 6,
+        "nextTileId": 7,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 7,
+        "nextTileId": 8,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 8,
+        "description": "Ladder 7 to 8"
+      },
+      {
+        "tileId": 8,
+        "nextTileId": 9,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 9,
+        "nextTileId": 10,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 10,
+        "nextTileId": 11,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 28,
+        "description": "Ladder 10 to 28"
+      },
+      {
+        "tileId": 11,
+        "nextTileId": 12,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 65,
+        "description": "Ladder 11 to 65"
+      },
+      {
+        "tileId": 12,
+        "nextTileId": 13,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 13,
+        "nextTileId": 14,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 0,
+        "description": "Snake 13 to 0"
+      },
+      {
+        "tileId": 14,
+        "nextTileId": 15,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 24,
+        "description": "Ladder 14 to 24"
+      },
+      {
+        "tileId": 15,
+        "nextTileId": 16,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 16,
+        "nextTileId": 17,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 17,
+        "nextTileId": 18,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 13,
+        "description": "Snake 17 to 13"
+      },
+      {
+        "tileId": 18,
+        "nextTileId": 19,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 19,
+        "nextTileId": 20,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 31,
+        "description": "Ladder 19 to 31"
+      },
+      {
+        "tileId": 20,
+        "nextTileId": 21,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 21,
+        "nextTileId": 22,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 22,
+        "nextTileId": 23,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 8,
+        "description": "Snake 22 to 8"
+      },
+      {
+        "tileId": 23,
+        "nextTileId": 24,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 91,
+        "description": "Ladder 23 to 91"
+      },
+      {
+        "tileId": 24,
+        "nextTileId": 25,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 25,
+        "nextTileId": 26,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 36,
+        "description": "Ladder 25 to 36"
+      },
+      {
+        "tileId": 26,
+        "nextTileId": 27,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 68,
+        "description": "Ladder 26 to 68"
+      },
+      {
+        "tileId": 27,
+        "nextTileId": 28,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 28,
+        "nextTileId": 29,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 29,
+        "nextTileId": 30,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 4,
+        "description": "Snake 29 to 4"
+      },
+      {
+        "tileId": 30,
+        "nextTileId": 31,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 31,
+        "nextTileId": 32,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 67,
+        "description": "Ladder 31 to 67"
+      },
+      {
+        "tileId": 32,
+        "nextTileId": 33,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 33,
+        "nextTileId": 34,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 34,
+        "nextTileId": 35,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 17,
+        "description": "Snake 34 to 17"
+      },
+      {
+        "tileId": 35,
+        "nextTileId": 36,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 29,
+        "description": "Snake 35 to 29"
+      },
+      {
+        "tileId": 36,
+        "nextTileId": 37,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 37,
+        "nextTileId": 38,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 11,
+        "description": "Snake 37 to 11"
+      },
+      {
+        "tileId": 38,
+        "nextTileId": 39,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 76,
+        "description": "Ladder 38 to 76"
+      },
+      {
+        "tileId": 39,
+        "nextTileId": 40,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 40,
+        "nextTileId": 41,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 41,
+        "nextTileId": 42,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 87,
+        "description": "Ladder 41 to 87"
+      },
+      {
+        "tileId": 42,
+        "nextTileId": 43,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 43,
+        "nextTileId": 44,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 47,
+        "description": "Ladder 43 to 47"
+      },
+      {
+        "tileId": 44,
+        "nextTileId": 45,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 45,
+        "nextTileId": 46,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 46,
+        "nextTileId": 47,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 64,
+        "description": "Ladder 46 to 64"
+      },
+      {
+        "tileId": 47,
+        "nextTileId": 48,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 72,
+        "description": "Ladder 47 to 72"
+      },
+      {
+        "tileId": 48,
+        "nextTileId": 49,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 49,
+        "nextTileId": 50,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 10,
+        "description": "Snake 49 to 10"
+      },
+      {
+        "tileId": 50,
+        "nextTileId": 51,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 34,
+        "description": "Snake 50 to 34"
+      },
+      {
+        "tileId": 51,
+        "nextTileId": 52,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 52,
+        "nextTileId": 53,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 53,
+        "nextTileId": 54,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 100,
+        "description": "Ladder 53 to 100"
+      },
+      {
+        "tileId": 54,
+        "nextTileId": 55,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 55,
+        "nextTileId": 56,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 95,
+        "description": "Ladder 55 to 95"
+      },
+      {
+        "tileId": 56,
+        "nextTileId": 57,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 57,
+        "nextTileId": 58,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 58,
+        "nextTileId": 59,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 43,
+        "description": "Snake 58 to 43"
+      },
+      {
+        "tileId": 59,
+        "nextTileId": 60,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 99,
+        "description": "Ladder 59 to 99"
+      },
+      {
+        "tileId": 60,
+        "nextTileId": 61,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 61,
+        "nextTileId": 62,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 74,
+        "description": "Ladder 61 to 74"
+      },
+      {
+        "tileId": 62,
+        "nextTileId": 63,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 63,
+        "description": "Ladder 62 to 63"
+      },
+      {
+        "tileId": 63,
+        "nextTileId": 64,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 64,
+        "nextTileId": 65,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 65,
+        "nextTileId": 66,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 36,
+        "description": "Snake 65 to 36"
+      },
+      {
+        "tileId": 66,
+        "nextTileId": 67,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 67,
+        "nextTileId": 68,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 77,
+        "description": "Ladder 67 to 77"
+      },
+      {
+        "tileId": 68,
+        "nextTileId": 69,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 69,
+        "nextTileId": 70,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 70,
+        "nextTileId": 71,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 40,
+        "description": "Snake 70 to 40"
+      },
+      {
+        "tileId": 71,
+        "nextTileId": 72,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 93,
+        "description": "Ladder 71 to 93"
+      },
+      {
+        "tileId": 72,
+        "nextTileId": 73,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 73,
+        "nextTileId": 74,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 2,
+        "description": "Snake 73 to 2"
+      },
+      {
+        "tileId": 74,
+        "nextTileId": 75,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 44,
+        "description": "Snake 74 to 44"
+      },
+      {
+        "tileId": 75,
+        "nextTileId": 76,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 76,
+        "nextTileId": 77,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 77,
+        "nextTileId": 78,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 89,
+        "description": "Ladder 77 to 89"
+      },
+      {
+        "tileId": 78,
+        "nextTileId": 79,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 79,
+        "nextTileId": 80,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 58,
+        "description": "Snake 79 to 58"
+      },
+      {
+        "tileId": 80,
+        "nextTileId": 81,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 81,
+        "nextTileId": 82,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 82,
+        "nextTileId": 83,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 83,
+        "description": "Ladder 82 to 83"
+      },
+      {
+        "tileId": 83,
+        "nextTileId": 84,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 87,
+        "description": "Ladder 83 to 87"
+      },
+      {
+        "tileId": 84,
+        "nextTileId": 85,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 85,
+        "nextTileId": 86,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 88,
+        "description": "Ladder 85 to 88"
+      },
+      {
+        "tileId": 86,
+        "nextTileId": 87,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 98,
+        "description": "Ladder 86 to 98"
+      },
+      {
+        "tileId": 87,
+        "nextTileId": 88,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 88,
+        "nextTileId": 89,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 89,
+        "nextTileId": 90,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 12,
+        "description": "Snake 89 to 12"
+      },
+      {
+        "tileId": 90,
+        "nextTileId": 91,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 91,
+        "nextTileId": 92,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 96,
+        "description": "Ladder 91 to 96"
+      },
+      {
+        "tileId": 92,
+        "nextTileId": 93,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 93,
+        "nextTileId": 94,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 94,
+        "nextTileId": 95,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 99,
+        "description": "Ladder 94 to 99"
+      },
+      {
+        "tileId": 95,
+        "nextTileId": 96,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 97,
+        "description": "Ladder 95 to 97"
+      },
+      {
+        "tileId": 96,
+        "nextTileId": 97,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      },
+      {
+        "tileId": 97,
+        "nextTileId": 98,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 76,
+        "description": "Snake 97 to 76"
+      },
+      {
+        "tileId": 98,
+        "nextTileId": 99,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SnakeAction",
+        "destination tile": 34,
+        "description": "Snake 98 to 34"
+      },
+      {
+        "tileId": 99,
+        "nextTileId": 100,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction",
+        "destination tile": 0,
+        "description": "Skip turn"
+      },
+      {
+        "tileId": 100,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start"
+      }
+    ]
+  }
+]

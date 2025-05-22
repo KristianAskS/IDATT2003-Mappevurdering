@@ -10,7 +10,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class TileView extends StackPane {
-  public static final int TILE_SIZE = 73;
+
+  public static final int TILE_SIZE_LADDER = 73;
+  public static final int TILE_SIZE_LUDO = 50;
+  private static final String ACTION_LABEL_CLASS = "action-label";
+  private TileView tileView;
 
   public TileView(Tile tile, int TILE_SIZE) {
     this.setId("tile" + tile.getTileId());

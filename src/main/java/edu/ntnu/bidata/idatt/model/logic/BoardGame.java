@@ -6,31 +6,27 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameOb
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.utils.exceptions.InvalidGameStateException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * The type Board game.
- * A facade class that represents the board game.
+ * Facade for UI to interact with the board game logic.
  */
 public class BoardGame {
-  private final List<Player> players;
-  private final List<BoardGameObserver> observers;
-  Logger logger = Logger.getLogger(BoardGame.class.getName());
-  private Board board;
-  private Player currentPlayer;
-  private Dice dice;
+  private final Board board;
+  private final Dice dice;
+  private final List<Player> players = new ArrayList<>();
+  private final List<BoardGameObserver> observers = new ArrayList<>();
+  private final Logger logger = Logger.getLogger(BoardGame.class.getName());
+  private final int currentIndex = 0;
+  private boolean started = false;
 
-  public BoardGame(Board board, List<Player> players, int numbOfDice) {
+  public BoardGame(Board board, int numOfDice) {
     this.board = board;
-    this.players = new ArrayList<>();
-    this.observers = new ArrayList<>();
-
-    setBoard(board);
-    createDice(numbOfDice);
-    addPlayers(players);
+    this.dice = new Dice(numOfDice);
   }
 
   public void addObserver(BoardGameObserver observer) {
@@ -41,34 +37,48 @@ public class BoardGame {
     observers.remove(observer);
   }
 
-  private void notifyObservers(BoardGameEventType eventType, Player player, Tile oldTile,
-                               Tile newTile) {
-    for (BoardGameObserver observer : observers) {
-      observer.onEvent(new BoardGameEvent(eventType, player, oldTile, newTile));
+  public void addPlayer(Player player) {
+    if (started) {
+      throw new InvalidGameStateException("Cannot add players after the game has started");
     }
+    player.setCurrentTileId(0);
+    players.add(player);
+  }
+
+  /**
+   * Start the game:
+   */
+  public void start() {
+    if (players.isEmpty()) {
+      throw new InvalidGameStateException("Cannot start game without players");
+    }
+    started = true;
+    //Collections.shuffle(players);
+    notifyEvent(new BoardGameEvent(BoardGameEventType.PLAYER_MOVED, null, null, null));
+  }
+
+  public boolean hasWinner() {
+    return players.stream()
+        .anyMatch(player -> player.getCurrentTileId() == board.getTiles().size() - 1);
+  }
+
+  public Player getWinner() {
+    return players.stream()
+        .filter(player -> player.getCurrentTileId() == board.getTiles().size() - 1)
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("No winner yet"));
+  }
+
+
+  public List<Player> getPlayers() {
+    return Collections.unmodifiableList(players);
   }
 
   public Board getBoard() {
     return board;
   }
 
-  public void setBoard(Board board) {
-    this.board = board;
-  }
-
-  public void addPlayers(List<Player> players) {
-    this.players.addAll(players);
-  }
-
-  public void createDice(int numbOfDice) {
-    dice = new Dice(numbOfDice);
-  }
-
-  public Dice getDice() {
-    return dice;
-  }
-
-  public Player getCurrentPlayer() {
-    return currentPlayer;
+  private void notifyEvent(BoardGameEvent event) {
+    observers.forEach(o -> o.onEvent(event));
   }
 }

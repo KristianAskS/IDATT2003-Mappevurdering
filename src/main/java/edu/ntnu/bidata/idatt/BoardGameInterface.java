@@ -1,10 +1,11 @@
 package edu.ntnu.bidata.idatt;
 
-import edu.ntnu.bidata.idatt.view.SceneManager;
+import edu.ntnu.bidata.idatt.controller.SceneManager;
 import java.io.IOException;
 import javafx.stage.Stage;
 
 public class BoardGameInterface {
+
   private final Stage primaryStage;
 
   public BoardGameInterface(Stage primaryStage) {

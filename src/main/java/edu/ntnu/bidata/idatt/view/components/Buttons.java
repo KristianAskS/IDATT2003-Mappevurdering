@@ -2,7 +2,6 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
 import javafx.util.Duration;
 
@@ -39,13 +38,6 @@ public class Buttons {
       scaleDown.setToX(0.95);
       scaleDown.setToY(0.95);
       scaleDown.play();
-
-      TranslateTransition bounce =
-          new TranslateTransition(Duration.millis(ANIMATION_DURATION), btn);
-      bounce.setByY(3);
-      bounce.setCycleCount(2);
-      bounce.setAutoReverse(true);
-      bounce.play();
     });
 
     btn.setOnMouseReleased(e -> {

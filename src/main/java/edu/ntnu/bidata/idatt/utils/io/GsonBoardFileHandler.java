@@ -9,6 +9,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction;
+import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
+import edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction;
+import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
 import edu.ntnu.bidata.idatt.utils.exceptions.BoardParsingException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -22,6 +26,7 @@ import java.util.logging.Logger;
 
 
 public class GsonBoardFileHandler implements FileHandler<Board> {
+
   Logger logger = Logger.getLogger(GsonBoardFileHandler.class.getName());
 
   @Override
@@ -90,7 +95,7 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
       if (tile.getLandAction() != null) {
         tileJson.addProperty("landAction", tile.getLandAction().getClass().getName());
         tileJson.addProperty("destination tile", tile.getLandAction().getDestinationTileId());
-        tileJson.addProperty("description", tile.getLandAction().getDescription());
+        tileJson.addProperty("description", tile.getLandAction().description());
       }
       jsonArray.add(tileJson);
     });
@@ -103,32 +108,50 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
   }
 
   public Board deserializeJsonToBoard(String jsonString) {
-    JsonElement jsonElement = JsonParser.parseString(jsonString);
-    if (jsonElement == null || !jsonElement.isJsonObject()) {
-      return null;
-    }
-    JsonObject jsonObject = jsonElement.getAsJsonObject();
-    JsonArray jsonArray = jsonObject.getAsJsonArray("tiles");
+    JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+    JsonArray tilesJsonArray = jsonObject.getAsJsonArray("tiles");
     Board board = new Board();
 
-    // create tiles
-    for (JsonElement tileJson : jsonArray) {
-      JsonObject tileJsonObject = tileJson.getAsJsonObject();
-      int tileId = tileJsonObject.get("tileId").getAsInt();
-      Tile tile = new Tile(tileId);
-      board.addTile(tile);
+    for (JsonElement jsonElement : tilesJsonArray) {
+      int id = jsonElement.getAsJsonObject().get("tileId").getAsInt();
+      board.addTile(new Tile(id));
     }
-    // asign nextTile references
-    for (JsonElement tileJson : jsonArray) {
-      JsonObject tileJsonObject = tileJson.getAsJsonObject();
-      int tileId = tileJsonObject.get("tileId").getAsInt();
-      Tile tile = board.getTileId(tileId);
-      if (tileJsonObject.has("nextTileId")) {
-        int nextTileId = tileJsonObject.get("nextTileId").getAsInt();
-        Tile nextTile = board.getTileId(nextTileId);
-        tile.setNextTile(nextTile);
+
+    for (JsonElement jsonElement2 : tilesJsonArray) {
+      JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
+      int tileId = jsonObject2.get("tileId").getAsInt();
+      Tile tile = board.getTile(tileId);
+
+      if (jsonObject2.has("nextTileId")) {
+        tile.setNextTile(board.getTile(jsonObject2.get("nextTileId").getAsInt()));
+      }
+
+      if (jsonObject2.has("landAction")) {
+        String actionClass = jsonObject2.get("landAction").getAsString();
+        int dest = jsonObject2.get("destination tile").getAsInt();
+        String desc = jsonObject2.has("description")
+            ? jsonObject2.get("description").getAsString() : "";
+
+        String actionName = actionClass.substring(actionClass.lastIndexOf('.') + 1);
+        switch (actionName) {
+          case "LadderAction":
+            tile.setLandAction(new LadderAction(dest, desc));
+            break;
+          case "SnakeAction":
+            tile.setLandAction(new SnakeAction(dest, desc));
+            break;
+          case "BackToStartAction":
+            tile.setLandAction(new BackToStartAction(desc));
+            break;
+          case "SkipTurnAction":
+            tile.setLandAction(new SkipTurnAction(1, desc));
+            break;
+          default:
+            throw new IllegalArgumentException("Unknown action (error): " + actionName);
+        }
       }
     }
+
     board.setName(jsonObject.get("name").getAsString());
     board.setDescription(jsonObject.get("description").getAsString());
     return board;

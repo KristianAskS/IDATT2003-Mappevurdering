@@ -1,13 +1,15 @@
 package edu.ntnu.bidata.idatt.model.entity;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The type Board.
+ * Represents a game board consisting of tiles mapped.
  */
 public class Board {
-  private Map<Integer, Tile> tiles = new HashMap<>();
+
+  private final Map<Integer, Tile> tiles = new HashMap<>();
   private String name;
   private String description;
 
@@ -17,19 +19,18 @@ public class Board {
   public Board(String name, String description) {
     this.name = name;
     this.description = description;
-    tiles = new HashMap<>();
   }
 
   public void addTile(Tile tile) {
     tiles.put(tile.getTileId(), tile);
   }
 
-  public Tile getTileId(int tileId) {
+  public Tile getTile(int tileId) {
     return tiles.get(tileId);
   }
 
   public Map<Integer, Tile> getTiles() {
-    return tiles;
+    return Collections.unmodifiableMap(tiles);
   }
 
   public String getName() {

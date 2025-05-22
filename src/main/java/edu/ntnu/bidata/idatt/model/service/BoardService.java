@@ -4,39 +4,43 @@ import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
 import edu.ntnu.bidata.idatt.utils.io.GsonBoardFileHandler;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
+/**
+ * Data persistence
+ */
 public class BoardService {
-  public final static String BOARD_FILE_PATH = "data/games/boards.json";
   private static final Logger logger = Logger.getLogger(BoardService.class.getName());
+  private static final String BOARD_DIR = "data/games/";
   private final FileHandler<Board> boardFileHandler = new GsonBoardFileHandler();
   private Board board;
-  private List<Board> boards;
+  private List<Board> boards = new ArrayList<>();
 
-  /**
-   * Reads a board from the specified file.
-   *
-   * @param filePath the path to the JSON file containing the board configuration
-   * @return the loaded Board object
-   * @throws IOException if reading from the file fails
-   */
-  public List<Board> readBoardFromFile(String filePath) throws IOException {
-    return boardFileHandler.readFromFile(filePath);
+  public BoardService() {
+    try (Stream<@org.jetbrains.annotations.NotNull Path> files = Files.list(Paths.get(BOARD_DIR))) {
+      files.filter(path -> path.toString().endsWith(".json"))
+          .forEach(path -> {
+            try {
+              boards.addAll(boardFileHandler.readFromFile(path.toString()));
+            } catch (IOException ioException) {
+              logger.log(Level.SEVERE, "Cannot read " + path, ioException);
+            }
+          });
+      logger.log(Level.INFO, "Loaded " + boards.size() + " static boards from " + BOARD_DIR);
+    } catch (IOException ioException) {
+      logger.log(Level.SEVERE, "Cannot access " + BOARD_DIR, ioException);
+    }
   }
 
-  /**
-   * Writes the current board configuration to the specified file.
-   *
-   * @param filePath the path to the JSON file where the board should be saved
-   * @throws IOException if writing to the file fails
-   */
-  public void writeBoardToFile(List<Board> boards, String filePath) throws IOException {
-    if (boards.isEmpty()) {
-      throw new IllegalStateException("No board to write");
-    }
-    boardFileHandler.writeToFile(boards, filePath);
+  public Board getBoard() {
+    return board;
   }
 
   public void setBoard(Board board) {
@@ -48,5 +52,5 @@ public class BoardService {
       boards = new ArrayList<>();
     }
     return boards;
-  } // TODO: Remove <Board>
+  }
 }

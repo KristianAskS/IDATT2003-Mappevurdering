@@ -1,5 +1,7 @@
 package edu.ntnu.bidata.idatt.model.entity;
 
+import static edu.ntnu.bidata.idatt.view.components.DiceView.NUMB_OF_DICE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +14,7 @@ import java.util.stream.IntStream;
  * @version 2.0
  */
 public class Dice {
+
   private final List<Die> dice;
   private int rollResult;
 
@@ -21,13 +24,16 @@ public class Dice {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  /**
-   * @return the sum of all the rolled values
-   */
-  public int roll() {
-    return dice.stream()
-        .mapToInt(Die::roll)
-        .sum();
+  public int[] rollDice() {
+    int[] results = new int[NUMB_OF_DICE];
+    for (int dieNumb = 0; dieNumb < NUMB_OF_DICE; dieNumb++) {
+      results[dieNumb] = dice.get(dieNumb).roll();
+    }
+    return results;
+  }
+
+  public int getRollResult() {
+    return rollResult;
   }
 
   public void setRollResult(int result) {

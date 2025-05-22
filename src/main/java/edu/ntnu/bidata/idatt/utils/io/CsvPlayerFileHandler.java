@@ -1,14 +1,17 @@
 package edu.ntnu.bidata.idatt.utils.io;
 
-import static edu.ntnu.bidata.idatt.model.entity.Token.token;
-
 import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Token;
 import edu.ntnu.bidata.idatt.view.components.TokenView;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,11 +22,11 @@ import javafx.scene.paint.Color;
  * Class for handling CSV-files containing players
  *
  * @author Trile
- * @version 1.0
+ * @version 2.2
  * @since 1.0
  */
 public class CsvPlayerFileHandler implements FileHandler<Player> {
-
+  private static final String IMG_DIR = "data/games/tokenimages";
   Logger logger = Logger.getLogger(CsvPlayerFileHandler.class.getName());
 
   /**
@@ -35,11 +38,7 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
   public void writeToFile(List<Player> players, String filePath) throws IOException {
     try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
       for (Player player : players) {
-        TokenView token = player.getToken();
-        String writeLine = player.getName() + "," + toRgbString(token.getTokenColor()) + "," +
-            token.getTokenShape();
-        bufferedWriter.write(writeLine);
-        bufferedWriter.newLine();
+        serializer(bufferedWriter, player);
         logger.log(Level.FINE, "Player: " + player.getName() + " has been written to the file");
       }
     } catch (IOException e) {
@@ -57,21 +56,38 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
   @Override
   public List<Player> readFromFile(String filePath) throws IOException {
     List<Player> players = new ArrayList<>();
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+    try (BufferedReader in = new BufferedReader(new FileReader(filePath))) {
       String line;
-      while ((line = bufferedReader.readLine()) != null) {
-        String[] playerData = line.split(",");
-        if (playerData.length == 3) {
-          String name = playerData[0].trim();
-          Color color = Color.web(playerData[1].trim());
-          String shape = playerData[2].trim();
-          TokenView token = new TokenView(token(color, shape));
-          Player player = new Player(name, token);
-          players.add(player);
+      while ((line = in.readLine()) != null) {
+        String[] data = line.split(",", -1);
+
+        if (data.length < 4) {
+          continue;
         }
+
+        String name = data[0].trim();
+        Color color = Color.web(data[1].trim());
+        String shape = data[2].trim().toLowerCase();
+
+        LocalDate dob = null;
+
+        if (!data[3].isBlank()) {
+          try {
+            dob = LocalDate.parse(data[3].trim());
+          } catch (Exception e) {
+            logger.log(Level.WARNING,
+                "Invalid date for player {0}: {1}", new Object[] {name, data[3]});
+          }
+        }
+
+        String imageRel = data.length > 4 ? data[4].trim() : "";
+        String imageAbs = imageRel.isBlank() ? null : toFileUri(imageRel);
+
+        // String img = playerData.length > 3 ? playerData[3].trim() : null;
+
+        TokenView token = new TokenView(Token.token(color, shape, imageAbs));
+        players.add(new Player(name, token, dob));
       }
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "Error reading from the file: " + e.getMessage());
     }
     return players;
   }
@@ -82,5 +98,53 @@ public class CsvPlayerFileHandler implements FileHandler<Player> {
     int blue = (int) (color.getBlue() * 255);
     int alpha = (int) (color.getOpacity() * 255);
     return String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
+  }
+
+  public void appendToFile(List<Player> players, String filePath) throws IOException {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
+      for (Player player : players) {
+        serializer(bw, player);
+        logger.log(Level.FINE, "Appended player " + player.getName());
+      }
+    }
+  }
+
+  private void serializer(BufferedWriter bw, Player player) throws IOException {
+    TokenView token = player.getToken();
+    String dob = player.getDateOfBirth() == null ? "" : player.getDateOfBirth().toString();
+
+    String img = "";
+    if (token.getImagePath() != null && !token.getImagePath().isBlank()) {
+      if (token.getImagePath().startsWith("file:")) {
+        Path p = Paths.get(URI.create(token.getImagePath()));
+        Path base = Paths.get("").toAbsolutePath().normalize();
+        img = base.relativize(p).toString().replace('\\', '/');
+      } else {
+        img = token.getImagePath();
+      }
+    }
+
+    String line = String.join(",",
+        player.getName(),
+        toRgbString(token.getTokenColor()),
+        token.getTokenShape(),
+        dob,
+        img
+    );
+    bw.write(line);
+    bw.newLine();
+  }
+
+
+  private String toFileUri(String csvPath) {
+    if (csvPath == null || csvPath.isBlank()) {
+      return null;
+    }
+
+    if (csvPath.matches("^[a-zA-Z][a-zA-Z0-9+.-]*:.*")) {
+      return csvPath;
+    }
+    Path p = Path.of(csvPath).toAbsolutePath().normalize();
+    return p.toUri().toString();
   }
 }

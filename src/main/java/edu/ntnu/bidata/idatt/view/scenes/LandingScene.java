@@ -1,10 +1,10 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_HEIGHT;
-import static edu.ntnu.bidata.idatt.view.SceneManager.SCENE_WIDTH;
+import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
+import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
 
+import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.ConsoleBoardGameObserver;
-import edu.ntnu.bidata.idatt.view.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
 public class LandingScene {
+
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
   private final Scene scene;
 
@@ -24,7 +25,7 @@ public class LandingScene {
     BorderPane rootPane = SceneManager.getRootPane();
     scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    Button choseGameBtn = Buttons.getPrimaryBtn("Chose game!");
+    Button choseGameBtn = Buttons.getPrimaryBtn("Choose game!");
     Button exitBtn = Buttons.getExitBtn("Exit");
     rootPane.setCenter(choseGameBtn);
 
@@ -35,8 +36,8 @@ public class LandingScene {
     rootPane.setBottom(exitBox);
     BorderPane.setMargin(exitBox, new Insets(10));
 
-    choseGameBtn.setOnAction(e -> SceneManager.showBoardGameSelectionScene());
-    exitBtn.setOnAction(e -> System.exit(0));
+    choseGameBtn.setOnAction(event -> SceneManager.showGameSelectionScene());
+    exitBtn.setOnAction(event -> System.exit(0));
 
     logger.log(Level.INFO, "LandingScene created");
   }
