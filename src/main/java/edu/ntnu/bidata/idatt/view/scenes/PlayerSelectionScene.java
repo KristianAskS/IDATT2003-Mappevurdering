@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -37,6 +38,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -305,41 +307,119 @@ public class PlayerSelectionScene {
     availablePanel.setPrefWidth(PANEL_WIDTH);
 
     ObservableList<Player> availablePlayers = FXCollections.observableArrayList(
-        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH));
+        playerService.readPlayersFromFile(PlayerService.PLAYER_FILE_PATH)
+    );
 
     VBox playersBox = new VBox(5);
     playersBox.setFillWidth(true);
     playersBox.setStyle("-fx-background-color: transparent;");
 
-    availablePlayers.forEach(player -> playersBox.getChildren().add(
-        new AvailablePlayerCard(player, chosenPlayer -> {
-          if (isAtMaxPlayers()) {
-            showAlert(Alert.AlertType.WARNING,
-                "Maximum players reached",
-                "Limit: " + getTotalPlayerCount());
-            return;
-          }
-          selectedPlayers.add(new Player(chosenPlayer.getName(),
-              new TokenView(Token.token(
-                  chosenPlayer.getToken().getTokenColor(),
-                  chosenPlayer.getToken().getTokenShape(),
-                  chosenPlayer.getToken().getImagePath()))));
-          updatePlayersCountLabel();
-        })));
+    Function<Player, AvailablePlayerCard> cardFactory = player -> {
+      return new AvailablePlayerCard(player, this::addSelectedPlayer);
+    };
 
-    ScrollPane scroll = new ScrollPane(playersBox);
+    playersBox.getChildren().setAll(
+        availablePlayers.stream()
+            .map(cardFactory)
+            .toList()
+    );
+
+    availablePlayers.addListener((ListChangeListener<Player>) c ->
+        playersBox.getChildren().setAll(
+            availablePlayers.stream()
+                .map(cardFactory)
+                .toList()
+        )
+    );
+
+    Button importCsvBtn = Buttons.getEditBtn("Import CSV");
+    importCsvBtn.setOnAction(e -> handleImportCsv(availablePlayers));
+
+    ScrollPane scroll = createTransparentScroll(playersBox, 250, 650);
+    VBox.setVgrow(scroll, Priority.ALWAYS);
+    availablePanel.getChildren().add(scroll);
+    availablePanel.getChildren().add(importCsvBtn);
+    return availablePanel;
+  }
+
+  /**
+   * Handles importing a CSV and replacing the available players list,
+   * but warns if the file doesn’t match the expected format.
+   */
+  private void handleImportCsv(ObservableList<Player> availablePlayers) {
+    FileChooser chooser = new FileChooser();
+    chooser.setTitle("Import players from CSV");
+    chooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter("CSV files", "*.csv")
+    );
+    File file = chooser.showOpenDialog(scene.getWindow());
+    if (file == null) {
+      return;
+    }
+
+    List<Player> imported;
+    try {
+      imported = playerService.readPlayersFromFile(file.getAbsolutePath());
+    } catch (IllegalArgumentException | IOException iae) {
+      logger.log(Level.WARNING, "CSV parse error", iae);
+      showAlert(
+          Alert.AlertType.ERROR,
+          "Oops! We couldn’t read that CSV.",
+          "Each player needs five comma‑separated values, in this order:\n" +
+              "  1. Name (e.g. Kristian)\n" +
+              "  2. Color as 8‑digit hex (e.g. #FF0000FF)\n" +
+              "  3. Shape (circle, square, or triangle)\n" +
+              "  4. Birthdate (YYYY‑MM‑DD)\n" +
+              "  5. Image path (can be left blank)\n\n" +
+              "Make sure there’s *no* header row and nothing extra.\n" +
+              "Example:\n" +
+              "Alice,#FF0000FF,circle,2010-05-15,"
+      );
+      return;
+    }
+
+    if (imported.isEmpty()) {
+      showAlert(Alert.AlertType.INFORMATION,
+          "No players found",
+          "The CSV did not contain any valid player rows.");
+      return;
+    }
+
+    availablePlayers.setAll(imported);
+  }
+
+  /**
+   * Adds a chosen available player to the selectedPlayers list and checking limits.
+   */
+  private void addSelectedPlayer(Player chosen) {
+    if (isAtMaxPlayers()) {
+      showAlert(Alert.AlertType.WARNING,
+          "Maximum players reached",
+          "Limit: " + getTotalPlayerCount());
+      return;
+    }
+    TokenView tokenView = new TokenView(Token.token(
+        chosen.getToken().getTokenColor(),
+        chosen.getToken().getTokenShape(),
+        chosen.getToken().getImagePath()
+    ));
+    selectedPlayers.add(new Player(chosen.getName(), tokenView));
+    updatePlayersCountLabel();
+  }
+
+  /**
+   * Creates a transparent ScrollPane around the given content.
+   */
+  private ScrollPane createTransparentScroll(Node content, double prefHeight, double maxHeight) {
+    ScrollPane scroll = new ScrollPane(content);
     scroll.getStyleClass().add("transparent-scroll");
     scroll.setFitToWidth(true);
-    scroll.setPrefHeight(250);
-    scroll.setMaxHeight(650);
+    scroll.setPrefHeight(prefHeight);
+    scroll.setMaxHeight(maxHeight);
     scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
     scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
     scroll.setStyle("-fx-background-color: transparent");
-
-    VBox.setVgrow(scroll, Priority.ALWAYS);
-    availablePanel.getChildren().add(scroll);
-
-    return availablePanel;
+    return scroll;
   }
 
   private HBox createBottomButtonContainer() {

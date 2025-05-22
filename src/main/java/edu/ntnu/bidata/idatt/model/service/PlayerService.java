@@ -49,7 +49,6 @@ public class PlayerService {
 
   public void addPlayers(List<Player> newPlayers) {
     try {
-      // 1) read current file (if it exists) to avoid duplicates by *name*
       List<Player> existing = Files.exists(Path.of(PLAYER_FILE_PATH))
           ? readPlayersFromFile(PLAYER_FILE_PATH)
           : List.of();
