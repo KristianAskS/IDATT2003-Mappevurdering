@@ -133,7 +133,7 @@ public final class LudoRules implements GameRules {
   }
 
   private Base pickBase(Player p) {
-    Base b = nearestBase(p.getColour());
+    Base b = nearestBase(p.getColor());
     for (int i = 0; i < Base.values().length; i++) {
       if (baseUsed.get(b) == 0) {
         break;
