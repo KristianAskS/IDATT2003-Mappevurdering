@@ -98,7 +98,7 @@ public abstract class GameController {
       }
       case SkipTurnAction skipAct -> {
         logger.log(Level.INFO, "SkipTurn");
-        int toSkip = skipAct.getTurnsToSkip();
+        int toSkip = skipAct.turnsToSkip();
         skipTurnMap.merge(player, toSkip, Integer::sum);
         boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_SKIP_TURN_ACTION,
             player, landed, landed));

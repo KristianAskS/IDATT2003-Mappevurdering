@@ -23,7 +23,7 @@ public class SnakeAction implements TileAction {
   }
 
   @Override
-  public String getDescription() {
+  public String description() {
     return description;
   }
 

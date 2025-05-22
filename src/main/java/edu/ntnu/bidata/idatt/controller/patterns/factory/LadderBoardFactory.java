@@ -24,7 +24,7 @@ public class LadderBoardFactory extends BoardFactory {
 
   @Override
   public Board createDefaultBoard() {
-    Board board = createBoardTiles("Classic Board", "90-tile board", 90);
+    Board board = createBoardTiles("CLASSIC", "90-tile board", 90);
     addRandomLadders(board, 10);
     return board;
   }
@@ -151,7 +151,7 @@ public class LadderBoardFactory extends BoardFactory {
       reserved.add(tail);
       placed++;
 
-      logger.log(Level.INFO, headTile.getLandAction().getDescription());
+      logger.log(Level.INFO, headTile.getLandAction().description());
     }
   }
 
@@ -180,7 +180,7 @@ public class LadderBoardFactory extends BoardFactory {
 
 
   public Board createClassicBoard() {
-    Board board = createBoardTiles("CLASSIC BOARD",
+    Board board = createBoardTiles("CLASSIC",
         "90‑tile board with obstacles", 90);
 
     addRandomLadders(board, 6);
@@ -192,7 +192,7 @@ public class LadderBoardFactory extends BoardFactory {
 
 
   public Board createChaosBoard() {
-    Board board = createBoardTiles("CHAOS BOARD", "100‑tile board ", 100);
+    Board board = createBoardTiles("CHAOS BOARD", "100‑tile board with all obstacles!", 100);
     addRandomLadders(board, 7);
     addRandomSnakes(board, 6);
     addRandomSkipTurns(board, 10);

@@ -8,7 +8,7 @@ public interface TileAction {
 
   void setDestinationTileId(int destinationTileId);
 
-  String getDescription();
+  String description();
 
   void setDescription(String description);
 

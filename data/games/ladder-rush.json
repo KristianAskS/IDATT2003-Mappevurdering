@@ -1,7 +1,7 @@
 [
   {
-    "name": "No obstacles",
-    "description": "Easy board with no ladder and snakes!",
+    "name": "LADDER RUSH",
+    "description": "60‑tile – 15 ladders, NO obstacles!",
     "tiles": [
       {
         "tileId": 1,
@@ -13,7 +13,10 @@
       },
       {
         "tileId": 3,
-        "nextTileId": 4
+        "nextTileId": 4,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 53,
+        "description": "Ladder 3 to 53"
       },
       {
         "tileId": 4,
@@ -49,7 +52,10 @@
       },
       {
         "tileId": 12,
-        "nextTileId": 13
+        "nextTileId": 13,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 60,
+        "description": "Ladder 12 to 60"
       },
       {
         "tileId": 13,
@@ -77,7 +83,10 @@
       },
       {
         "tileId": 19,
-        "nextTileId": 20
+        "nextTileId": 20,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 34,
+        "description": "Ladder 19 to 34"
       },
       {
         "tileId": 20,
@@ -85,23 +94,38 @@
       },
       {
         "tileId": 21,
-        "nextTileId": 22
+        "nextTileId": 22,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 41,
+        "description": "Ladder 21 to 41"
       },
       {
         "tileId": 22,
-        "nextTileId": 23
+        "nextTileId": 23,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 47,
+        "description": "Ladder 22 to 47"
       },
       {
         "tileId": 23,
-        "nextTileId": 24
+        "nextTileId": 24,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 58,
+        "description": "Ladder 23 to 58"
       },
       {
         "tileId": 24,
-        "nextTileId": 25
+        "nextTileId": 25,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 48,
+        "description": "Ladder 24 to 48"
       },
       {
         "tileId": 25,
-        "nextTileId": 26
+        "nextTileId": 26,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 39,
+        "description": "Ladder 25 to 39"
       },
       {
         "tileId": 26,
@@ -121,7 +145,10 @@
       },
       {
         "tileId": 30,
-        "nextTileId": 31
+        "nextTileId": 31,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 48,
+        "description": "Ladder 30 to 48"
       },
       {
         "tileId": 31,
@@ -145,7 +172,10 @@
       },
       {
         "tileId": 36,
-        "nextTileId": 37
+        "nextTileId": 37,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 43,
+        "description": "Ladder 36 to 43"
       },
       {
         "tileId": 37,
@@ -157,11 +187,17 @@
       },
       {
         "tileId": 39,
-        "nextTileId": 40
+        "nextTileId": 40,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 42,
+        "description": "Ladder 39 to 42"
       },
       {
         "tileId": 40,
-        "nextTileId": 41
+        "nextTileId": 41,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 55,
+        "description": "Ladder 40 to 55"
       },
       {
         "tileId": 41,
@@ -169,7 +205,10 @@
       },
       {
         "tileId": 42,
-        "nextTileId": 43
+        "nextTileId": 43,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 50,
+        "description": "Ladder 42 to 50"
       },
       {
         "tileId": 43,
@@ -217,7 +256,10 @@
       },
       {
         "tileId": 54,
-        "nextTileId": 55
+        "nextTileId": 55,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 60,
+        "description": "Ladder 54 to 60"
       },
       {
         "tileId": 55,
@@ -225,7 +267,10 @@
       },
       {
         "tileId": 56,
-        "nextTileId": 57
+        "nextTileId": 57,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.LadderAction",
+        "destination tile": 59,
+        "description": "Ladder 56 to 59"
       },
       {
         "tileId": 57,
@@ -240,168 +285,7 @@
         "nextTileId": 60
       },
       {
-        "tileId": 60,
-        "nextTileId": 61
-      },
-      {
-        "tileId": 61,
-        "nextTileId": 62
-      },
-      {
-        "tileId": 62,
-        "nextTileId": 63
-      },
-      {
-        "tileId": 63,
-        "nextTileId": 64
-      },
-      {
-        "tileId": 64,
-        "nextTileId": 65
-      },
-      {
-        "tileId": 65,
-        "nextTileId": 66
-      },
-      {
-        "tileId": 66,
-        "nextTileId": 67
-      },
-      {
-        "tileId": 67,
-        "nextTileId": 68
-      },
-      {
-        "tileId": 68,
-        "nextTileId": 69
-      },
-      {
-        "tileId": 69,
-        "nextTileId": 70
-      },
-      {
-        "tileId": 70,
-        "nextTileId": 71
-      },
-      {
-        "tileId": 71,
-        "nextTileId": 72
-      },
-      {
-        "tileId": 72,
-        "nextTileId": 73
-      },
-      {
-        "tileId": 73,
-        "nextTileId": 74
-      },
-      {
-        "tileId": 74,
-        "nextTileId": 75
-      },
-      {
-        "tileId": 75,
-        "nextTileId": 76
-      },
-      {
-        "tileId": 76,
-        "nextTileId": 77
-      },
-      {
-        "tileId": 77,
-        "nextTileId": 78
-      },
-      {
-        "tileId": 78,
-        "nextTileId": 79
-      },
-      {
-        "tileId": 79,
-        "nextTileId": 80
-      },
-      {
-        "tileId": 80,
-        "nextTileId": 81
-      },
-      {
-        "tileId": 81,
-        "nextTileId": 82
-      },
-      {
-        "tileId": 82,
-        "nextTileId": 83
-      },
-      {
-        "tileId": 83,
-        "nextTileId": 84
-      },
-      {
-        "tileId": 84,
-        "nextTileId": 85
-      },
-      {
-        "tileId": 85,
-        "nextTileId": 86
-      },
-      {
-        "tileId": 86,
-        "nextTileId": 87
-      },
-      {
-        "tileId": 87,
-        "nextTileId": 88
-      },
-      {
-        "tileId": 88,
-        "nextTileId": 89
-      },
-      {
-        "tileId": 89,
-        "nextTileId": 90
-      },
-      {
-        "tileId": 90,
-        "nextTileId": 91
-      },
-      {
-        "tileId": 91,
-        "nextTileId": 92
-      },
-      {
-        "tileId": 92,
-        "nextTileId": 93
-      },
-      {
-        "tileId": 93,
-        "nextTileId": 94
-      },
-      {
-        "tileId": 94,
-        "nextTileId": 95
-      },
-      {
-        "tileId": 95,
-        "nextTileId": 96
-      },
-      {
-        "tileId": 96,
-        "nextTileId": 97
-      },
-      {
-        "tileId": 97,
-        "nextTileId": 98
-      },
-      {
-        "tileId": 98,
-        "nextTileId": 99
-      },
-      {
-        "tileId": 99,
-        "nextTileId": 100
-      },
-      {
-        "tileId": 100,
-        "nextTileId": 101
+        "tileId": 60
       }
     ]
   }

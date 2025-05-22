@@ -20,12 +20,7 @@ public record BackToStartAction(String description) implements TileAction {
   }
 
   @Override
-  public String getDescription() {
-    return "Back to start";
-  }
-
-  @Override
-  public void setDescription(String d) {
+  public void setDescription(String description) {
 
   }
 }

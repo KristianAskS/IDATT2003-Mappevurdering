@@ -28,7 +28,7 @@ public class LadderAction implements TileAction {
   }
 
   @Override
-  public String getDescription() {
+  public String description() {
     return description;
   }
 
