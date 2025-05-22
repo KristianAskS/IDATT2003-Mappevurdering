@@ -34,7 +34,6 @@ import java.util.logging.Logger;
  * @since 1.0
  */
 public class GsonBoardFileHandler implements FileHandler<Board> {
-
   private final Logger logger = Logger.getLogger(GsonBoardFileHandler.class.getName());
 
   /**
@@ -50,19 +49,21 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
   @Override
   public void writeToFile(List<Board> boards, String filePath) throws IOException {
     if (boards == null || boards.isEmpty() || filePath == null || filePath.isBlank()) {
-      throw new IllegalArgumentException("Invalid board list or file path");
+      throw new IllegalArgumentException("Invalid board or file path");
     }
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-      Gson gson = new GsonBuilder().setPrettyPrinting().create();
-      JsonArray array = new JsonArray();
-      for (Board b : boards) {
-        array.add(serializeBoardToJson(b));
-      }
-      String json = gson.toJson(array);
-      logger.log(Level.INFO, "Writing boards to file: {0}", filePath);
-      writer.write(json);
-    } catch (JsonSyntaxException e) {
-      throw new BoardParsingException(filePath, e);
+    try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
+      Gson gson = new GsonBuilder()
+          .setPrettyPrinting()
+          .create();
+      JsonArray boardsArray = new JsonArray();
+      boards.forEach(board -> {
+        boardsArray.add(serializeBoardToJson(board));
+      });
+      String jsonString = gson.toJson(boardsArray);
+      logger.log(Level.INFO, "Writing board to file: " + filePath);
+      bufferedWriter.write(jsonString);
+    } catch (JsonSyntaxException error) {
+      throw new BoardParsingException(filePath, error);
     }
   }
 
@@ -78,30 +79,30 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
    */
   @Override
   public List<Board> readFromFile(String filePath) throws IOException {
-    if (filePath == null || filePath.isBlank()) {
-      throw new IllegalArgumentException("Invalid file path");
-    }
-    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-      StringBuilder sb = new StringBuilder();
+    try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+      StringBuilder stringBuilder = new StringBuilder();
       String line;
-      while ((line = reader.readLine()) != null) {
-        sb.append(line);
+      while ((line = bufferedReader.readLine()) != null) {
+        stringBuilder.append(line);
       }
-      logger.log(Level.INFO, "Reading boards from file: {0}", filePath);
-      JsonElement root = JsonParser.parseString(sb.toString());
-      List<Board> result = new ArrayList<>();
-      if (root.isJsonArray()) {
-        for (JsonElement elem : root.getAsJsonArray()) {
-          result.add(deserializeJsonToBoard(elem.toString()));
-        }
-      } else if (root.isJsonObject()) {
-        result.add(deserializeJsonToBoard(root.toString()));
+      String jsonString = stringBuilder.toString();
+      logger.log(Level.INFO, "Reading board from file: " + filePath);
+
+      JsonElement jsonElement = JsonParser.parseString(jsonString);
+      List<Board> boards = new ArrayList<>();
+      if (jsonElement.isJsonArray()) {
+        JsonArray boardsArray = jsonElement.getAsJsonArray();
+        boardsArray.forEach(board -> {
+          boards.add(deserializeJsonToBoard(board.toString()));
+        });
+      } else if (jsonElement.isJsonObject()) {
+        boards.add(deserializeJsonToBoard(jsonElement.toString()));
       } else {
         throw new BoardParsingException(filePath, new JsonSyntaxException("Invalid JSON format"));
       }
-      return result;
-    } catch (JsonSyntaxException e) {
-      throw new BoardParsingException(filePath, e);
+      return boards;
+    } catch (JsonSyntaxException error) {
+      throw new BoardParsingException(filePath, error);
     }
   }
 
@@ -115,25 +116,28 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
     if (board == null) {
       return null;
     }
-    JsonArray tilesJson = new JsonArray();
-    for (Tile t : board.getTiles().values()) {
-      JsonObject tileObj = new JsonObject();
-      tileObj.addProperty("tileId", t.getTileId());
-      if (t.getNextTile() != null) {
-        tileObj.addProperty("nextTileId", t.getNextTileId());
+    JsonArray jsonArray = new JsonArray();
+
+    board.getTiles().forEach((tileId, tile) -> {
+      JsonObject tileJson = new JsonObject();
+      tileJson.addProperty("tileId", tile.getTileId());
+      if (tile.getNextTile() != null) {
+        tileJson.addProperty("nextTileId", tile.getNextTileId());
       }
-      if (t.getLandAction() != null) {
-        tileObj.addProperty("landAction", t.getLandAction().getClass().getSimpleName());
-        tileObj.addProperty("destinationTile", t.getLandAction().getDestinationTileId());
-        tileObj.addProperty("description", t.getLandAction().description());
+
+      if (tile.getLandAction() != null) {
+        tileJson.addProperty("landAction", tile.getLandAction().getClass().getName());
+        tileJson.addProperty("destination tile", tile.getLandAction().getDestinationTileId());
+        tileJson.addProperty("description", tile.getLandAction().description());
       }
-      tilesJson.add(tileObj);
-    }
-    JsonObject boardObj = new JsonObject();
-    boardObj.addProperty("name", board.getName());
-    boardObj.addProperty("description", board.getDescription());
-    boardObj.add("tiles", tilesJson);
-    return boardObj;
+      jsonArray.add(tileJson);
+    });
+
+    JsonObject boardJson = new JsonObject();
+    boardJson.addProperty("name", board.getName());
+    boardJson.addProperty("description", board.getDescription());
+    boardJson.add("tiles", jsonArray);
+    return boardJson;
   }
 
   /**
@@ -144,35 +148,52 @@ public class GsonBoardFileHandler implements FileHandler<Board> {
    * @throws IllegalArgumentException if an unknown action type is encountered
    */
   public Board deserializeJsonToBoard(String jsonString) {
-    JsonObject obj = JsonParser.parseString(jsonString).getAsJsonObject();
-    JsonArray tilesArray = obj.getAsJsonArray("tiles");
+    JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+    JsonArray tilesJsonArray = jsonObject.getAsJsonArray("tiles");
     Board board = new Board();
-    for (JsonElement el : tilesArray) {
-      int id = el.getAsJsonObject().get("tileId").getAsInt();
+
+    for (JsonElement jsonElement : tilesJsonArray) {
+      int id = jsonElement.getAsJsonObject().get("tileId").getAsInt();
       board.addTile(new Tile(id));
     }
-    for (JsonElement el : tilesArray) {
-      JsonObject tileObj = el.getAsJsonObject();
-      int id = tileObj.get("tileId").getAsInt();
-      Tile tile = board.getTile(id);
-      if (tileObj.has("nextTileId")) {
-        tile.setNextTile(board.getTile(tileObj.get("nextTileId").getAsInt()));
+
+    for (JsonElement jsonElement2 : tilesJsonArray) {
+      JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
+      int tileId = jsonObject2.get("tileId").getAsInt();
+      Tile tile = board.getTile(tileId);
+
+      if (jsonObject2.has("nextTileId")) {
+        tile.setNextTile(board.getTile(jsonObject2.get("nextTileId").getAsInt()));
       }
-      if (tileObj.has("landAction")) {
-        String action = tileObj.get("landAction").getAsString();
-        int dest = tileObj.get("destinationTile").getAsInt();
-        String desc = tileObj.has("description") ? tileObj.get("description").getAsString() : "";
-        switch (action) {
-          case "LadderAction" -> tile.setLandAction(new LadderAction(dest, desc));
-          case "SnakeAction" -> tile.setLandAction(new SnakeAction(dest, desc));
-          case "BackToStartAction" -> tile.setLandAction(new BackToStartAction(desc));
-          case "SkipTurnAction" -> tile.setLandAction(new SkipTurnAction(1, desc));
-          default -> throw new IllegalArgumentException("Unknown action: " + action);
+
+      if (jsonObject2.has("landAction")) {
+        String actionClass = jsonObject2.get("landAction").getAsString();
+        int dest = jsonObject2.get("destination tile").getAsInt();
+        String desc = jsonObject2.has("description")
+            ? jsonObject2.get("description").getAsString() : "";
+
+        String actionName = actionClass.substring(actionClass.lastIndexOf('.') + 1);
+        switch (actionName) {
+          case "LadderAction":
+            tile.setLandAction(new LadderAction(dest, desc));
+            break;
+          case "SnakeAction":
+            tile.setLandAction(new SnakeAction(dest, desc));
+            break;
+          case "BackToStartAction":
+            tile.setLandAction(new BackToStartAction(desc));
+            break;
+          case "SkipTurnAction":
+            tile.setLandAction(new SkipTurnAction(1, desc));
+            break;
+          default:
+            throw new IllegalArgumentException("Unknown action (error): " + actionName);
         }
       }
     }
-    board.setName(obj.get("name").getAsString());
-    board.setDescription(obj.get("description").getAsString());
+
+    board.setName(jsonObject.get("name").getAsString());
+    board.setDescription(jsonObject.get("description").getAsString());
     return board;
   }
 }
