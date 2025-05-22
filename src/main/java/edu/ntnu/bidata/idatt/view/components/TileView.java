@@ -2,7 +2,6 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -14,8 +13,8 @@ public class TileView extends StackPane {
 
   public static final int TILE_SIZE_LADDER = 73;
   public static final int TILE_SIZE_LUDO = 50;
-  private TileView tileView;
   private static final String ACTION_LABEL_CLASS = "action-label";
+  private TileView tileView;
 
   public TileView(Tile tile, int TILE_SIZE) {
     this.setId("tile" + tile.getTileId());
@@ -41,19 +40,5 @@ public class TileView extends StackPane {
     rectangle.setEffect(dropShadow);
 
     getChildren().addAll(rectangle, numb);
-  }
-
-  public void addTileActionViewLbl(String text, Color color) {
-    // if we've already added an action‐label, bail out
-    if (this.lookup("." + ACTION_LABEL_CLASS) != null) {
-      return;
-    }
-
-    Label lbl = new Label(text);
-    lbl.getStyleClass().add(ACTION_LABEL_CLASS);
-    lbl.setTextFill(color);
-    lbl.setMouseTransparent(true);
-    // position, font etc...
-    getChildren().add(lbl);
   }
 }

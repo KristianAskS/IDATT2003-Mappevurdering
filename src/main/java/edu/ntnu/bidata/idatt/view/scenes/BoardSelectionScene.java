@@ -123,13 +123,13 @@ public class BoardSelectionScene {
   }
 
   private void addSnakesAndLaddersButtons(VBox parent) {
-    Button small = Buttons.getSecondaryBtn("Small Board");
-    small.setOnAction(e -> load(ladderBoardFactory.createSmallBoard()));
-
-    Button classic = Buttons.getSecondaryBtn("Classic Board");
+    Button classic = Buttons.getSecondaryBtn("CLASSIC");
     classic.setOnAction(e -> load(ladderBoardFactory.createClassicBoard()));
 
-    parent.getChildren().addAll(small, classic);
+    Button chaos = Buttons.getSecondaryBtn("CHAOS");
+    chaos.setOnAction(e -> load(ladderBoardFactory.createChaosBoard()));
+
+    parent.getChildren().addAll(chaos, classic);
   }
 
   private void addJsonBoardButtons(VBox parent) {

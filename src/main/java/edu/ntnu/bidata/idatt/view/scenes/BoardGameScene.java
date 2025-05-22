@@ -16,7 +16,6 @@ import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction;
 import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
-import edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction;
 import edu.ntnu.bidata.idatt.model.logic.action.SnakeAction;
 import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
@@ -118,9 +117,10 @@ public class BoardGameScene implements BoardGameObserver {
 
     if (!isLudo) {
       Platform.runLater(() -> {
+        highlightActionTiles(board, boardGridPane);
+        highlightEndTile(board, boardGridPane);
         LadderView.drawLadders(board, boardGridPane, overlay, gameController);
         SnakeView.drawSnakes(board, boardGridPane, overlay, gameController);
-        highlightActionTiles(board, boardGridPane);
       });
     }
 
@@ -161,7 +161,16 @@ public class BoardGameScene implements BoardGameObserver {
     players.forEach(player -> stagingArea.getChildren().add(player.getToken()));
   }
 
-  private void highlightActionTiles(Board board, GridPane boardGrid) {
+  private void highlightEndTile(Board board, GridPane boardGridPane) {
+    TileView tileView = (TileView) boardGridPane.lookup("#tile" + board.getTiles().size());
+    tileView.setStyle("-fx-background-color: #FFD700");
+    Label lbl = new Label("🏁");
+    lbl.setStyle("-fx-text-fill: black");
+    lbl.setFont(Font.font("Arial", 35));
+    tileView.getChildren().add(lbl);
+  }
+
+  private void highlightActionTiles(Board board, GridPane boardGridPane) {
     board.getTiles().values().forEach(tile -> {
       TileAction action = tile.getLandAction();
       if (action == null
@@ -170,18 +179,19 @@ public class BoardGameScene implements BoardGameObserver {
         return;
       }
 
-      TileView tileView = (TileView) boardGrid.lookup("#tile" + tile.getTileId());
-      if (tileView == null) return;
-
-      String bg;
-      if (action instanceof BackToStartAction) {
-        bg = "#808080";
-      } else {
-        bg = "#FFFFFF";
+      TileView tileView = (TileView) boardGridPane.lookup("#tile" + tile.getTileId());
+      if (tileView == null) {
+        return;
       }
 
-      tileView.setStyle("-fx-background-color: " + bg + ";");
-      tileView.addTileActionViewLbl("", Color.BLACK);
+      String bgColor = action instanceof BackToStartAction ? "#808080" : "#FFFFFF";
+      tileView.setStyle("-fx-background-color: " + bgColor + ";");
+
+      String text = action instanceof BackToStartAction ? "⏮" : "🛑";
+      Label lbl = new Label(text);
+      lbl.setStyle("-fx-text-fill: black");
+      lbl.setFont(Font.font("Arial", 28));
+      tileView.getChildren().add(lbl);
     });
   }
 
@@ -236,6 +246,20 @@ public class BoardGameScene implements BoardGameObserver {
           );
           repositionTokenOnTile();
         }
+        case PLAYER_BACK_START_ACTION -> {
+          eventLog.appendText(
+              String.format("%s hit “Back to Start” on %d and jumped to %d%n",
+                  player.getName(), oldId, newId)
+          );
+          repositionTokenOnTile();
+        }
+        case PLAYER_SKIP_TURN_ACTION -> {
+          eventLog.appendText(
+              String.format("%s landed on “Skip Turn” at %d and will skip next turn%n",
+                  player.getName(), oldId)
+          );
+          repositionTokenOnTile();
+        }
         case PLAYER_FINISHED -> {
           eventLog.appendText(
               String.format("Player %s finished!%n", player.getName())
@@ -253,7 +277,8 @@ public class BoardGameScene implements BoardGameObserver {
       if (rollBtn.isDisabled() &&
           switch (event.eventType()) {
             case PLAYER_MOVED, PLAYER_LADDER_ACTION,
-                 PLAYER_FINISHED, GAME_FINISHED -> true;
+                 PLAYER_FINISHED, GAME_FINISHED,
+                 PLAYER_BACK_START_ACTION, PLAYER_SKIP_TURN_ACTION -> true;
             default -> false;
           }) {
         rollBtn.setDisable(false);

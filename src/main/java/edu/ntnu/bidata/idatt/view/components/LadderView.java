@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 
 /**
  * Renders the ladders defined in the Board model
@@ -52,11 +51,9 @@ public class LadderView {
           TileView startView = (TileView) boardGridPane.lookup("#tile" + startId);
           if (startView != null) {
             startView.setStyle("-fx-background-color: green;");
-            startView.addTileActionViewLbl("start", Color.RED);
           }
           if (endView != null) {
             endView.setStyle("-fx-background-color: #90EE90;");
-            endView.addTileActionViewLbl("end", Color.RED);
           }
 
           logger.log(Level.FINE, "Drew ladder from " + startId + " to " + endId);

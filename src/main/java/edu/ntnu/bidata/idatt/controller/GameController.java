@@ -81,24 +81,32 @@ public abstract class GameController {
 
   protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
     TileAction action = landed.getLandAction();
-    if (action == null) {
-      onDone.run();
-      return;
-    }
-
-    if (action instanceof BackToStartAction back) {
-      back.perform(player);
-      boardGameScene.onEvent(new BoardGameEvent(
-          BoardGameEventType.PLAYER_MOVED, player, landed, board.getTile(0)));
-      onDone.run();
-      return;
-    }
-
-    if (action instanceof SkipTurnAction skipAct) {
-      int toSkip = skipAct.getTurnsToSkip();
-      skipTurnMap.merge(player, toSkip, Integer::sum);
-      onDone.run();
-      return;
+    switch (action) {
+      case null -> {
+        onDone.run();
+        return;
+      }
+      case BackToStartAction back -> {
+        logger.log(Level.INFO, "BackToStart");
+        back.perform(player);
+        animateLadderMovement(player, landed.getTileId(), 1, () -> {
+          boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_BACK_START_ACTION,
+              player, landed, board.getTile(1)));
+        });
+        onDone.run();
+        return;
+      }
+      case SkipTurnAction skipAct -> {
+        logger.log(Level.INFO, "SkipTurn");
+        int toSkip = skipAct.getTurnsToSkip();
+        skipTurnMap.merge(player, toSkip, Integer::sum);
+        boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_SKIP_TURN_ACTION,
+            player, landed, landed));
+        onDone.run();
+        return;
+      }
+      default -> {
+      }
     }
 
     action.perform(player);
