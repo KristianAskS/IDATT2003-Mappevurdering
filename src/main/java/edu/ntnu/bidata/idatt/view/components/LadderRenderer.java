@@ -3,6 +3,7 @@ package edu.ntnu.bidata.idatt.view.components;
 import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
+import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -24,14 +25,14 @@ public class LadderRenderer {
   }
 
   public static void drawLadders(Board board, GridPane boardGrid, Pane overlayPane,
-      GameController gameController) {
+                                 GameController gameController) {
 
     board.getTiles().values().stream()
         .filter(
-            tile -> tile.getLandAction() instanceof edu.ntnu.bidata.idatt.model.logic.action.LadderAction)
+            tile -> tile.getLandAction() instanceof LadderAction)
         .forEach(startTile -> {
-          edu.ntnu.bidata.idatt.model.logic.action.LadderAction ladderAction =
-              (edu.ntnu.bidata.idatt.model.logic.action.LadderAction) startTile.getLandAction();
+          LadderAction ladderAction =
+              (LadderAction) startTile.getLandAction();
           int startId = startTile.getTileId();
           int endId = ladderAction.getDestinationTileId();
 
@@ -70,7 +71,7 @@ public class LadderRenderer {
   }
 
   private static List<Node> createLadderVisual(double[] startCenter, double[] endCenter,
-      Tile startTile, Board board) {
+                                               Tile startTile, Board board) {
     List<Node> ladderComponents = new ArrayList<>();
 
     double dx = endCenter[0] - startCenter[0];
@@ -107,9 +108,9 @@ public class LadderRenderer {
   private static double[] calculatePerpendicularUnitVector(double dx, double dy) {
     double length = Math.hypot(dx, dy);
     if (length == 0) {
-      return new double[]{0, 0};
+      return new double[] {0, 0};
     }
-    return new double[]{-dy / length, dx / length};
+    return new double[] {-dy / length, dx / length};
   }
 
   private static void flipDirection(double[] perp, int startRow, Board board) {
@@ -123,11 +124,11 @@ public class LadderRenderer {
   }
 
   private static double[][] calculateSideRailCoordinates(double[] start, double[] end,
-      double[] perpUnit) {
+                                                         double[] perpUnit) {
     double offX = perpUnit[0] * SIDE_OFFSET;
     double offY = perpUnit[1] * SIDE_OFFSET;
 
-    return new double[][]{
+    return new double[][] {
         {start[0] + offX, start[1] + offY},
         {end[0] + offX, end[1] + offY},
         {start[0] - offX, start[1] - offY},
@@ -165,7 +166,7 @@ public class LadderRenderer {
   }
 
   private static void addLine(List<Node> components, double x1, double y1, double x2, double y2,
-      double width, Color color) {
+                              double width, Color color) {
     Line line = new Line(x1, y1, x2, y2);
     line.setStroke(color);
     line.setStrokeWidth(width);
