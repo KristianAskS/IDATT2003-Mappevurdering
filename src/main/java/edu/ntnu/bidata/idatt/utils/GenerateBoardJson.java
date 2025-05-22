@@ -100,9 +100,9 @@ public class GenerateBoardJson {
     for (int i = 1; i <= size; i++) {
       Tile tile = board.getTile(i);
       if (i % 4 == 0) {
-        tile.setLandAction(new BackToStartAction("Back to start" + i));
+        tile.setLandAction(new BackToStartAction("Back to start"));
       } else if (i % 3 == 0) {
-        tile.setLandAction(new SkipTurnAction(1, "Skip turn" + i));
+        tile.setLandAction(new SkipTurnAction(1, "Skip turn"));
       } else if (rnd.nextBoolean()) {
         int dest = rnd.nextInt(size - i) + i + 1;
         tile.setLandAction(new LadderAction(dest, "Ladder " + i + " to " + dest));

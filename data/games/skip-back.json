@@ -9,14 +9,14 @@
       },
       {
         "tileId": 2,
-        "nextTileId": 3
-      },
-      {
-        "tileId": 3,
-        "nextTileId": 4,
+        "nextTileId": 3,
         "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
         "destination tile": 0,
         "description": "Back to start on tile 30!"
+      },
+      {
+        "tileId": 3,
+        "nextTileId": 4
       },
       {
         "tileId": 4,
@@ -101,14 +101,14 @@
       },
       {
         "tileId": 19,
-        "nextTileId": 20
-      },
-      {
-        "tileId": 20,
-        "nextTileId": 21,
+        "nextTileId": 20,
         "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
         "destination tile": 0,
         "description": "Back to start on tile 30!"
+      },
+      {
+        "tileId": 20,
+        "nextTileId": 21
       },
       {
         "tileId": 21,
@@ -119,10 +119,7 @@
       },
       {
         "tileId": 22,
-        "nextTileId": 23,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
-        "destination tile": 0,
-        "description": "Back to start on tile 30!"
+        "nextTileId": 23
       },
       {
         "tileId": 23,
@@ -130,7 +127,10 @@
       },
       {
         "tileId": 24,
-        "nextTileId": 25
+        "nextTileId": 25,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start on tile 30!"
       },
       {
         "tileId": 25,
@@ -141,10 +141,7 @@
       },
       {
         "tileId": 26,
-        "nextTileId": 27,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
-        "destination tile": 0,
-        "description": "Back to start on tile 30!"
+        "nextTileId": 27
       },
       {
         "tileId": 27,
@@ -152,7 +149,10 @@
       },
       {
         "tileId": 28,
-        "nextTileId": 29
+        "nextTileId": 29,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start on tile 30!"
       },
       {
         "tileId": 29,
@@ -163,7 +163,10 @@
       },
       {
         "tileId": 30,
-        "nextTileId": 31
+        "nextTileId": 31,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start on tile 30!"
       },
       {
         "tileId": 31,
@@ -171,10 +174,7 @@
       },
       {
         "tileId": 32,
-        "nextTileId": 33,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
-        "destination tile": 0,
-        "description": "Back to start on tile 30!"
+        "nextTileId": 33
       },
       {
         "tileId": 33,
@@ -185,10 +185,7 @@
       },
       {
         "tileId": 34,
-        "nextTileId": 35,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
-        "destination tile": 0,
-        "description": "Back to start on tile 30!"
+        "nextTileId": 35
       },
       {
         "tileId": 35,
@@ -196,7 +193,10 @@
       },
       {
         "tileId": 36,
-        "nextTileId": 37
+        "nextTileId": 37,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start on tile 30!"
       },
       {
         "tileId": 37,
@@ -207,14 +207,14 @@
       },
       {
         "tileId": 38,
-        "nextTileId": 39,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
-        "destination tile": 0,
-        "description": "Back to start on tile 30!"
+        "nextTileId": 39
       },
       {
         "tileId": 39,
-        "nextTileId": 40
+        "nextTileId": 40,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start on tile 30!"
       },
       {
         "tileId": 40,
@@ -255,14 +255,14 @@
       },
       {
         "tileId": 47,
-        "nextTileId": 48,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
-        "destination tile": 0,
-        "description": "Back to start on tile 30!"
+        "nextTileId": 48
       },
       {
         "tileId": 48,
-        "nextTileId": 49
+        "nextTileId": 49,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start on tile 30!"
       },
       {
         "tileId": 49,
@@ -361,10 +361,7 @@
       },
       {
         "tileId": 66,
-        "nextTileId": 67,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
-        "destination tile": 0,
-        "description": "Back to start on tile 30!"
+        "nextTileId": 67
       },
       {
         "tileId": 67,
@@ -372,7 +369,10 @@
       },
       {
         "tileId": 68,
-        "nextTileId": 69
+        "nextTileId": 69,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start on tile 30!"
       },
       {
         "tileId": 69,
@@ -387,14 +387,14 @@
       },
       {
         "tileId": 71,
-        "nextTileId": 72,
-        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
-        "destination tile": 0,
-        "description": "Back to start on tile 30!"
+        "nextTileId": 72
       },
       {
         "tileId": 72,
-        "nextTileId": 73
+        "nextTileId": 73,
+        "landAction": "edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction",
+        "destination tile": 0,
+        "description": "Back to start on tile 30!"
       },
       {
         "tileId": 73,
