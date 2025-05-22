@@ -8,9 +8,11 @@ import edu.ntnu.bidata.idatt.controller.patterns.factory.LadderBoardFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.LudoBoardFactory;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
+import edu.ntnu.bidata.idatt.utils.exceptions.BoardParsingException;
 import edu.ntnu.bidata.idatt.utils.exceptions.GameUIException;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 
 public class BoardSelectionScene {
 
@@ -38,8 +41,10 @@ public class BoardSelectionScene {
   private final String selectedGame = GameSelectionScene.getSelectedGame();
   private final LudoBoardFactory ludoBoardFactory = new LudoBoardFactory();
   private final LadderBoardFactory ladderBoardFactory = new LadderBoardFactory();
+  private final VBox selectionBox;
   private Label detailsTitle;
   private Label detailsDescription;
+
 
   public BoardSelectionScene() {
     BorderPane root = SceneManager.getRootPane();
@@ -56,7 +61,7 @@ public class BoardSelectionScene {
     HBox menu = new HBox(20);
     menu.setAlignment(Pos.CENTER);
 
-    VBox selectionBox = createSelectionContainer();
+    selectionBox = createSelectionContainer();
     VBox detailsBox = createDetailsContainer();
 
     menu.getChildren().addAll(selectionBox, detailsBox);
@@ -67,6 +72,7 @@ public class BoardSelectionScene {
     root.setBottom(bottom);
     BorderPane.setMargin(bottom, new Insets(10));
     BorderPane.setAlignment(bottom, Pos.BOTTOM_LEFT);
+    rebuildSelectionPanel();
   }
 
   public static Board getSelectedBoard() {
@@ -89,50 +95,6 @@ public class BoardSelectionScene {
             + "-fx-border-radius: 10;"
             + "-fx-background-radius: 10;"
     );
-
-    Label title = new Label("Select a Board Variant");
-    title.setStyle(
-        "-fx-font-size: 24px;"
-            + "-fx-font-weight: bold;"
-            + "-fx-text-fill: #ffffff;"
-            + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0, 2, 2);"
-    );
-
-    List<Button> buttons = new ArrayList<>();
-    if ("LUDO".equalsIgnoreCase(selectedGame)) {
-      Button classic = Buttons.getSecondaryBtn("CLASSIC");
-      classic.setOnAction(e -> load(ludoBoardFactory.createDefaultBoard()));
-      buttons.add(classic);
-    } else {
-      Button classic = Buttons.getSecondaryBtn("CLASSIC");
-      classic.setOnAction(e -> load(ladderBoardFactory.createClassicBoard()));
-      Button chaos = Buttons.getSecondaryBtn("CHAOS");
-      chaos.setOnAction(e -> load(ladderBoardFactory.createChaosBoard()));
-      buttons.add(classic);
-      buttons.add(chaos);
-      //JSON
-      for (Board b : boardService.getBoards()) {
-        Button btn = Buttons.getSecondaryBtn(b.getName());
-        btn.setOnAction(e -> load(b));
-        buttons.add(btn);
-      }
-    }
-    HBox columns = new HBox(20);
-    columns.setAlignment(Pos.CENTER);
-    int total = buttons.size();
-    int mid = (int) Math.ceil(total / 2.0);
-    VBox col1 = new VBox(10);
-    col1.setAlignment(Pos.CENTER);
-    col1.getChildren().addAll(buttons.subList(0, mid));
-    VBox col2 = new VBox(10);
-    col2.setAlignment(Pos.CENTER);
-    if (mid < total) {
-      col2.getChildren().addAll(buttons.subList(mid, total));
-    }
-
-    columns.getChildren().addAll(col1, col2);
-
-    box.getChildren().addAll(title, columns);
     return box;
   }
 
@@ -213,4 +175,133 @@ public class BoardSelectionScene {
     detailsTitle.setText(board.getName());
     detailsDescription.setText(board.getDescription());
   }
+
+  private Button makeBoardButton(Board b) {
+    Button btn = Buttons.getSecondaryBtn(b.getName());
+    btn.setOnAction(e -> {
+      boardService.setBoard(b);
+      updateDetails(b);
+    });
+    return btn;
+  }
+
+  /**
+   * Called when the user clicks “Import From JSON”
+   */
+  private void handleImportJson() {
+    FileChooser chooser = new FileChooser();
+    chooser.setTitle("Import Board JSON");
+    chooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter("JSON files", "*.json")
+    );
+    File file = chooser.showOpenDialog(scene.getWindow());
+    if (file == null) {
+      return;
+    }
+
+    List<Board> imported;
+    try {
+      imported = boardService
+          .getBoardFileHandler()
+          .readFromFile(file.getAbsolutePath());
+    } catch (BoardParsingException | IllegalArgumentException ex) {
+      showAlert(Alert.AlertType.ERROR,
+          "Couldn’t parse that JSON file",
+          "Your JSON must define one or more boards in this shape:\n\n" +
+              "• A single object **or** an array of objects\n" +
+              "• Each board object must have:\n" +
+              "    – \"name\": string\n" +
+              "    – \"description\": string\n" +
+              "    – \"tiles\": array of tile‑objects\n" +
+              "• Each tile‑object must have:\n" +
+              "    – \"tileId\": integer\n" +
+              "    – optional \"nextTileId\": integer\n" +
+              "    – optional land‑action props:\n" +
+              "        • \"landAction\": class name (SnakeAction, LadderAction…)\n" +
+              "        • \"destination tile\": integer\n" +
+              "        • \"description\": string\n\n" +
+              "Make sure the file is valid JSON and follows this schema exactly.");
+      return;
+
+    } catch (IOException ioe) {
+      showAlert(Alert.AlertType.ERROR,
+          "I/O Error reading file",
+          "We couldn’t read “" + file.getName() + "”.\n" +
+              "Please check file permissions and try again.");
+      return;
+    }
+
+    if (imported.isEmpty()) {
+      showAlert(Alert.AlertType.INFORMATION,
+          "Nothing to import",
+          "We didn’t find any valid boards in that file.");
+      return;
+    }
+
+    boardService.getBoards().addAll(imported);
+    rebuildSelectionPanel();
+  }
+
+  private void rebuildSelectionPanel() {
+    selectionBox.getChildren().clear();
+
+    Label title = new Label("Select a Board Variant");
+    title.setStyle(
+        "-fx-font-size: 24px;"
+            + "-fx-font-weight: bold;"
+            + "-fx-text-fill: #ffffff;"
+            + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0, 2, 2);"
+    );
+
+    Button importBtn = Buttons.getSecondaryBtn("Import From JSON");
+    importBtn.setOnAction(e -> handleImportJson());
+
+    List<Button> buttons = new ArrayList<>();
+
+    Button classic = Buttons.getSecondaryBtn("CLASSIC");
+    if ("LUDO".equalsIgnoreCase(selectedGame)) {
+      classic.setOnAction(e -> load(ludoBoardFactory.createDefaultBoard()));
+      buttons.add(classic);
+
+    } else {
+      classic.setOnAction(e -> load(ladderBoardFactory.createClassicBoard()));
+      Button chaos = Buttons.getSecondaryBtn("CHAOS");
+      chaos.setOnAction(e -> load(ladderBoardFactory.createChaosBoard()));
+
+      buttons.add(classic);
+      buttons.add(chaos);
+      buttons.add(importBtn);
+
+      for (Board b : boardService.getBoards()) {
+        Button userBtn = Buttons.getSecondaryBtn(b.getName());
+        userBtn.setOnAction(evt -> load(b));
+        buttons.add(userBtn);
+      }
+    }
+
+    int mid = (int) Math.ceil(buttons.size() / 2.0);
+    VBox col1 = new VBox(10);
+    col1.setAlignment(Pos.CENTER);
+    col1.getChildren().addAll(buttons.subList(0, mid));
+
+    VBox col2 = new VBox(10);
+    col2.setAlignment(Pos.CENTER);
+    if (mid < buttons.size()) {
+      col2.getChildren().addAll(buttons.subList(mid, buttons.size()));
+    }
+
+    HBox columns = new HBox(20, col1, col2);
+    columns.setAlignment(Pos.CENTER);
+
+    selectionBox.getChildren().addAll(title, columns);
+  }
+
+  private void showAlert(Alert.AlertType type, String title, String msg) {
+    Alert alert = new Alert(type);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(msg);
+    alert.showAndWait();
+  }
 }
+

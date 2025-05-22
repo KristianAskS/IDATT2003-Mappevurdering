@@ -128,4 +128,13 @@ public class TokenView extends StackPane {
   public String getImagePath() {
     return token.getImagePath();
   }
+
+  /**
+   * Returns the {@link Token} instance
+   *
+   * @return the token
+   */
+  public Token getToken() {
+    return token;
+  }
 }
