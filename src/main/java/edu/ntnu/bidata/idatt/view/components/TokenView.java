@@ -87,7 +87,7 @@ public class TokenView extends StackPane {
     }
 
     logger.log(Level.INFO, "TokenView created with color {0} and shape {1}",
-        new Object[] {token.getColor(), token.getShape()});
+        new Object[]{token.getColor(), token.getShape()});
   }
 
   /**
