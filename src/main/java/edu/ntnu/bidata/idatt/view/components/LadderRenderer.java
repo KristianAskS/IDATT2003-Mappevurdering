@@ -38,14 +38,11 @@ public class LadderRenderer {
           int endId = ladderAction.getDestinationTileId();
 
           if (!isValidLadder(startId, endId)) {
-            logger.warning("Invalid ladder defined from " + startId + " to " + endId);
             return;
           }
 
           Tile endTile = board.getTile(endId);
           if (endTile == null) {
-            logger.severe(
-                "Ladder destination tile " + endId + " not found for start tile " + startId);
             return;
           }
 

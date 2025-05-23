@@ -60,14 +60,11 @@ public class SnakeRenderer {
           int endId = snakeAction.getDestinationTileId();
 
           if (isValidSnake(startId, endId)) {
-            logger.warning("Invalid snake defined from " + startId + " to " + endId);
             return;
           }
 
           Tile endTile = board.getTile(endId);
           if (endTile == null) {
-            logger.severe(
-                "Snake destination tile " + endId + " not found for start tile " + startId);
             return;
           }
 

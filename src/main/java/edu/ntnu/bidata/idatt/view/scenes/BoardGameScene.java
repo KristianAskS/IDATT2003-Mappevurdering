@@ -160,7 +160,6 @@ public class BoardGameScene implements BoardGameObserver {
   public static double[] getTileCenter(Bounds bounds) {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
     double y = bounds.getMinY() + bounds.getHeight() * 0.5;
-    logger.info(() -> "Center:(" + x + "," + y + ")");
     return new double[] {x, y};
   }
 

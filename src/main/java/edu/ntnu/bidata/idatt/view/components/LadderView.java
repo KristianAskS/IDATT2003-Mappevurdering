@@ -2,7 +2,6 @@ package edu.ntnu.bidata.idatt.view.components;
 
 import edu.ntnu.bidata.idatt.controller.GameController;
 import edu.ntnu.bidata.idatt.model.entity.Board;
-import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
@@ -11,7 +10,6 @@ import javafx.scene.layout.Pane;
  */
 public final class LadderView {
 
-  private static final Logger logger = Logger.getLogger(LadderView.class.getName());
   private static final int COLUMNS = 10;
 
   private LadderView() {

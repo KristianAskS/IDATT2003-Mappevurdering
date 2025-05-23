@@ -573,7 +573,6 @@ public class PlayerSelectionScene extends BaseScene {
         runtimeUri = destination.toUri().toString();
 
         finalShape = "circle";
-        logger.log(Level.INFO, "Player will use selected image: " + storedImgPath);
 
       } catch (IOException ex) {
         logger.log(Level.SEVERE, "Error copying image file", ex);

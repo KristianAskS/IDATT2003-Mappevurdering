@@ -16,7 +16,7 @@ import javafx.scene.layout.GridPane;
  */
 public class LaddersBoardView extends BaseBoardView {
   private static final int COLUMNS = 10;
-  private static final Logger LOG = Logger.getLogger(LaddersBoardView.class.getName());
+  private static final Logger logger = Logger.getLogger(LaddersBoardView.class.getName());
 
   /**
    * Default constructor
@@ -51,7 +51,7 @@ public class LaddersBoardView extends BaseBoardView {
 
       if (tile.getLandAction() != null) {
         int finalId = id;
-        LOG.log(Level.INFO, () -> "Added action label to tile " + finalId);
+        logger.log(Level.INFO, () -> "Added action label to tile " + finalId);
       }
 
       int rowIndexFromBottom = (id - 1) / COLUMNS;
