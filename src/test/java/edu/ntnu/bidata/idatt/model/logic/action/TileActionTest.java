@@ -1,144 +1,122 @@
 package edu.ntnu.bidata.idatt.model.logic.action;
 
-import edu.ntnu.bidata.idatt.model.entity.Player;
-import edu.ntnu.bidata.idatt.view.components.TileView;
-import edu.ntnu.bidata.idatt.view.components.TokenView;
-import java.util.Objects;
-import org.junit.jupiter.api.*;
-import java.time.LocalDate;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Unit tests for TileAction implementations using Arrange-Act-Assert pattern.
- */
+import edu.ntnu.bidata.idatt.model.entity.Player;
+import edu.ntnu.bidata.idatt.model.entity.Token;
+import edu.ntnu.bidata.idatt.view.components.TokenView;
+import javafx.application.Platform;
+import javafx.scene.paint.Color;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
 class TileActionTest {
 
-  private static Player sharedPlayer;
-  private static TokenView dummyToken;
-  private TileAction action;
+  private Player player;
 
   @BeforeAll
-  static void setupAll() {
-    // Runs once before all tests: prepare a dummy token and a player with required constructor args
-    dummyToken = mock(TokenView.class);
-    sharedPlayer = new Player("TestPlayer", dummyToken, LocalDate.of(2000, 1, 1));
+  static void initJfx() {
+    try {
+      Platform.startup(() -> {
+      });
+    } catch (IllegalStateException ignored) {
+    }
   }
 
   @BeforeEach
-  void setup() {
-    // Arrange: create fresh action and reset player before each test
-    action = new SimpleTileAction();
-    sharedPlayer.setCurrentTileId(0);
+  void setUp() {
+    Token token = new Token(Color.BLACK, "circle");
+    TokenView tokenView = new TokenView(token);
+
+    player = new Player("TestPlayer", tokenView);
+    assertEquals(0, player.getCurrentTileId(), "Player should start on tile 0");
   }
 
-  /**
-   * Positive test: setting and getting destination tile id.
-   */
-  @Test
-  void testSetAndGetDestinationTileId() {
-    // Arrange
-    int expected = 5;
+  @Nested
+  class PositiveTests {
 
-    // Act
-    action.setDestinationTileId(expected);
-    int actual = action.getDestinationTileId();
+    @Test
+    void ladderActionMovesPlayerToDestination() {
+      TileAction action = new LadderAction(10, "Climb the ladder");
 
-    // Assert
-    assertEquals(expected, actual, "Destination tile ID should match the set value");
-  }
+      action.perform(player);
 
-  /**
-   * Negative test: setting a negative tile id should throw IllegalArgumentException.
-   */
-  @Test
-  void testSetNegativeDestinationTileIdThrows() {
-    // Arrange
-    int invalidId = -1;
-
-    // Act & Assert
-    assertThrows(IllegalArgumentException.class,
-        () -> action.setDestinationTileId(invalidId),
-        "Setting a negative destination tile ID should throw IllegalArgumentException");
-  }
-
-  /**
-   * Positive test: setting and getting description.
-   */
-  @Test
-  void testSetAndGetDescription() {
-    // Arrange
-    String desc = "Move to tile";
-
-    // Act
-    action.setDescription(desc);
-    String actual = action.description();
-
-    // Assert
-    assertEquals(desc, actual, "Description should match the set value");
-  }
-
-  /**
-   * Negative test: setting null description should throw NullPointerException.
-   */
-  @Test
-  void testSetNullDescriptionThrows() {
-    // Act & Assert
-    assertThrows(NullPointerException.class,
-        () -> action.setDescription(null),
-        "Setting a null description should throw NullPointerException");
-  }
-
-  /**
-   * Positive test: perform action moves player to destination tile.
-   */
-  @Test
-  void testPerformMovesPlayer() {
-    // Arrange
-    int target = 3;
-    action.setDestinationTileId(target);
-
-    // Act
-    action.perform(sharedPlayer);
-
-    // Assert
-    assertEquals(target, sharedPlayer.getCurrentTileId(),
-        "Player should be moved to the destination tile after perform");
-  }
-
-  /**
-   * Simple implementation of TileAction for testing purposes.
-   */
-  private static class SimpleTileAction implements TileAction {
-    private int destinationTileId;
-    private String desc = "";
-
-    @Override
-    public int getDestinationTileId() {
-      return destinationTileId;
+      assertEquals(10, player.getCurrentTileId(), "perform() should move player to destination");
     }
 
-    @Override
-    public void setDestinationTileId(int destinationTileId) {
-      if (destinationTileId < 0) {
-        throw new IllegalArgumentException("Tile ID cannot be negative");
-      }
-      this.destinationTileId = destinationTileId;
+    @Test
+    void snakeActionMovesPlayerToDestination() {
+      TileAction action = new SnakeAction(3, "Slide down the snake");
+
+      action.perform(player);
+
+      assertEquals(3, player.getCurrentTileId(), "perform() should move player to destination");
     }
 
-    @Override
-    public String description() {
-      return desc;
+    @Test
+    void backToStartActionResetsPlayerToStart() {
+      player.setCurrentTileId(7);
+      TileAction action = new BackToStartAction("Back to start");
+
+      action.perform(player);
+
+      assertEquals(0, player.getCurrentTileId(), "perform() should reset player to start");
     }
 
-    @Override
-    public void setDescription(String description) {
-      this.desc = Objects.requireNonNull(description, "Description cannot be null");
+    @Test
+    void skipTurnActionDoesNotMovePlayer() {
+      SkipTurnAction skipAction = new SkipTurnAction(2, "Skip two turns");
+
+      assertDoesNotThrow(() -> skipAction.perform(player),
+          "perform() should not throw on skip turn");
+      assertEquals(0, player.getCurrentTileId(), "SkipTurnAction should not alter tile id");
     }
 
-    @Override
-    public void perform(Player player) {
-      player.setCurrentTileId(destinationTileId);
+    @Test
+    void descriptionSettersAndGettersWork() {
+      TileAction action = new LadderAction(5, "Original description");
+
+      action.setDescription("New description");
+
+      assertEquals("New description", action.description(),
+          "setDescription() should update the description");
+    }
+  }
+
+  @Nested
+  class NegativeAndEdgeCaseTests {
+
+    @Test
+    void snakeActionWithNegativeDestination() {
+      TileAction action = new SnakeAction(3, "Slide down the snake");
+
+      action.setDestinationTileId(-5);
+      action.perform(player);
+
+      assertEquals(-5, player.getCurrentTileId(),
+          "setDestinationTileId() should accept negative values");
+    }
+
+    @Test
+    void skipTurnActionWithZeroTurnsDefaultsToOne() {
+      SkipTurnAction skipAction = new SkipTurnAction(0, "No turns");
+
+      int turns = skipAction.turnsToSkip();
+
+      assertEquals(1, turns, "SkipTurnAction should default to 1 if given zero or negative");
+    }
+
+    @Test
+    void ladderActionInvalidDestinationDoesNotThrow() {
+      TileAction action = new LadderAction(10, "Climb the ladder");
+
+      assertDoesNotThrow(() -> action.setDestinationTileId(Integer.MIN_VALUE),
+          "setDestinationTileId() should not throw on extreme values");
+      assertEquals(Integer.MIN_VALUE, action.getDestinationTileId(),
+          "getDestinationTileId() should return the set value");
     }
   }
 }
