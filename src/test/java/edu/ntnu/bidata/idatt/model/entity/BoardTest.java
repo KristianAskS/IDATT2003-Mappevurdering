@@ -1,11 +1,15 @@
 package edu.ntnu.bidata.idatt.model.entity;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,60 +17,102 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Board Entity Tests")
 class BoardTest {
 
+  private static Tile tile1;
+  private static Tile tile2;
+  private Board board;
+
+  @BeforeAll
+  static void initAll() {
+    tile1 = new Tile(1);
+    tile2 = new Tile(2);
+  }
+
+  @BeforeEach
+  void init() {
+    board = new Board();
+  }
+
+  @Nested
+  @DisplayName("Default State")
+  class DefaultStateTests {
+
+    @Test
+    @DisplayName("new board has null name and description")
+    void defaultConstructorInitializesFieldsToNull() {
+      assertAll("default fields",
+          () -> assertNull(board.getName(), "name should be null"),
+          () -> assertNull(board.getDescription(), "description should be null"),
+          () -> assertTrue(board.getTiles().isEmpty(), "tiles should be empty")
+      );
+    }
+  }
+
   @Nested
   @DisplayName("Positive Tests")
   class PositiveTests {
 
     @Test
-    @DisplayName("Parameterized constructor sets name and description")
+    @DisplayName("parameterized constructor sets name and description")
     void parameterizedConstructorSetsNameAndDescription() {
-      Board board = new Board("MyBoard", "Boardgame");
-
-      assertEquals("MyBoard", board.getName());
-      assertEquals("Boardgame", board.getDescription());
+      String expectedName = "MyBoard";
+      String expectedDesc = "FunGame";
+      Board b = new Board(expectedName, expectedDesc);
+      assertAll("constructor",
+          () -> assertEquals(expectedName, b.getName(), "name must match"),
+          () -> assertEquals(expectedDesc, b.getDescription(), "description must match")
+      );
     }
 
     @Test
-    @DisplayName("setName and getName work correctly")
+    @DisplayName("setName and getName work correctly, including null")
     void nameSetterAndGetter() {
-      Board board = new Board();
-      board.setName("NewName");
-
-      assertEquals("NewName", board.getName());
+      String newName = "BoardX";
+      board.setName(newName);
+      assertEquals(newName, board.getName());
+      board.setName(null);
+      assertNull(board.getName());
     }
 
     @Test
-    @DisplayName("setDescription and getDescription work correctly")
+    @DisplayName("setDescription and getDescription work correctly, including null")
     void descriptionSetterAndGetter() {
-      Board board = new Board();
-      board.setDescription("NewDesc");
-
-      assertEquals("NewDesc", board.getDescription());
+      String newDesc = "A great board";
+      board.setDescription(newDesc);
+      assertEquals(newDesc, board.getDescription());
+      board.setDescription(null);
+      assertNull(board.getDescription());
     }
 
     @Test
     @DisplayName("addTile and getTile return the added tile")
     void addAndGetTile() {
-      Board board = new Board();
-      Tile tile = new Tile(42);
-      board.addTile(tile);
-
-      assertSame(tile, board.getTile(42));
+      Tile t = new Tile(42);
+      board.addTile(t);
+      Tile result = board.getTile(42);
+      assertSame(t, result);
     }
 
     @Test
     @DisplayName("getTiles returns all added tiles")
     void getTilesContainsAllTiles() {
-      Board board = new Board();
-      Tile t1 = new Tile(1);
-      Tile t2 = new Tile(2);
-      board.addTile(t1);
-      board.addTile(t2);
-
+      board.addTile(tile1);
+      board.addTile(tile2);
       Map<Integer, Tile> tiles = board.getTiles();
-      assertEquals(2, tiles.size());
-      assertSame(t1, tiles.get(1));
-      assertSame(t2, tiles.get(2));
+      assertAll("tiles map",
+          () -> assertEquals(2, tiles.size(), "should contain two entries"),
+          () -> assertSame(tile1, tiles.get(1), "tile1 must be present"),
+          () -> assertSame(tile2, tiles.get(2), "tile2 must be present")
+      );
+    }
+
+    @Test
+    @DisplayName("adding a tile with existing ID overwrites previous")
+    void addTileWithExistingIdOverwrites() {
+      Tile original = new Tile(7);
+      Tile replacement = new Tile(7);
+      board.addTile(original);
+      board.addTile(replacement);
+      assertSame(replacement, board.getTile(7));
     }
   }
 
@@ -75,41 +121,27 @@ class BoardTest {
   class NegativeTests {
 
     @Test
-    @DisplayName("getTile returns null for unknown tileId")
-    void getUnknownTileReturnsNull() {
-      Board board = new Board();
-
-      assertNull(board.getTile(99));
+    @DisplayName("getTile returns null for unknown ID")
+    void getTileUnknownReturnsNull() {
+      assertNull(board.getTile(99), "unknown ID should return null");
     }
 
     @Test
     @DisplayName("getTiles map is unmodifiable")
     void tilesMapIsUnmodifiable() {
-      Board board = new Board();
-      board.addTile(new Tile(5));
-
+      board.addTile(tile1);
       Map<Integer, Tile> tiles = board.getTiles();
-      assertThrows(UnsupportedOperationException.class, () -> tiles.put(6, new Tile(6)));
+      assertThrows(UnsupportedOperationException.class,
+          () -> tiles.put(3, new Tile(3)),
+          "should not allow modification");
     }
 
     @Test
-    @DisplayName("adding tile with existing id overwrites previous")
-    void addTileWithExistingIdOverwrites() {
-      Board board = new Board();
-      Tile original = new Tile(7);
-      Tile replacement = new Tile(7);
-      board.addTile(original);
-      board.addTile(replacement);
-
-      assertSame(replacement, board.getTile(7));
-    }
-
-    @Test
-    @DisplayName("addTile with null throws NullPointerException")
-    void addNullTileThrows() {
-      Board board = new Board();
-
-      assertThrows(NullPointerException.class, () -> board.addTile(null));
+    @DisplayName("addTile(null) throws NullPointerException")
+    void addNullTileThrowsNPE() {
+      assertThrows(NullPointerException.class,
+          () -> board.addTile(null),
+          "adding null tile should NPE");
     }
   }
 }

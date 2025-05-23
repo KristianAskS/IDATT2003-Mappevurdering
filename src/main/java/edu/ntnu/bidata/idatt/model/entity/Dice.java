@@ -8,34 +8,55 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Stores the collection of dices
+ * <p>Represents a collection of dice.</p>
+ * <p>Manages a fixed number of {@link Die}.</p>
  *
- * @author Trile
+ * @author Tri Tac Le
  * @version 2.0
+ * @since 1.0
  */
 public class Dice {
-
   private final List<Die> dice;
   private int rollResult;
 
+  /**
+   * Constructs a collection of die with the specified number of dice.
+   *
+   * @param numberOfDice the number of dice to include
+   */
   public Dice(int numberOfDice) {
     dice = IntStream.range(0, numberOfDice)
-        .mapToObj(Die -> new Die())
+        .mapToObj(i -> new Die())
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  /**
+   * Rolls all dice in the collection.
+   *
+   * @return an array of roll results
+   */
   public int[] rollDice() {
     int[] results = new int[NUMB_OF_DICE];
-    for (int dieNumb = 0; dieNumb < NUMB_OF_DICE; dieNumb++) {
-      results[dieNumb] = dice.get(dieNumb).roll();
+    for (int i = 0; i < NUMB_OF_DICE; i++) {
+      results[i] = dice.get(i).roll();
     }
     return results;
   }
 
+  /**
+   * Returns the roll result from the last roll
+   *
+   * @return the last roll result
+   */
   public int getRollResult() {
     return rollResult;
   }
 
+  /**
+   * Sets the roll result.
+   *
+   * @param result the total value as the roll result
+   */
   public void setRollResult(int result) {
     this.rollResult = result;
   }

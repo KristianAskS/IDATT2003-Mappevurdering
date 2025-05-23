@@ -2,22 +2,19 @@ package edu.ntnu.bidata.idatt.controller;
 
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.controller.rules.GameRules;
-import edu.ntnu.bidata.idatt.controller.rules.LudoRules;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Die;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction;
+import edu.ntnu.bidata.idatt.model.logic.action.LadderAction;
 import edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction;
-import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
-import edu.ntnu.bidata.idatt.view.components.TileView;
-import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
-import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
-import java.io.IOException;
+import edu.ntnu.bidata.idatt.view.components.GameUiAnimator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,271 +22,142 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.PathTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.SequentialTransition;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
 
 /**
- * Base controller that contains the core game‑flow logic that is shared across the different board
- * games in the application.
+ * Abstract base class for handling the game flow shared by all board games
+ * Responsibilities include:
+ * <ul>
+ *   <li>Maintaining the board, dice, and rule set.</li>
+ *   <li>Animating token movement via {@link GameUiAnimator}.</li>
+ *   <li>Publishing {@link BoardGameEvent}s to registered {@link BoardGameObserver}s.</li>
+ * </ul>
+ *
+ * @author Tri Tac Le
+ * @version 1.2
+ * @since 1.0
  */
 public abstract class GameController {
-
-  private static final double TOKEN_PIXELS_PER_SECOND = 400.0;
 
   protected final Logger logger = Logger.getLogger(getClass().getName());
   protected final PlayerService playerService = new PlayerService();
   protected final BoardService boardService = new BoardService();
-  protected final BoardGameScene boardGameScene;
   protected final Board board;
   protected final Dice dice;
   protected final Die die;
   final GameRules gameRules;
-
-  /**
-   * Players that must skip a number of upcoming turns. The value represents how many turns remain
-   * to be skipped.
-   */
   private final Map<Player, Integer> skipTurnMap = new HashMap<>();
-
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
+  private final List<BoardGameObserver> observers = new ArrayList<>();
+  private GameUiAnimator animator;
   private int currentIndex = 0;
 
-  protected GameController(BoardGameScene boardGameScene,
-                           Board board,
+  /**
+   * Constructs a new GameController.
+   *
+   * @param board        the game board instance
+   * @param numberOfDice how many dice are used
+   * @param gameRules    the rule set implementation
+   */
+  protected GameController(Board board,
                            int numberOfDice,
-                           GameRules gameRules) throws IOException {
-    this.boardGameScene = boardGameScene;
+                           GameRules gameRules) {
     this.board = board;
     this.dice = new Dice(numberOfDice);
     this.die = new Die();
     this.gameRules = gameRules;
-
     boardService.setBoard(board);
   }
 
+  /**
+   * Translates a Tile model into its (row, column) position on the GridPane.
+   *
+   * @param tile  the tile to translate
+   * @param board the board containing that tile
+   * @return an array of rows and cols
+   */
   public abstract int[] tileToGridPosition(Tile tile, Board board);
 
-  protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
-    TileAction action = landed.getLandAction();
-    switch (action) {
-      case null -> {
-        onDone.run();
-        return;
-      }
-      case BackToStartAction back -> {
-        logger.log(Level.INFO, "BackToStart");
-        back.perform(player);
-        animateLadderMovement(player, landed.getTileId(), 1, () -> {
-          boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_BACK_START_ACTION,
-              player, landed, board.getTile(1)));
-        });
-        onDone.run();
-        return;
-      }
-      case SkipTurnAction skipAct -> {
-        logger.log(Level.INFO, "SkipTurn");
-        int toSkip = skipAct.turnsToSkip();
-        skipTurnMap.merge(player, toSkip, Integer::sum);
-        boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_SKIP_TURN_ACTION,
-            player, landed, landed));
-        onDone.run();
-        return;
-      }
-      default -> {
-      }
-    }
-
-    action.perform(player);
-    onDone.run();
+  /**
+   * Injects the UI animator to handle token movement and animations.
+   *
+   * @param animator the GameUiAnimator instance
+   */
+  public void setAnimator(GameUiAnimator animator) {
+    this.animator = animator;
   }
 
+  /**
+   * Registers an observer to receive {@link BoardGameEvent}s.
+   *
+   * @param observer the observer to add
+   */
+  public void addObserver(BoardGameObserver observer) {
+    observers.add(observer);
+  }
+
+  /**
+   * Unregisters an observer so it no longer receives game events.
+   *
+   * @param observer the observer to remove
+   */
+  public void removeObserver(BoardGameObserver observer) {
+    observers.remove(observer);
+  }
+
+  /**
+   * Notifies all registered observers of the given event.
+   *
+   * @param event the event to publish
+   */
+  private void notifyObservers(BoardGameEvent event) {
+    for (var observer : observers) {
+      observer.onEvent(event);
+    }
+  }
+
+  /**
+   * Determines whether the given player has reached
+   * the final tile and thus should finish the game.
+   *
+   * @param player the player to check
+   * @return true if the player’s tile index is at or beyond the last tile
+   */
   protected boolean shouldFinish(Player player) {
     return player.getCurrentTileId() >= board.getTiles().size();
   }
 
+  /**
+   * Initializes the players at the start of the game:
+   * <ol>
+   *   <li>Resets each player’s current tile to 0 (staging area).</li>
+   *   <li>Registers them with the PlayerService.</li>
+   *   <li>Fires a {@link BoardGameEventType#GAME_STARTED} event.</li>
+   *   <li>Sorts them into turn order (by age) and fires the first
+   *       {@link BoardGameEventType#CURRENT_PLAYER_CHANGED}.</li>
+   * </ol>
+   *
+   * @param players the list of players to initialize
+   */
   public void initializePlayers(List<Player> players) {
-    players.forEach(player -> player.setCurrentTileId(0));
+    players.forEach(p -> p.setCurrentTileId(0));
     playerService.setPlayers(players);
-    boardGameScene.setupPlayersUI(players);
+
+    notifyObservers(new BoardGameEvent(
+        BoardGameEventType.GAME_STARTED,
+        null, null, null, null));
 
     initializeTurnOrder();
+
+    notifyObservers(new BoardGameEvent(
+        BoardGameEventType.CURRENT_PLAYER_CHANGED,
+        turnOrder.get(currentIndex),
+        null, null, null));
   }
 
-  public Die getDie() {
-    return die;
-  }
-
-  public void handlePlayerTurn(int steps) {
-    initializeTurnOrder();
-    dice.setRollResult(steps);
-
-    if (turnOrder.isEmpty()) {
-      return;
-    }
-
-    Player player = turnOrder.get(currentIndex);
-
-    int remainingSkips = skipTurnMap.getOrDefault(player, 0);
-    if (remainingSkips > 0) {
-      skipTurnMap.put(player, remainingSkips - 1);
-      logger.log(Level.INFO,
-          () -> player.getName() + " skips a turn (" + (remainingSkips - 1) + " left)");
-      advanceToNextPlayer();
-      return;
-    }
-
-    if (!gameRules.canEnterTrack(player, steps)) {
-      advanceToNextPlayer();
-      return;
-    }
-
-    int maxTileId = board.getTiles().size();
-    int destinationTileId = gameRules.destinationTile(player, steps, maxTileId);
-
-    if (destinationTileId < 0) {
-      advanceToNextPlayer();
-      return;
-    }
-
-    int originTileId = player.getCurrentTileId();
-    Tile originTile = originTileId == 0 ? null : board.getTile(originTileId);
-    int hopCount = ((destinationTileId - originTileId) + maxTileId) % maxTileId;
-
-    movePlayerAlongTiles(player, hopCount, () -> {
-      Tile landed = board.getTile(player.getCurrentTileId());
-
-      boardGameScene.onEvent(new BoardGameEvent(
-          BoardGameEventType.PLAYER_MOVED, player, originTile, landed));
-
-      applyLandAction(player, landed, () -> {
-        if (shouldFinish(player)) {
-          finishPlayer(player);
-        } else {
-          afterTurnLogic(player);
-        }
-      });
-    });
-  }
-
-  private void movePlayerAlongTiles(Player player, int steps, Runnable onDoneCallback) {
-
-    int start = player.getCurrentTileId();
-    int boardSize = board.getTiles().size();
-
-    steps = ((steps % boardSize) + boardSize) % boardSize;
-    if (steps == 0) {
-      onDoneCallback.run();
-      return;
-    }
-
-    int tmp = (start + steps) % boardSize;
-    if (tmp == 0) {
-      tmp = boardSize;
-    }
-    final int target = tmp;
-
-    Node token = player.getToken();
-    if (token == null) {
-      player.setCurrentTileId(target);
-      onDoneCallback.run();
-      return;
-    }
-
-    SequentialTransition seq = new SequentialTransition();
-
-    boolean isLudo = gameRules instanceof LudoRules;
-    boolean leaveYard = (start == 0) && isLudo;
-
-    if (leaveYard) {
-      seq.getChildren().add(getHopTransition(player, target, token));
-    } else {
-      for (int i = 1; i <= steps; i++) {
-        int nextId = (start + i) % boardSize;
-        if (nextId == 0) {
-          nextId = boardSize;
-        }
-        seq.getChildren().add(getHopTransition(player, nextId, token));
-      }
-    }
-
-    seq.setOnFinished(e -> {
-      Tile landed = board.getTile(target);
-      landed.addPlayer(player);
-      onDoneCallback.run();
-    });
-    seq.play();
-  }
-
-  private PauseTransition getHopTransition(Player player, int nextId, Node token) {
-    PauseTransition pauseTransition = new PauseTransition(Duration.millis(250));
-    pauseTransition.setOnFinished(event -> {
-      Pane parent = (Pane) token.getParent();
-      parent.getChildren().remove(token);
-
-      TileView tileView = lookupTileView(nextId);
-      tileView.getChildren().add(token);
-      boardGameScene.setTokenPositionOnTile(tileView);
-
-      player.setCurrentTileId(nextId);
-    });
-    return pauseTransition;
-  }
-
-  void animateLadderMovement(Player player, int fromTileId, int toTileId,
-                             Runnable onDoneCallback) {
-    TileView startTileView = lookupTileView(fromTileId);
-    TileView endTileView = lookupTileView(toTileId);
-    Node token = player.getToken();
-
-    Point2D startCenter = tileCenter(startTileView);
-    Pane parentPane = (Pane) token.getParent();
-    parentPane.getChildren().remove(token);
-
-    Pane overlayPane = boardGameScene.getTokenLayer();
-    overlayPane.getChildren().add(token);
-    token.setTranslateX(startCenter.getX());
-    token.setTranslateY(startCenter.getY());
-
-    Point2D endCenter = tileCenter(endTileView);
-    Path path = new Path(
-        new MoveTo(startCenter.getX(), startCenter.getY()),
-        new LineTo(endCenter.getX(), endCenter.getY())
-    );
-
-    double distance = startCenter.distance(endCenter);
-    double durationSeconds = distance / TOKEN_PIXELS_PER_SECOND;
-
-    PathTransition trans = new PathTransition(Duration.seconds(durationSeconds), path, token);
-    trans.setOnFinished(event -> {
-      overlayPane.getChildren().remove(token);
-      endTileView.getChildren().add(token);
-      boardGameScene.setTokenPositionOnTile(endTileView);
-      onDoneCallback.run();
-    });
-    trans.play();
-  }
-
-  private Point2D tileCenter(TileView tileView) {
-    Bounds bounds = tileView.localToScene(tileView.getBoundsInLocal());
-    double x = bounds.getMinX() + bounds.getWidth() * 0.5;
-    double y = bounds.getMinY() + bounds.getHeight() * 0.5;
-    return boardGameScene.getTokenLayer().sceneToLocal(x, y);
-  }
-
-  private TileView lookupTileView(int tileId) {
-    return (TileView) boardGameScene.getScene().lookup("#tile" + tileId);
-  }
-
+  /**
+   * Builds the initial turnOrder list by sorting registered players by age.
+   */
   private void initializeTurnOrder() {
     if (!turnOrder.isEmpty()) {
       return;
@@ -301,41 +169,189 @@ public abstract class GameController {
     }
     players.sort(Comparator.comparing(Player::getAge));
     turnOrder.addAll(players);
-    boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
   }
 
+  /**
+   * Getter for a single {@link Die} instance
+   *
+   * @return the single {@link Die} instance
+   */
+  public Die getDie() {
+    return die;
+  }
+
+  /**
+   * Handle a single player’s turn:
+   * <ol>
+   *   <li>Rolls the dice and sets the result.</li>
+   *   <li>Animates the token, then fires a {@link BoardGameEventType#PLAYER_MOVED} event.</li>
+   *   <li>Applies any land action and fires the corresponding event.</li>
+   *   <li>If the player finishes, fires {@link BoardGameEventType#PLAYER_FINISHED}
+   *       followed by {@link BoardGameEventType#GAME_FINISHED}</li>
+   * </ol>
+   *
+   * @param steps the number rolled on the dice
+   */
+  public void handlePlayerTurn(int steps) {
+    initializeTurnOrder();
+    dice.setRollResult(steps);
+
+    Player player = turnOrder.get(currentIndex);
+    int skips = skipTurnMap.getOrDefault(player, 0);
+    if (skips > 0) {
+      skipTurnMap.put(player, skips - 1);
+      advanceToNextPlayer();
+      return;
+    }
+
+    if (!gameRules.canEnterTrack(player, steps)) {
+      advanceToNextPlayer();
+      return;
+    }
+
+    int maxId = board.getTiles().size();
+    int destId = gameRules.destinationTile(player, steps, maxId);
+    if (destId < 0) {
+      advanceToNextPlayer();
+      return;
+    }
+
+    int originId = player.getCurrentTileId();
+    int hopCount = ((destId - originId) + maxId) % maxId;
+
+    animator.movePlayerAlongTiles(player, hopCount, () -> {
+      Tile landed = board.getTile(player.getCurrentTileId());
+
+      notifyObservers(new BoardGameEvent(
+          BoardGameEventType.PLAYER_MOVED,
+          player,
+          originId == 0 ? null : board.getTile(originId),
+          landed,
+          null));
+
+      applyLandAction(player, landed, () -> {
+        if (shouldFinish(player)) {
+          finishPlayer(player);
+        } else {
+          afterTurnLogic(player);
+        }
+      });
+    });
+  }
+
+  /**
+   * Checks and executes any special action on landing:
+   * <ul>
+   *   <li>{@link BackToStartAction}</li>
+   *   <li>{@link SkipTurnAction}</li>
+   *   <li>{@link LadderAction}</li>
+   * </ul>
+   *
+   * @param player the player who just landed
+   * @param landed the tile landed upon
+   * @param onDone callback function
+   */
+  protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
+    var action = landed.getLandAction();
+    if (action != null) {
+      switch (action) {
+        case BackToStartAction back -> {
+          back.perform(player);
+          animator.animateLadderMovement(player, landed.getTileId(), 1, () -> {
+            notifyObservers(new BoardGameEvent(
+                BoardGameEventType.PLAYER_BACK_START_ACTION,
+                player, landed, board.getTile(1), null));
+            onDone.run();
+          });
+          return;
+        }
+        case SkipTurnAction skipAct -> {
+          skipTurnMap.merge(player, skipAct.turnsToSkip(), Integer::sum);
+          notifyObservers(new BoardGameEvent(
+              BoardGameEventType.PLAYER_SKIP_TURN_ACTION,
+              player, landed, landed, null));
+          onDone.run();
+          return;
+        }
+        case LadderAction la -> {
+          int dest = la.getDestinationTileId();
+          la.perform(player);
+          animator.animateLadderMovement(player, landed.getTileId(), dest, () -> {
+            notifyObservers(new BoardGameEvent(
+                BoardGameEventType.PLAYER_LADDER_ACTION,
+                player, landed, board.getTile(dest), null));
+            onDone.run();
+          });
+          return;
+        }
+        default -> {
+        }
+      }
+    }
+    if (action != null) {
+      action.perform(player);
+    }
+    onDone.run();
+  }
+
+  /**
+   * Handles when a player finishes
+   *
+   * @param player the player who just finished
+   */
   private void finishPlayer(Player player) {
     logger.log(Level.INFO, player.getName() + " finished");
     finishedPlayers.add(player);
     turnOrder.remove(currentIndex);
 
-    boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_FINISHED, player, null,
-        new Tile(player.getCurrentTileId())));
+    notifyObservers(new BoardGameEvent(
+        BoardGameEventType.PLAYER_FINISHED,
+        player, null,
+        new Tile(player.getCurrentTileId()),
+        null));
 
     if (!turnOrder.isEmpty()) {
       if (currentIndex >= turnOrder.size()) {
         currentIndex = 0;
       }
-      boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
+      notifyObservers(new BoardGameEvent(
+          BoardGameEventType.CURRENT_PLAYER_CHANGED,
+          turnOrder.get(currentIndex),
+          null, null, null));
     } else {
-      boardGameScene.setCurrentPlayer(null);
-    }
+      notifyObservers(new BoardGameEvent(
+          BoardGameEventType.CURRENT_PLAYER_CHANGED,
+          null, null, null, null));
 
-    if (turnOrder.isEmpty()) {
-      PodiumGameScene.setFinalRanking(finishedPlayers);
-      boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.GAME_FINISHED, player, null,
-          new Tile(player.getCurrentTileId())));
-    } else if (currentIndex >= turnOrder.size()) {
-      currentIndex = 0;
+      notifyObservers(new BoardGameEvent(
+          BoardGameEventType.GAME_FINISHED,
+          null, null, null,
+          List.copyOf(finishedPlayers)));
     }
   }
 
+  /**
+   * Advances the turn index to the next player in the list
+   * and fires {@link BoardGameEventType#CURRENT_PLAYER_CHANGED}.
+   */
   protected void advanceToNextPlayer() {
     currentIndex = (currentIndex + 1) % turnOrder.size();
-    boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
+    notifyObservers(new BoardGameEvent(
+        BoardGameEventType.CURRENT_PLAYER_CHANGED,
+        turnOrder.get(currentIndex),
+        null, null, null));
   }
 
   protected void afterTurnLogic(Player current) {
     advanceToNextPlayer();
+  }
+
+  /**
+   * Getter for the board
+   *
+   * @return the game board
+   */
+  public Board getBoard() {
+    return board;
   }
 }
