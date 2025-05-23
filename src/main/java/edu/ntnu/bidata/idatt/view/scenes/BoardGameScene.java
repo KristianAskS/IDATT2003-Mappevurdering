@@ -73,6 +73,8 @@ public class BoardGameScene implements BoardGameObserver {
       "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame()));
   private List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private HBox stagingArea;
+  Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
+
   private boolean isGameFinished = false;
   private Button rollBtn;
 
@@ -81,8 +83,6 @@ public class BoardGameScene implements BoardGameObserver {
     BorderPane rootPane = createRootPane();
     VBox ioContainer = createIOContainer();
     rootPane.setLeft(ioContainer);
-
-    Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
 
     int numbOfDice = 2;
     if (isLudo) {
@@ -404,5 +404,8 @@ public class BoardGameScene implements BoardGameObserver {
     if (rollBtn != null && rollBtn.isDisabled()) {
       rollBtn.setDisable(false);
     }
+  }
+  public Board getBoard(){
+    return selectedBoardModel;
   }
 }
