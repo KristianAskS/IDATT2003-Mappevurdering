@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
- * Data persistence
+ * Board service for loading and saving board models.
  */
 public class BoardService {
   private static final Logger logger = Logger.getLogger(BoardService.class.getName());
@@ -23,6 +23,9 @@ public class BoardService {
   private Board board;
   private List<Board> boards = new ArrayList<>();
 
+  /**
+   * Constructs a new BoardService.
+   */
   public BoardService() {
     try (Stream<@org.jetbrains.annotations.NotNull Path> files = Files.list(Paths.get(BOARD_DIR))) {
       files.filter(path -> path.toString().endsWith(".json"))
@@ -39,18 +42,38 @@ public class BoardService {
     }
   }
 
+  /**
+   * Returns the current board.
+   *
+   * @return the board
+   */
   public Board getBoard() {
     return board;
   }
 
+  /**
+   * Sets the current board.
+   *
+   * @param board the board to set
+   */
   public void setBoard(Board board) {
     this.board = board;
   }
 
+  /**
+   * Returns the board file handler.
+   *
+   * @return the board file handler
+   */
   public FileHandler<Board> getBoardFileHandler() {
     return boardFileHandler;
   }
 
+  /**
+   * Returns the list of boards.
+   *
+   * @return the list of boards
+   */
   public List<Board> getBoards() {
     if (boards == null) {
       boards = new ArrayList<>();

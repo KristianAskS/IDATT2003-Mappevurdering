@@ -11,16 +11,19 @@ import edu.ntnu.bidata.idatt.model.entity.Tile;
  */
 public final class LaddersRules implements GameRules {
 
+  /** {@inheritDoc} */
   @Override
   public boolean canEnterTrack(Player player, int rolled) {
     return true;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int destinationTile(Player player, int rolled, int max) {
     return Math.min(player.getCurrentTileId() + rolled, max);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void onLand(Player player, Tile landed) {
     if (landed.getLandAction() != null) {

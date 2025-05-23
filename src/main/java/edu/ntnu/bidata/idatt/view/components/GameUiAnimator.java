@@ -15,14 +15,29 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
+/**
+ * Utility class for animating the game UI.
+ */
 public class GameUiAnimator {
   private static final double TOKEN_PIXELS_PER_SECOND = 400.0;
   private final BoardGameScene scene;
 
+  /**
+   * Constructs a new GameUiAnimator.
+   *
+   * @param scene the scene to animate
+   */
   public GameUiAnimator(BoardGameScene scene) {
     this.scene = scene;
   }
 
+  /**
+   * Moves a player along the tiles.
+   *
+   * @param player the player to move
+   * @param steps the number of steps to move
+   * @param onDone a callback to execute after the move is complete
+   */
   public void movePlayerAlongTiles(Player player, int steps, Runnable onDone) {
     Node token = player.getToken();
     if (token == null || steps == 0) {
@@ -50,6 +65,14 @@ public class GameUiAnimator {
     seq.play();
   }
 
+  /**
+   * Animates the movement of a ladder.
+   *
+   * @param player the player to move
+   * @param fromTileId the starting tile id
+   * @param toTileId the destination tile id
+   * @param onDone a callback to execute after the move is complete
+   */
   public void animateLadderMovement(Player player,
                                     int fromTileId,
                                     int toTileId,
@@ -82,6 +105,14 @@ public class GameUiAnimator {
     pt.play();
   }
 
+  /**
+   * Returns a pause transition for the given player and tile.
+   *
+   * @param player the player to move
+   * @param nextId the destination tile id
+   * @param token the token to move
+   * @return a pause transition
+   */
   private PauseTransition getHopTransition(Player player,
                                            int nextId,
                                            Node token) {
@@ -97,6 +128,12 @@ public class GameUiAnimator {
     return pause;
   }
 
+  /**
+   * Calculates the center of the tile in the grid.
+   *
+   * @param tv the tile view to calculate the center of
+   * @return the center of the tile in the grid
+   */
   private Point2D tileCenter(TileView tv) {
     Bounds b = tv.localToScene(tv.getBoundsInLocal());
     double x = b.getMinX() + b.getWidth() * 0.5;
@@ -104,6 +141,12 @@ public class GameUiAnimator {
     return scene.getTokenLayer().sceneToLocal(x, y);
   }
 
+  /**
+   * Returns the tile view for the given tile id.
+   *
+   * @param id the tile id
+   * @return the tile view
+   */
   private TileView lookupTileView(int id) {
     return (TileView) scene.getScene().lookup("#tile" + id);
   }

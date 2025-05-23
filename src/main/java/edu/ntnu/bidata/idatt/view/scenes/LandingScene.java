@@ -11,9 +11,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
+/**
+ * Represents the landing scene.
+ * Displays the main menu.
+ * Extends {@link BaseScene} for common scene setup.
+ */
 public class LandingScene extends BaseScene {
   private static final Logger logger = Logger.getLogger(LandingScene.class.getName());
 
+  /**
+   * Initializes the UI layout to display the landing scene.
+   */
   @Override
   protected void initialize() {
     BorderPane rootPane = this.root;

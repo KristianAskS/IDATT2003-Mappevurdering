@@ -29,7 +29,6 @@ public abstract class GameController {
   protected final Dice dice;
   protected final Die die;
   final GameRules gameRules;
-
   private final Map<Player, Integer> skipTurnMap = new HashMap<>();
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
@@ -81,7 +80,6 @@ public abstract class GameController {
 
     initializeTurnOrder();
 
-    // Første spiller
     notifyObservers(new BoardGameEvent(
         BoardGameEventType.CURRENT_PLAYER_CHANGED,
         turnOrder.get(currentIndex),
@@ -187,7 +185,7 @@ public abstract class GameController {
           return;
         }
         default -> {
-          // ingen ekstra handling
+
         }
       }
     }
@@ -217,7 +215,7 @@ public abstract class GameController {
           turnOrder.get(currentIndex),
           null, null, null));
     } else {
-      // ingen flere spillere → sluttspill
+
       notifyObservers(new BoardGameEvent(
           BoardGameEventType.CURRENT_PLAYER_CHANGED,
           null, null, null, null));

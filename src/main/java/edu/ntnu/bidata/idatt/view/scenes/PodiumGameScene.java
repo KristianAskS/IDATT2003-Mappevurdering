@@ -21,11 +21,6 @@ public class PodiumGameScene extends BaseScene {
 
   private static List<Player> finalRanking;
 
-  /**
-   * Sets the list of players to be displayed in final ranking order.
-   *
-   * @param ranking index 0=first, 1=second, 2=third
-   */
   public static void setFinalRanking(List<Player> ranking) {
     finalRanking = ranking;
   }

@@ -4,8 +4,8 @@ import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 import java.util.List;
 
-/*
- A record for board game events.
+/**
+ * A record that represents a board game event
  */
 public record BoardGameEvent(
     BoardGameEventType eventType,
