@@ -32,7 +32,6 @@ public class PodiumGameScene extends BaseScene {
 
   @Override
   protected void initialize() {
-    // 1) Configure the shared root pane
     BorderPane root = this.root;
     root.setPadding(Insets.EMPTY);
     root.setStyle("-fx-font-family: 'monospace';");
@@ -44,17 +43,14 @@ public class PodiumGameScene extends BaseScene {
         ))
     );
 
-    // 2) Configure the inherited scene dimensions (fill is already default)
-    scene.setFill(Color.TRANSPARENT);  // optional, if you want a fill
+    scene.setFill(Color.TRANSPARENT);
 
-    // 3) Build title and podium
     Label title = new Label("Congratulations:");
     title.getStyleClass().add("podium-title");
 
     HBox podium = createPodium(finalRanking);
     podium.getStyleClass().add("podium-container");
 
-    // 4) Build navigation buttons
     Button playAgain = Buttons.getSmallPrimaryBtn("Play again");
     playAgain.setOnAction(e -> SceneManager.showBoardSelectionScene());
 
@@ -64,12 +60,10 @@ public class PodiumGameScene extends BaseScene {
     HBox buttons = new HBox(30, playAgain, mainMenu);
     buttons.setAlignment(Pos.CENTER);
 
-    // 5) Assemble center and attach
     VBox center = new VBox(40, title, podium, buttons);
     center.setAlignment(Pos.CENTER);
     root.setCenter(center);
 
-    // 6) Apply stylesheet
     scene.getStylesheets().add(
         Objects.requireNonNull(
             getClass().getResource(
@@ -79,13 +73,8 @@ public class PodiumGameScene extends BaseScene {
     );
   }
 
-  // You no longer need this:
-  // public Scene getScene() { return scene; }
-
-  // --- helper methods unchanged ---
-
   private HBox createPodium(List<Player> ranking) {
-    Player first = (ranking != null && ranking.size() > 0) ? ranking.get(0) : null;
+    Player first = (ranking != null && !ranking.isEmpty()) ? ranking.get(0) : null;
     Player second = (ranking != null && ranking.size() > 1) ? ranking.get(1) : null;
     Player third = (ranking != null && ranking.size() > 2) ? ranking.get(2) : null;
 
@@ -106,7 +95,7 @@ public class PodiumGameScene extends BaseScene {
     Label placeLbl = new Label(String.valueOf(place));
     placeLbl.getStyleClass().add("pillar-place");
 
-    Label nameLbl = new Label(player != null ? player.getName() : "—");
+    Label nameLbl = new Label(player != null ? player.getName() : "-");
     nameLbl.getStyleClass().add("pillar-name");
 
     VBox pillar = new VBox(10, placeLbl, nameLbl);
