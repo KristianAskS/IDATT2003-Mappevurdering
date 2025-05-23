@@ -21,7 +21,8 @@ public class TileView extends StackPane {
 
   /**
    * Constructs a new TileView
-   * @param tile the tile
+   *
+   * @param tile      the tile
    * @param TILE_SIZE the tile size
    */
   public TileView(Tile tile, int TILE_SIZE) {

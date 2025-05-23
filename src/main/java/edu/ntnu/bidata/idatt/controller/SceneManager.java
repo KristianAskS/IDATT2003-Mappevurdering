@@ -1,6 +1,9 @@
 package edu.ntnu.bidata.idatt.controller;
 
+import edu.ntnu.bidata.idatt.model.entity.Board;
+import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
+import edu.ntnu.bidata.idatt.view.components.GameUiAnimator;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 import edu.ntnu.bidata.idatt.view.scenes.BoardSelectionScene;
 import edu.ntnu.bidata.idatt.view.scenes.GameSelectionScene;
@@ -8,6 +11,7 @@ import edu.ntnu.bidata.idatt.view.scenes.LandingScene;
 import edu.ntnu.bidata.idatt.view.scenes.PlayerSelectionScene;
 import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,11 +38,10 @@ public class SceneManager {
    */
   public static final int SCENE_HEIGHT = 800;
   private static final Logger logger = Logger.getLogger(SceneManager.class.getName());
-
   private static final String BUTTONS_CSS_PATH =
       "/edu/ntnu/bidata/idatt/styles/ButtonsStyles.css";
-
   private static Stage primaryStage;
+  private GameUiAnimator animator;
 
   /**
    * <p>Initializes the SceneManager with the given primary stage.</p>
@@ -93,8 +96,28 @@ public class SceneManager {
    * @throws IOException if loading required resources fails
    */
   public static void showBoardGameScene() throws IOException {
-    Scene scene = loadBtnCss(new BoardGameScene().getScene());
-    primaryStage.setScene(scene);
+    boolean isLudo = "LUDO".equalsIgnoreCase(
+        String.valueOf(GameSelectionScene.getSelectedGame()));
+    Board selectedBoard = BoardSelectionScene.getSelectedBoard();
+    List<Player> players = PlayerSelectionScene.getSelectedPlayers();
+    int diceCount = 2;
+
+    GameController controller;
+    if (isLudo) {
+      controller = new LudoGameController(selectedBoard, diceCount);
+    } else {
+      controller = new LaddersController(selectedBoard, diceCount);
+    }
+
+    BoardGameScene scene = new BoardGameScene(controller);
+    controller.addObserver(scene);
+
+    GameUiAnimator animator = new GameUiAnimator(scene);
+    controller.setAnimator(animator);
+
+    controller.initializePlayers(players);
+
+    primaryStage.setScene(loadBtnCss(scene.getScene()));
     logger.log(Level.INFO, "Switched to BoardGameScene");
   }
 

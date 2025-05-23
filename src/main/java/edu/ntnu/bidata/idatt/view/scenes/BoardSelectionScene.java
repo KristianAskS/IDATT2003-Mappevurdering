@@ -54,6 +54,7 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Returns the currently selected game board.
+   *
    * @return The {@link Board} selected by the user, or null if no board is selected.
    */
   public static Board getSelectedBoard() {
@@ -97,6 +98,7 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Returns the JavaFX {@link Scene} for this view.
+   *
    * @return The scene object.
    */
   public Scene getScene() {
@@ -105,6 +107,7 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Creates a VBox container for board selection buttons.
+   *
    * @return The styled {@link VBox} for board options.
    */
   private VBox createSelectionContainer() {
@@ -124,6 +127,7 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Creates a VBox container to display details of the selected board.
+   *
    * @return The styled {@link VBox} for board details.
    */
   private VBox createDetailsContainer() {
@@ -156,6 +160,7 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Creates an HBox container for bottom navigation buttons (Back, Play).
+   *
    * @return The styled {@link HBox} with navigation buttons.
    */
   private HBox createBottomContainer() {
@@ -193,6 +198,7 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Sets the given board as the current board in the service and updates the details view.
+   *
    * @param board The {@link Board} to load.
    */
   private void load(Board board) {
@@ -211,6 +217,7 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Updates the details panel with information from the given board and sets it as selected.
+   *
    * @param board The {@link Board} whose details are to be displayed.
    */
   private void updateDetails(Board board) {
@@ -221,6 +228,7 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Creates a button for a given board. When clicked, it loads the board.
+   *
    * @param b The {@link Board} for which to create a button.
    * @return A configured {@link Button}.
    */
@@ -350,9 +358,10 @@ public class BoardSelectionScene extends BaseScene {
 
   /**
    * Displays an alert dialog with the specified type, title, and message.
-   * @param type The {@link Alert.AlertType} of the alert.
+   *
+   * @param type  The {@link Alert.AlertType} of the alert.
    * @param title The title of the alert window.
-   * @param msg The main message content of the alert.
+   * @param msg   The main message content of the alert.
    */
   private void showAlert(Alert.AlertType type, String title, String msg) {
     Alert alert = new Alert(type);

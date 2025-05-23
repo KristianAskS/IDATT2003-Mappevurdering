@@ -40,11 +40,12 @@ public class SnakeRenderer {
   private SnakeRenderer() {
   }
 
-  /** Draws the snakes defined in the board model.
+  /**
+   * Draws the snakes defined in the board model.
    *
-   * @param board the board model
-   * @param boardGrid the grid pane to draw on
-   * @param overlayPane the pane to draw overlays on
+   * @param board          the board model
+   * @param boardGrid      the grid pane to draw on
+   * @param overlayPane    the pane to draw overlays on
    * @param gameController the game controller
    */
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlayPane,
@@ -91,7 +92,8 @@ public class SnakeRenderer {
         });
   }
 
-  /** Creates a snake visual from the start and end centers.
+  /**
+   * Creates a snake visual from the start and end centers.
    *
    * @param headCenter the start center
    * @param tailCenter the end center
@@ -166,6 +168,7 @@ public class SnakeRenderer {
 
   /**
    * Creates a random snake color.
+   *
    * @return a random color
    */
   private static Color getRandomSnakeColor() {
@@ -181,7 +184,6 @@ public class SnakeRenderer {
   }
 
   /**
-   *
    * @param headId the head tile id
    * @param tailId the tail tile id
    * @return true if the snake is valid, false otherwise

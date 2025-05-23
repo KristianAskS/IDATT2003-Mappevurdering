@@ -35,7 +35,7 @@ public class GameUiAnimator {
    * Moves a player along the tiles.
    *
    * @param player the player to move
-   * @param steps the number of steps to move
+   * @param steps  the number of steps to move
    * @param onDone a callback to execute after the move is complete
    */
   public void movePlayerAlongTiles(Player player, int steps, Runnable onDone) {
@@ -68,10 +68,10 @@ public class GameUiAnimator {
   /**
    * Animates the movement of a ladder.
    *
-   * @param player the player to move
+   * @param player     the player to move
    * @param fromTileId the starting tile id
-   * @param toTileId the destination tile id
-   * @param onDone a callback to execute after the move is complete
+   * @param toTileId   the destination tile id
+   * @param onDone     a callback to execute after the move is complete
    */
   public void animateLadderMovement(Player player,
                                     int fromTileId,
@@ -110,7 +110,7 @@ public class GameUiAnimator {
    *
    * @param player the player to move
    * @param nextId the destination tile id
-   * @param token the token to move
+   * @param token  the token to move
    * @return a pause transition
    */
   private PauseTransition getHopTransition(Player player,

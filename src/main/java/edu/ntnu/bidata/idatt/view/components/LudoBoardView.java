@@ -40,7 +40,9 @@ public class LudoBoardView extends BaseBoardView {
   private static final int YELLOW_SAFE = 26;
   private static final int RED_SAFE = 39;
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected void layout(Board board, GridPane grid) {
 
@@ -82,11 +84,12 @@ public class LudoBoardView extends BaseBoardView {
   }
 
 
-  /** Paints a block of tiles at the given coordinates.
+  /**
+   * Paints a block of tiles at the given coordinates.
    *
-   * @param grid the {@link GridPane} to add tiles to
-   * @param col the column index
-   * @param row the row index
+   * @param grid  the {@link GridPane} to add tiles to
+   * @param col   the column index
+   * @param row   the row index
    * @param color the color of the tiles
    */
   private void paintBlock(GridPane grid, int col, int row, Color color) {
@@ -99,13 +102,14 @@ public class LudoBoardView extends BaseBoardView {
     }
   }
 
-  /** Paints a column of tiles at the given coordinates.
+  /**
+   * Paints a column of tiles at the given coordinates.
    *
-   * @param grid the {@link GridPane} to add tiles to
-   * @param col the column index
+   * @param grid     the {@link GridPane} to add tiles to
+   * @param col      the column index
    * @param startRow the starting row index
-   * @param len the number of rows to paint
-   * @param color the color of the tiles
+   * @param len      the number of rows to paint
+   * @param color    the color of the tiles
    */
   private void paintColumn(GridPane grid, int col, int startRow, int len, Color color) {
     for (int row = startRow; row < startRow + len; row++) {
@@ -115,13 +119,14 @@ public class LudoBoardView extends BaseBoardView {
     }
   }
 
-  /** Paints a row of tiles at the given coordinates.
+  /**
+   * Paints a row of tiles at the given coordinates.
    *
-   * @param grid the {@link GridPane} to add tiles to
+   * @param grid     the {@link GridPane} to add tiles to
    * @param startCol the starting column index
-   * @param row the row index
-   * @param len the number of columns to paint
-   * @param color the color of the tiles
+   * @param row      the row index
+   * @param len      the number of columns to paint
+   * @param color    the color of the tiles
    */
   private void paintRow(GridPane grid, int startCol, int row, int len, Color color) {
     for (int c = startCol; c < startCol + len; c++) {
@@ -131,11 +136,12 @@ public class LudoBoardView extends BaseBoardView {
     }
   }
 
-  /** Paints an entry square at the given coordinates.
+  /**
+   * Paints an entry square at the given coordinates.
    *
-   * @param grid the {@link GridPane} to add tiles to
-   * @param row the row index
-   * @param col the column index
+   * @param grid   the {@link GridPane} to add tiles to
+   * @param row    the row index
+   * @param col    the column index
    * @param colour the color of the tiles
    */
   private void paintEntry(GridPane grid, int row, int col, Color colour) {
@@ -144,7 +150,8 @@ public class LudoBoardView extends BaseBoardView {
     grid.add(sq, col, row);
   }
 
-  /** Paints a star at the center of the board.
+  /**
+   * Paints a star at the center of the board.
    *
    * @param grid the {@link GridPane} to add tiles to
    */
@@ -176,7 +183,9 @@ public class LudoBoardView extends BaseBoardView {
     grid.add(star, 6, 6);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected void decorate(GridPane grid) {
     grid.setGridLinesVisible(false);

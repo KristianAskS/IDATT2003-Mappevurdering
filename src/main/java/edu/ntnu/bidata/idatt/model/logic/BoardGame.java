@@ -27,7 +27,7 @@ public class BoardGame {
   /**
    * Constructs a new BoardGame.
    *
-   * @param board the board model
+   * @param board     the board model
    * @param numOfDice the number of dice to use
    */
   public BoardGame(Board board, int numOfDice) {
@@ -75,7 +75,7 @@ public class BoardGame {
     }
     started = true;
     //Collections.shuffle(players);
-    notifyEvent(new BoardGameEvent(BoardGameEventType.PLAYER_MOVED, null, null, null));
+    notifyEvent(new BoardGameEvent(BoardGameEventType.PLAYER_MOVED, null, null, null, null));
   }
 
   /**

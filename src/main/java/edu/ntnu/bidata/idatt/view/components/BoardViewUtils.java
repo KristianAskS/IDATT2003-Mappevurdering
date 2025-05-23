@@ -17,12 +17,13 @@ public class BoardViewUtils {
   private BoardViewUtils() {
   }
 
-  /** Calculates the center of the tile in the grid
+  /**
+   * Calculates the center of the tile in the grid
    *
-   * @param grid the grid to calculate the center of
+   * @param grid           the grid to calculate the center of
    * @param gameController the game controller
-   * @param board the board model
-   * @param tile the tile to calculate the center of
+   * @param board          the board model
+   * @param tile           the tile to calculate the center of
    * @return the center of the tile in the grid
    */
   public static double[] getTileCenter(GridPane grid, GameController gameController, Board board,

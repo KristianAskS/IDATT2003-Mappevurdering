@@ -7,8 +7,6 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LADDER;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LUDO;
 
 import edu.ntnu.bidata.idatt.controller.GameController;
-import edu.ntnu.bidata.idatt.controller.LaddersController;
-import edu.ntnu.bidata.idatt.controller.LudoGameController;
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
@@ -34,14 +32,11 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -58,11 +53,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-/**
- * Manages the visual representation and interaction for the board game.
- * It displays the game board, tokens, dice, and logs game events.
- * Implements {@link BoardGameObserver} to react to game state changes.
- */
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
   private final Scene scene;
@@ -71,34 +61,21 @@ public class BoardGameScene implements BoardGameObserver {
   private final DiceView diceView;
   private final GridPane boardGridPane;
   private final Pane tokenLayerPane = new Pane();
-  private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
-      FXCollections.observableArrayList();
   private final GameController gameController;
   private final boolean isLudo =
       "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame()));
   Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
   private List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private HBox stagingArea;
-  private boolean isGameFinished = false;
   private Button rollBtn;
 
-  /**
-   * Constructs the BoardGameScene, setting up UI components and the game controller.
-   *
-   * @throws IOException If an I/O error occurs during setup.
-   */
-  public BoardGameScene() throws IOException {
+  public BoardGameScene(GameController controller) {
     diceView = new DiceView();
     BorderPane rootPane = createRootPane();
     VBox ioContainer = createIOContainer();
     rootPane.setLeft(ioContainer);
 
-    int numbOfDice = 2;
-    if (isLudo) {
-      gameController = new LudoGameController(this, selectedBoardModel, numbOfDice);
-    } else {
-      gameController = new LaddersController(this, selectedBoardModel, numbOfDice);
-    }
+    this.gameController = controller;
 
     final Board boardForGuiSetup = gameController.getBoard();
 
@@ -139,18 +116,10 @@ public class BoardGameScene implements BoardGameObserver {
     StackPane container = new StackPane(rootPane);
     scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
 
-    gameController.initializePlayers(players);
-
     logger.log(Level.INFO, "BoardGameScene initialized. Game = {0}",
         GameSelectionScene.getSelectedGame());
   }
 
-  /**
-   * Provides X and Y offsets for positioning multiple tokens on a single tile.
-   *
-   * @param tokenCount The number of tokens.
-   * @return A 2D array of [xOffsetFactor, yOffsetFactor] for each token.
-   */
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
       case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
@@ -161,12 +130,6 @@ public class BoardGameScene implements BoardGameObserver {
     };
   }
 
-  /**
-   * Calculates the center coordinates of the given bounds.
-   *
-   * @param bounds The bounds of a UI element (e.g., a tile).
-   * @return A double array [x, y] representing the center.
-   */
   @SuppressWarnings("unused")
   public static double[] getTileCenter(Bounds bounds) {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
@@ -175,11 +138,6 @@ public class BoardGameScene implements BoardGameObserver {
     return new double[] {x, y};
   }
 
-  /**
-   * Initializes or updates the UI for players, including their tokens in the staging area.
-   *
-   * @param players The list of players.
-   */
   public void setupPlayersUI(List<Player> players) {
     this.players = players;
     players.forEach(player -> player.setCurrentTileId(0));
@@ -190,12 +148,6 @@ public class BoardGameScene implements BoardGameObserver {
     players.forEach(player -> stagingArea.getChildren().add(player.getToken()));
   }
 
-  /**
-   * Visually highlights the end tile on the board.
-   *
-   * @param board The game board model.
-   * @param boardGridPane The UI grid representing the board.
-   */
   private void highlightEndTile(Board board, GridPane boardGridPane) {
     TileView tileView = (TileView) boardGridPane.lookup("#tile" + board.getTiles().size());
     tileView.setStyle("-fx-background-color: #FFD700");
@@ -205,12 +157,6 @@ public class BoardGameScene implements BoardGameObserver {
     tileView.getChildren().add(lbl);
   }
 
-  /**
-   * Visually highlights tiles that have special actions (excluding ladders/snakes).
-   *
-   * @param board The game board model.
-   * @param boardGridPane The UI grid representing the board.
-   */
   private void highlightActionTiles(Board board, GridPane boardGridPane) {
     board.getTiles().values().forEach(tile -> {
       TileAction action = tile.getLandAction();
@@ -236,11 +182,6 @@ public class BoardGameScene implements BoardGameObserver {
     });
   }
 
-  /**
-   * Arranges tokens visually on a given tile, using offsets for multiple tokens.
-   *
-   * @param tile The {@link TileView} where tokens are located.
-   */
   public void setTokenPositionOnTile(TileView tile) {
     List<Node> tokens = tile.getChildren().stream()
         .filter(node -> node instanceof TokenView).toList();
@@ -257,10 +198,6 @@ public class BoardGameScene implements BoardGameObserver {
   }
 
 
-  /**
-   * Repositions all player tokens on their respective tiles.
-   * Called after moves or actions that might alter token layout on a tile.
-   */
   public void repositionTokenOnTile() {
     players.forEach(player -> {
       int tileId = player.getCurrentTileId();
@@ -273,18 +210,10 @@ public class BoardGameScene implements BoardGameObserver {
     });
   }
 
-  /**
-   * Handles game events by updating the UI, such as event logs and token positions.
-   * Triggers game state changes like navigating to the podium scene.
-   *
-   * @param event The {@link BoardGameEvent} that occurred.
-   */
   @Override
   public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
       Player player = event.player();
-      //int rolled = boardGameController.getLastRolledValue();
-      //eventLog.appendText(String.format("%s rolled a %d%n", pl.getName(), rolled));
 
       int oldId = event.oldTile() != null ? event.oldTile().getTileId() : 0;
       int newId = event.newTile() != null ? event.newTile().getTileId() : 0;
@@ -323,10 +252,18 @@ public class BoardGameScene implements BoardGameObserver {
           repositionTokenOnTile();
         }
         case GAME_FINISHED -> {
-          if (!isGameFinished) {
-            isGameFinished = true;
+          eventLog.appendText("Game over!");
+          List<Player> podium = event.finalRanking();
+          Platform.runLater(() -> {
+            PodiumGameScene.setFinalRanking(podium);
             SceneManager.showPodiumGameScene();
-          }
+          });
+        }
+        case GAME_STARTED -> {
+          setupPlayersUI(players);
+        }
+        case CURRENT_PLAYER_CHANGED -> {
+          setCurrentPlayer(event.player());
         }
         default -> repositionTokenOnTile();
       }
@@ -344,40 +281,20 @@ public class BoardGameScene implements BoardGameObserver {
 
   }
 
-  /**
-   * Returns the main JavaFX scene for this game view.
-   *
-   * @return The {@link Scene}.
-   */
   public Scene getScene() {
     return scene;
   }
 
-  /**
-   * Returns the pane used as a layer for tokens above the game board.
-   *
-   * @return The token layer {@link Pane}.
-   */
   public Pane getTokenLayer() {
     return tokenLayerPane;
   }
 
-  /**
-   * Creates the main root {@link BorderPane} for the scene.
-   *
-   * @return The root BorderPane.
-   */
   private BorderPane createRootPane() {
     BorderPane rootBorderPane = new BorderPane();
     rootBorderPane.setStyle("-fx-background-color: #1A237E;");
     return rootBorderPane;
   }
 
-  /**
-   * Creates the {@link HBox} for the player token staging area.
-   *
-   * @return The staging area HBox.
-   */
   private HBox createStagingArea() {
     HBox stagingArea = new HBox(10);
     stagingArea.setPadding(new Insets(10));
@@ -389,11 +306,6 @@ public class BoardGameScene implements BoardGameObserver {
     return stagingArea;
   }
 
-  /**
-   * Creates the {@link TextArea} for displaying game event messages.
-   *
-   * @return The event log TextArea.
-   */
   private TextArea createOutputArea() {
     eventLog.setEditable(false);
     eventLog.setWrapText(true);
@@ -404,11 +316,6 @@ public class BoardGameScene implements BoardGameObserver {
     return eventLog;
   }
 
-  /**
-   * Creates the {@link VBox} containing UI controls (dice, logs, buttons).
-   *
-   * @return The IO container VBox.
-   */
   private VBox createIOContainer() {
     VBox ioContainer = new VBox();
     ioContainer.setPrefWidth(250);
@@ -480,12 +387,6 @@ public class BoardGameScene implements BoardGameObserver {
     return ioContainer;
   }
 
-  /**
-   * Updates the UI to display the name of the current player.
-   * Re-enables the roll button if it's disabled.
-   *
-   * @param player The current {@link Player}, or null.
-   */
   public void setCurrentPlayer(Player player) {
     String displayedText =
         (player == null) ? "Current player: " : "Current player: " + player.getName();
@@ -495,11 +396,6 @@ public class BoardGameScene implements BoardGameObserver {
     }
   }
 
-  /**
-   * Returns the current game board model.
-   *
-   * @return The selected {@link Board}.
-   */
   public Board getBoard() {
     return selectedBoardModel;
   }

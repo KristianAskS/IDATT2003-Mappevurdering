@@ -29,6 +29,7 @@ public class GameSelectionScene extends BaseScene {
 
   /**
    * Returns the currently selected game board.
+   *
    * @return Board selected by the user, or null if no board is selected.
    */
   public static String getSelectedGame() {
@@ -82,6 +83,7 @@ public class GameSelectionScene extends BaseScene {
 
   /**
    * Creates a VBox container for board selection buttons.
+   *
    * @return The styled {@link VBox} for board options.
    */
   private HBox createBottomContainer() {
