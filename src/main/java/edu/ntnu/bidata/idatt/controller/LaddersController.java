@@ -18,6 +18,6 @@ public final class LaddersController extends GameController {
     int id = tile.getTileId() - 1;
     int r = id / cols;
     int c = (r % 2 == 0) ? id % cols : cols - 1 - id % cols;
-    return new int[]{rows - 1 - r, c};
+    return new int[] {rows - 1 - r, c};
   }
 }

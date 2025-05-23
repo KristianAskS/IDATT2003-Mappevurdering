@@ -3,19 +3,14 @@ package edu.ntnu.bidata.idatt.controller;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.controller.rules.GameRules;
-import edu.ntnu.bidata.idatt.controller.rules.LudoRules;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
 import edu.ntnu.bidata.idatt.model.entity.Die;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
-import edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction;
-import edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction;
-import edu.ntnu.bidata.idatt.model.logic.action.TileAction;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.GameUiAnimator;
-import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
 import java.io.IOException;
@@ -26,17 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.PathTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.SequentialTransition;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
+
 
 /**
  * Base controller that contains the core game‑flow logic that is shared across the different board
@@ -123,8 +108,11 @@ public abstract class GameController {
           BoardGameEventType.PLAYER_MOVED, player,
           originId == 0 ? null : board.getTile(originId), landed));
       applyLandAction(player, landed, () -> {
-        if (shouldFinish(player)) finishPlayer(player);
-        else afterTurnLogic(player);
+        if (shouldFinish(player)) {
+          finishPlayer(player);
+        } else {
+          afterTurnLogic(player);
+        }
       });
     });
   }
@@ -143,6 +131,7 @@ public abstract class GameController {
     turnOrder.addAll(players);
     boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
   }
+
   protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
     var action = landed.getLandAction();
     if (action != null) {
@@ -176,13 +165,16 @@ public abstract class GameController {
           });
           return;
         }
-        default -> { /* fall-through */ }
+        default -> {
+
+        }
       }
     }
-    if (action != null) action.perform(player);
+    if (action != null) {
+      action.perform(player);
+    }
     onDone.run();
   }
-
 
   private void finishPlayer(Player player) {
     logger.log(Level.INFO, player.getName() + " finished");

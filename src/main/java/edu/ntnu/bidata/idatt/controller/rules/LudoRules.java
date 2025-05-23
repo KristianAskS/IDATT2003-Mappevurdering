@@ -53,7 +53,7 @@ public final class LudoRules implements GameRules {
    * Calculates the distance between two tiles in a clockwise direction.
    *
    * @param from the starting tile id
-   * @param to the ending tile id
+   * @param to   the ending tile id
    * @return the distance between the two tiles
    */
   private static int distanceCW(int from, int to) {
@@ -64,7 +64,7 @@ public final class LudoRules implements GameRules {
    * Calculates the distance between two tiles in a counter-clockwise direction.
    *
    * @param from the starting tile id
-   * @param to the ending tile id
+   * @param to   the ending tile id
    * @return the distance between the two tiles
    */
   private static int distanceCCW(int from, int to) {
@@ -74,8 +74,8 @@ public final class LudoRules implements GameRules {
   /**
    * Checks if the given tile id crosses the start tile in a clockwise direction.
    *
-   * @param cur the current tile id
-   * @param dist the distance between the current tile and the start tile
+   * @param cur   the current tile id
+   * @param dist  the distance between the current tile and the start tile
    * @param start the start tile id
    * @return true if the tile crosses the start tile, false otherwise
    */
@@ -102,7 +102,7 @@ public final class LudoRules implements GameRules {
   /**
    * Determines if the player can enter the track with the given roll.
    *
-   * @param p the player to check
+   * @param p      the player to check
    * @param rolled the rolled dice value
    * @return true if the player can enter the track, false otherwise
    */
@@ -114,8 +114,8 @@ public final class LudoRules implements GameRules {
   /**
    * Returns the destination tile id for the player after rolling the dice.
    *
-   * @param p the player to check
-   * @param rolled the rolled dice value
+   * @param p       the player to check
+   * @param rolled  the rolled dice value
    * @param ignored the maximum tile id
    * @return the destination tile id
    */

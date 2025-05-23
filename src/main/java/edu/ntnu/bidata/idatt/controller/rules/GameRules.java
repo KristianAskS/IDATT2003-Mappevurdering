@@ -21,8 +21,8 @@ public interface GameRules {
   /**
    * Returns the destination tile id for the player after rolling the dice.
    *
-   * @param player the player to check
-   * @param rolled the rolled dice value
+   * @param player    the player to check
+   * @param rolled    the rolled dice value
    * @param maxTileId the maximum tile id
    * @return the destination tile id
    */
@@ -31,7 +31,7 @@ public interface GameRules {
   /**
    * Called when a player lands on a tile.
    *
-   * @param player the player who landed
+   * @param player  the player who landed
    * @param landing the tile they landed on
    */
   void onLand(Player player, Tile landing);

@@ -1,10 +1,7 @@
 package edu.ntnu.bidata.idatt.view.components;
 
-import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
-import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
-import edu.ntnu.bidata.idatt.view.components.TileView;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 import javafx.animation.PathTransition;
 import javafx.animation.PauseTransition;
@@ -39,7 +36,9 @@ public class GameUiAnimator {
     int boardSize = scene.getBoard().getTiles().size();
     for (int i = 1; i <= steps; i++) {
       int nextId = (start + i) % boardSize;
-      if (nextId == 0) nextId = boardSize;
+      if (nextId == 0) {
+        nextId = boardSize;
+      }
       seq.getChildren().add(getHopTransition(player, nextId, token));
     }
     seq.setOnFinished(e -> {

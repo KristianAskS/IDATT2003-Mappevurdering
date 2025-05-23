@@ -71,10 +71,9 @@ public class BoardGameScene implements BoardGameObserver {
   private final GameController gameController;
   private final boolean isLudo =
       "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame()));
+  Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
   private List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private HBox stagingArea;
-  Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
-
   private boolean isGameFinished = false;
   private Button rollBtn;
 
@@ -405,7 +404,8 @@ public class BoardGameScene implements BoardGameObserver {
       rollBtn.setDisable(false);
     }
   }
-  public Board getBoard(){
+
+  public Board getBoard() {
     return selectedBoardModel;
   }
 }
