@@ -4,10 +4,7 @@ package edu.ntnu.bidata.idatt.model.entity;
  * Visual representation of a ladder connecting two {@link Tile} instances on a Snakes and Ladders
  * board.
  */
-public class Ladder {
-
-  private final int startTileId;
-  private final int endTileId;
+public record Ladder(int startTileId, int endTileId) {
 
   /**
    * Constructs a new ladder between the specified start and end tile ids
@@ -15,9 +12,7 @@ public class Ladder {
    * @param startTileId the id of the start tile
    * @param endTileId   the id of the end tile
    */
-  public Ladder(int startTileId, int endTileId) {
-    this.startTileId = startTileId;
-    this.endTileId = endTileId;
+  public Ladder {
   }
 
   /**
@@ -25,7 +20,8 @@ public class Ladder {
    *
    * @return the start tile id
    */
-  public int getStartTileId() {
+  @Override
+  public int startTileId() {
     return startTileId;
   }
 
@@ -34,7 +30,8 @@ public class Ladder {
    *
    * @return the end tile id
    */
-  public int getEndTileId() {
+  @Override
+  public int endTileId() {
     return endTileId;
   }
 
