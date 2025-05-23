@@ -29,6 +29,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
+/**
+ * Represents the scene where users can select a game board.
+ * It allows users to choose from predefined boards or import custom boards from JSON files.
+ * Extends {@link BaseScene} for common scene setup.
+ */
 public class BoardSelectionScene extends BaseScene {
   private static Board selectedBoard;
   private final BoardService boardService = new BoardService();
@@ -39,15 +44,26 @@ public class BoardSelectionScene extends BaseScene {
   private Label detailsTitle;
   private Label detailsDescription;
 
+  /**
+   * Constructs a new BoardSelectionScene and initializes its UI components.
+   */
   public BoardSelectionScene() {
     super();
     initialize();
   }
 
+  /**
+   * Returns the currently selected game board.
+   * @return The {@link Board} selected by the user, or null if no board is selected.
+   */
   public static Board getSelectedBoard() {
     return selectedBoard;
   }
 
+  /**
+   * Initializes the UI layout and components for the board selection scene.
+   * Sets up containers for board selection, board details, and navigation buttons.
+   */
   @Override
   protected void initialize() {
     scene.setFill(Color.PINK);
@@ -79,10 +95,18 @@ public class BoardSelectionScene extends BaseScene {
     rebuildSelectionPanel();
   }
 
+  /**
+   * Returns the JavaFX {@link Scene} for this view.
+   * @return The scene object.
+   */
   public Scene getScene() {
     return scene;
   }
 
+  /**
+   * Creates a VBox container for board selection buttons.
+   * @return The styled {@link VBox} for board options.
+   */
   private VBox createSelectionContainer() {
     VBox box = new VBox(15);
     box.setAlignment(Pos.CENTER);
@@ -98,6 +122,10 @@ public class BoardSelectionScene extends BaseScene {
     return box;
   }
 
+  /**
+   * Creates a VBox container to display details of the selected board.
+   * @return The styled {@link VBox} for board details.
+   */
   private VBox createDetailsContainer() {
     VBox box = new VBox(10);
     box.setAlignment(Pos.TOP_LEFT);
@@ -126,6 +154,10 @@ public class BoardSelectionScene extends BaseScene {
     return box;
   }
 
+  /**
+   * Creates an HBox container for bottom navigation buttons (Back, Play).
+   * @return The styled {@link HBox} with navigation buttons.
+   */
   private HBox createBottomContainer() {
     HBox bottomContainer = new HBox(20);
     bottomContainer.setPadding(new Insets(10, 20, 10, 20));
@@ -159,23 +191,39 @@ public class BoardSelectionScene extends BaseScene {
     return bottomContainer;
   }
 
+  /**
+   * Sets the given board as the current board in the service and updates the details view.
+   * @param board The {@link Board} to load.
+   */
   private void load(Board board) {
     boardService.setBoard(board);
     updateDetails(board);
   }
 
+  /**
+   * Resets the selected board to null and clears the details display.
+   */
   private void resetBoardSelection() {
     selectedBoard = null;
     detailsTitle.setText("Board Details");
     detailsDescription.setText("Select a board to see details here.");
   }
 
+  /**
+   * Updates the details panel with information from the given board and sets it as selected.
+   * @param board The {@link Board} whose details are to be displayed.
+   */
   private void updateDetails(Board board) {
     selectedBoard = board;
     detailsTitle.setText(board.getName());
     detailsDescription.setText(board.getDescription());
   }
 
+  /**
+   * Creates a button for a given board. When clicked, it loads the board.
+   * @param b The {@link Board} for which to create a button.
+   * @return A configured {@link Button}.
+   */
   private Button makeBoardButton(Board b) {
     Button btn = Buttons.getSecondaryBtn(b.getName());
     btn.setOnAction(e -> {
@@ -242,6 +290,10 @@ public class BoardSelectionScene extends BaseScene {
     rebuildSelectionPanel();
   }
 
+  /**
+   * Clears and rebuilds the panel containing board selection buttons.
+   * Includes buttons for default boards, imported boards, and the import function.
+   */
   private void rebuildSelectionPanel() {
     selectionBox.getChildren().clear();
 
@@ -296,6 +348,12 @@ public class BoardSelectionScene extends BaseScene {
     selectionBox.getChildren().addAll(title, columns);
   }
 
+  /**
+   * Displays an alert dialog with the specified type, title, and message.
+   * @param type The {@link Alert.AlertType} of the alert.
+   * @param title The title of the alert window.
+   * @param msg The main message content of the alert.
+   */
   private void showAlert(Alert.AlertType type, String title, String msg) {
     Alert alert = new Alert(type);
     alert.setTitle(title);
@@ -304,4 +362,3 @@ public class BoardSelectionScene extends BaseScene {
     alert.showAndWait();
   }
 }
-

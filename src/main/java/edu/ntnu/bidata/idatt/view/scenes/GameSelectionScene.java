@@ -16,16 +16,29 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+/**
+ * Represents the scene where users can select a game board.
+ * It allows users to choose from predefined boards or import custom boards from JSON files.
+ * Extends {@link BaseScene} for common scene setup.
+ */
 public class GameSelectionScene extends BaseScene {
 
   private static final Logger logger = Logger.getLogger(GameSelectionScene.class.getName());
 
   private static String selectedGame;
 
+  /**
+   * Returns the currently selected game board.
+   * @return Board selected by the user, or null if no board is selected.
+   */
   public static String getSelectedGame() {
     return selectedGame;
   }
 
+  /**
+   * Initializes the UI layout and components for the game selection scene.
+   * Sets up containers for game selection.
+   */
   @Override
   protected void initialize() {
     scene.setFill(Color.PINK);
@@ -67,6 +80,10 @@ public class GameSelectionScene extends BaseScene {
     logger.log(Level.INFO, "GameSelectionScene initialized");
   }
 
+  /**
+   * Creates a VBox container for board selection buttons.
+   * @return The styled {@link VBox} for board options.
+   */
   private HBox createBottomContainer() {
     HBox bottomBox = new HBox(20);
     bottomBox.setPadding(new Insets(10, 20, 10, 20));

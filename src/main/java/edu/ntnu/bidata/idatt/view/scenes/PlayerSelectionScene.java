@@ -60,6 +60,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
+/**
+ * Manages the player selection screen for the game.
+ * Allows users to create new players, select existing players,
+ * and define the total number of players for the upcoming game.
+ * Extends {@link BaseScene} for common scene setup.
+ */
 public class PlayerSelectionScene extends BaseScene {
 
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
@@ -76,6 +82,11 @@ public class PlayerSelectionScene extends BaseScene {
   private File selectedImage;
   private ColorPicker playerColorPicker;
 
+  /**
+   * Displays a dialog to select the total number of players for the game.
+   * The number of choices depends on the selected game type (Ludo or other)
+   * and specific board configurations (e.g., Ludo Mega).
+   */
   public static void showTotalPlayerSelectionDialog() {
     boolean isLudo = "LUDO".equalsIgnoreCase(GameSelectionScene.getSelectedGame());
     int minPlayers = isLudo ? 2 : 1;
@@ -110,18 +121,34 @@ public class PlayerSelectionScene extends BaseScene {
     updatePlayersCountLabel();
   }
 
+  /**
+   * Gets the total number of players selected for the game.
+   * @return The total player count, or 0 if not yet set.
+   */
   public static int getTotalPlayerCount() {
     return totalPlayerCount == null ? 0 : totalPlayerCount;
   }
 
+  /**
+   * Gets the observable list of players currently selected for the game.
+   * @return An {@link ObservableList} of {@link Player} objects.
+   */
   public static ObservableList<Player> getSelectedPlayers() {
     return selectedPlayers;
   }
 
+  /**
+   * Updates the label displaying the current number of selected players versus the total required.
+   */
   private static void updatePlayersCountLabel() {
     playersCountLabel.setText("Players: " + selectedPlayers.size() + "/" + getTotalPlayerCount());
   }
 
+  /**
+   * Initializes the player selection scene UI.
+   * Sets up panels for player input, selected players, and available players.
+   * @throws IOException If stylesheet resources cannot be loaded.
+   */
   @Override
   protected void initialize() throws IOException {
     scene.setFill(Color.LIGHTBLUE);
@@ -156,6 +183,10 @@ public class PlayerSelectionScene extends BaseScene {
         selectedGame);
   }
 
+  /**
+   * Creates the panel for manual player input (name, shape, color, image, DOB).
+   * @return A {@link VBox} containing player input fields and an add button.
+   */
   private VBox createPlayerInputPanel() {
     VBox inputPanel = createPanel("Add players manually");
     inputPanel.setMaxWidth(PANEL_WIDTH);
@@ -227,6 +258,9 @@ public class PlayerSelectionScene extends BaseScene {
     return inputPanel;
   }
 
+  /**
+   * Handles saving the currently selected players to persistent storage.
+   */
   private void handleSavePlayers() {
     String name = nameInput.getText();
     if (selectedPlayers.isEmpty()) {
@@ -247,6 +281,11 @@ public class PlayerSelectionScene extends BaseScene {
     }
   }
 
+  /**
+   * Handles the action of Browse for a player token image.
+   * @param shapeComboBox The ComboBox for token shape selection.
+   * @param imgPath The Label to display the selected image path.
+   */
   private void handleBrowseImage(ComboBox<String> shapeComboBox, Label imgPath) {
     FileChooser fileChooser = new FileChooser();
     fileChooser.getExtensionFilters()
@@ -260,6 +299,11 @@ public class PlayerSelectionScene extends BaseScene {
     }
   }
 
+  /**
+   * Creates the panel to display players currently added to the game.
+   * Shows selected player cards and options to edit total player count or save players.
+   * @return A {@link VBox} displaying selected players.
+   */
   private VBox createPlayerTablePanel() {
     VBox tablePanel = createPanel("Players added to the game");
     tablePanel.setPrefWidth(PANEL_WIDTH + 50);
@@ -296,6 +340,12 @@ public class PlayerSelectionScene extends BaseScene {
     return tablePanel;
   }
 
+  /**
+   * Creates the panel displaying available players loaded from storage.
+   * Allows users to select existing players or import players from a CSV file.
+   * @return A {@link VBox} displaying available players.
+   * @throws IOException If there's an error reading player data.
+   */
   private VBox createAvailablePlayersPanel() throws IOException {
     String heading = "LUDO".equalsIgnoreCase(selectedGame)
         ? "Saved Ludo players"
@@ -340,8 +390,9 @@ public class PlayerSelectionScene extends BaseScene {
   }
 
   /**
-   * Handles importing a CSV and replacing the available players list, but warns if the file doesn’t
-   * match the expected format.
+   * Handles importing player data from a CSV file.
+   * Replaces the current list of available players with those from the CSV.
+   * @param availablePlayers The observable list to update with imported players.
    */
   private void handleImportCsv(ObservableList<Player> availablePlayers) {
     FileChooser chooser = new FileChooser();
@@ -419,6 +470,10 @@ public class PlayerSelectionScene extends BaseScene {
     return scroll;
   }
 
+  /**
+   * Creates the HBox container for bottom navigation buttons (Back, Start Game, To Main Page).
+   * @return A configured {@link HBox} with navigation buttons.
+   */
   private HBox createBottomButtonContainer() {
     HBox container = new HBox(20);
     container.setAlignment(Pos.CENTER);
@@ -456,6 +511,11 @@ public class PlayerSelectionScene extends BaseScene {
     return container;
   }
 
+  /**
+   * Resets the selected image for the player token and updates UI elements.
+   * @param shapeComboBox The ComboBox for token shape, re-enabled if an image is removed.
+   * @param imgPathDisplayLabel The Label displaying the image path, cleared on reset.
+   */
   private void resetSelectedImage(ComboBox<String> shapeComboBox, Label imgPathDisplayLabel) {
     this.selectedImage = null;
     imgPathDisplayLabel.setText("");
@@ -463,6 +523,14 @@ public class PlayerSelectionScene extends BaseScene {
     shapeComboBox.setDisable(false);
   }
 
+  /**
+   * Handles adding a new player based on input fields.
+   * Validates inputs, processes optional image selection, creates a new player object,
+   * and adds it to the selected players list.
+   * @param nameField The TextField for player name.
+   * @param shapeComboBox The ComboBox for token shape.
+   * @param dobPicker The DatePicker for player date of birth.
+   */
   private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox,
                                DatePicker dobPicker) {
     String name = nameField.getText();
@@ -533,6 +601,10 @@ public class PlayerSelectionScene extends BaseScene {
         new Object[] {name, finalShape, (runtimeUri != null ? "Custom" : "None")});
   }
 
+  /**
+   * Generates a random birth date within a predefined range.
+   * @return A random {@link LocalDate}.
+   */
   private LocalDate randomBirthDate() {
     long start = LocalDate.of(1980, 1, 1).toEpochDay();
     long end = LocalDate.of(2003, 1, 1).toEpochDay();
@@ -541,6 +613,12 @@ public class PlayerSelectionScene extends BaseScene {
   }
 
 
+  /**
+   * Resets the player input fields to their default states.
+   * @param nameField The TextField for player name.
+   * @param shapeComboBox The ComboBox for token shape.
+   * @param dobPicker The DatePicker for date of birth.
+   */
   private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox,
                            DatePicker dobPicker) {
     nameField.clear();
@@ -555,10 +633,19 @@ public class PlayerSelectionScene extends BaseScene {
     this.selectedImage = null;
   }
 
+  /**
+   * Checks if the number of selected players has reached the maximum allowed.
+   * @return True if the maximum number of players is reached, false otherwise.
+   */
   private boolean isAtMaxPlayers() {
     return selectedPlayers.size() >= getTotalPlayerCount();
   }
 
+  /**
+   * Creates a styled VBox panel with a heading.
+   * @param headingText The text for the panel's heading label.
+   * @return A configured {@link VBox} panel.
+   */
   private VBox createPanel(String headingText) {
     VBox panel = new VBox(10);
     panel.setPadding(new Insets(10));
@@ -571,6 +658,11 @@ public class PlayerSelectionScene extends BaseScene {
     return panel;
   }
 
+  /**
+   * Creates a styled heading label.
+   * @param text The text for the label.
+   * @return A configured {@link Label}.
+   */
   private Label createHeadingLabel(String text) {
     Label heading = new Label(text);
     heading.setWrapText(true);
@@ -579,6 +671,10 @@ public class PlayerSelectionScene extends BaseScene {
     return heading;
   }
 
+  /**
+   * Adds a hover animation to a label (slight translate and opacity change).
+   * @param label The {@link Label} to animate.
+   */
   private void addHeadingAnimation(Label label) {
     label.setOnMouseEntered(e -> new Timeline(new KeyFrame(Duration.millis(300),
         new KeyValue(label.translateXProperty(), 5),
@@ -588,6 +684,10 @@ public class PlayerSelectionScene extends BaseScene {
         new KeyValue(label.opacityProperty(), 1.0))).play());
   }
 
+  /**
+   * Adds a hover animation to a VBox panel (slight scale and opacity change).
+   * @param panel The {@link VBox} panel to animate.
+   */
   private void addPanelHoverAnimation(VBox panel) {
     panel.setOnMouseEntered(e -> new Timeline(new KeyFrame(Duration.millis(300),
         new KeyValue(panel.scaleXProperty(), 1.02),
@@ -599,6 +699,12 @@ public class PlayerSelectionScene extends BaseScene {
         new KeyValue(panel.opacityProperty(), 1.0))).play());
   }
 
+  /**
+   * Adds a general scale animation on mouse hover to a Node.
+   * @param node The {@link Node} to animate.
+   * @param targetScale The target scale factor.
+   * @param duration The duration of the animation.
+   */
   private void addScaleAnimation(javafx.scene.Node node, double targetScale, Duration duration) {
     node.setOnMouseEntered(e -> new Timeline(new KeyFrame(duration,
         new KeyValue(node.scaleXProperty(), targetScale),
@@ -608,6 +714,12 @@ public class PlayerSelectionScene extends BaseScene {
         new KeyValue(node.scaleYProperty(), 1))).play());
   }
 
+  /**
+   * Creates a ListView for displaying players.
+   * Each cell shows the player's name, token color, and token shape.
+   * @param players An {@link ObservableList} of {@link Player} objects.
+   * @return A configured {@link ListView}.
+   */
   private ListView<Player> createPlayerListView(ObservableList<Player> players) {
     ListView<Player> listView = new ListView<>(players);
     listView.setCellFactory(list -> new ListCell<>() {
@@ -638,6 +750,11 @@ public class PlayerSelectionScene extends BaseScene {
     return listView;
   }
 
+  /**
+   * Capitalizes the first letter of a string and makes the rest lowercase.
+   * @param input The string to capitalize.
+   * @return The capitalized string, or an empty string if input is null or blank.
+   */
   private String capitalize(String input) {
     if (input == null || input.isBlank()) {
       return "";
@@ -645,6 +762,12 @@ public class PlayerSelectionScene extends BaseScene {
     return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
   }
 
+  /**
+   * Shows an alert dialog.
+   * @param type The {@link Alert.AlertType} of the alert.
+   * @param title The title of the alert window.
+   * @param message The content message of the alert.
+   */
   private void showAlert(Alert.AlertType type, String title, String message) {
     Alert alert = new Alert(type);
     alert.setTitle(title);
@@ -652,6 +775,10 @@ public class PlayerSelectionScene extends BaseScene {
     alert.showAndWait();
   }
 
+  /**
+   * Gets the JavaFX scene for this player selection view.
+   * @return The {@link Scene}.
+   */
   public Scene getScene() {
     return scene;
   }
