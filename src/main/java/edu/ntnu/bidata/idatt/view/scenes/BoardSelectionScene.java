@@ -1,8 +1,5 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
-import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
-
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.LadderBoardFactory;
 import edu.ntnu.bidata.idatt.controller.patterns.factory.LudoBoardFactory;
@@ -32,26 +29,32 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
-public class BoardSelectionScene {
-
+public class BoardSelectionScene extends BaseScene {
   private static Board selectedBoard;
-
-  private final Scene scene;
   private final BoardService boardService = new BoardService();
   private final String selectedGame = GameSelectionScene.getSelectedGame();
   private final LudoBoardFactory ludoBoardFactory = new LudoBoardFactory();
   private final LadderBoardFactory ladderBoardFactory = new LadderBoardFactory();
-  private final VBox selectionBox;
+  private VBox selectionBox;
   private Label detailsTitle;
   private Label detailsDescription;
 
-
   public BoardSelectionScene() {
-    BorderPane root = SceneManager.getRootPane();
+    super();
+    initialize();
+  }
+
+  public static Board getSelectedBoard() {
+    return selectedBoard;
+  }
+
+  @Override
+  protected void initialize() {
+    scene.setFill(Color.PINK);
+
+    BorderPane root = this.root;
     root.setPadding(Insets.EMPTY);
     root.setStyle("-fx-font-family: 'monospace';");
-
-    scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
     root.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
 
     VBox main = new VBox(20);
@@ -72,11 +75,8 @@ public class BoardSelectionScene {
     root.setBottom(bottom);
     BorderPane.setMargin(bottom, new Insets(10));
     BorderPane.setAlignment(bottom, Pos.BOTTOM_LEFT);
-    rebuildSelectionPanel();
-  }
 
-  public static Board getSelectedBoard() {
-    return selectedBoard;
+    rebuildSelectionPanel();
   }
 
   public Scene getScene() {

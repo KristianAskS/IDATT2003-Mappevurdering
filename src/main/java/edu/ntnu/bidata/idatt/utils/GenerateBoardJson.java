@@ -39,8 +39,7 @@ public class GenerateBoardJson {
     String outputDir = "./data/games";
     List<Board> boards = List.of(
         generateLadderRush(),
-        generateSkipAndBack(),
-        generateFunBoard()
+        generateSkipAndBack()
     );
 
     GsonBoardFileHandler handler = new GsonBoardFileHandler();
@@ -67,11 +66,11 @@ public class GenerateBoardJson {
   private static Board generateLadderRush() {
     Board board = new Board();
     board.setName("LADDER RUSH");
-    board.setDescription("60-tile – 15 ladders, NO obstacles!");
+    board.setDescription("60-tile – 10 ladders, NO obstacles!");
     int tileCount = 60;
     makeTiles(board, tileCount);
 
-    int ladderCount = 15;
+    int ladderCount = 10;
     Random random = new Random();
     Map<Integer, Integer> ladders = new HashMap<>();
     Set<Integer> starts = new HashSet<>();
@@ -108,37 +107,6 @@ public class GenerateBoardJson {
     );
     applyLadders(board, ladders);
     applySnakes(board, snakes);
-    return board;
-  }
-
-  /**
-   * Creates a 100-tile board with actions; back-to-start, skip-turn,
-   * ladders and snakes
-   *
-   * @return the generated {@link Board}
-   */
-  private static Board generateFunBoard() {
-    Board board = new Board();
-    board.setName("MORE CHAOS");
-    board.setDescription("100-tile - with even more chaos!!!!!!");
-    int size = 100;
-    makeTiles(board, size);
-    Random rnd = new Random();
-
-    for (int i = 1; i <= size; i++) {
-      Tile tile = board.getTile(i);
-      if (i % 4 == 0) {
-        tile.setLandAction(new BackToStartAction("Back to start"));
-      } else if (i % 3 == 0) {
-        tile.setLandAction(new SkipTurnAction(1, "Skip turn"));
-      } else if (rnd.nextBoolean()) {
-        int dest = rnd.nextInt(size - i) + i + 1;
-        tile.setLandAction(new LadderAction(dest, "Ladder " + i + " to " + dest));
-      } else {
-        int dest = rnd.nextInt(i);
-        tile.setLandAction(new SnakeAction(dest, "Snake " + i + " to " + dest));
-      }
-    }
     return board;
   }
 

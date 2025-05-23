@@ -59,9 +59,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class BoardGameScene implements BoardGameObserver {
-
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
-
   private final Scene scene;
   private final TextArea eventLog = new TextArea("Game started! \n");
   private final Label currentPlayerLabel = new Label("Current player: -");
