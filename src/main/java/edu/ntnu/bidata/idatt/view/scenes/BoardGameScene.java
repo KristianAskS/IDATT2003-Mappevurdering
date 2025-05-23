@@ -80,16 +80,25 @@ public class BoardGameScene implements BoardGameObserver {
 
   public BoardGameScene() throws IOException {
     diceView = new DiceView();
-
     BorderPane rootPane = createRootPane();
     VBox ioContainer = createIOContainer();
     rootPane.setLeft(ioContainer);
 
-    Board board = BoardSelectionScene.getSelectedBoard();
+    Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
+
+    int numbOfDice = 2;
     if (isLudo) {
-      this.boardGridPane = new LudoBoardView().createBoardGUI(board);
+      gameController = new LudoGameController(this, selectedBoardModel, numbOfDice);
     } else {
-      this.boardGridPane = new LaddersBoardView().createBoardGUI(board);
+      gameController = new LaddersController(this, selectedBoardModel, numbOfDice);
+    }
+
+    final Board boardForGuiSetup = gameController.getBoard();
+
+    if (isLudo) {
+      this.boardGridPane = new LudoBoardView().createBoardGUI(boardForGuiSetup);
+    } else {
+      this.boardGridPane = new LaddersBoardView().createBoardGUI(boardForGuiSetup);
     }
     boardGridPane.setId("boardGridPane");
 
@@ -108,19 +117,15 @@ public class BoardGameScene implements BoardGameObserver {
     tokenLayerPane.toFront();
     rootPane.setCenter(boardStack);
 
-    int numbOfDice = 2;  // should be an argument value or static or based on isLudo
-    if (isLudo) {
-      gameController = new LudoGameController(this, board, numbOfDice);
-    } else {
-      gameController = new LaddersController(this, board, numbOfDice);
-    }
-
     if (!isLudo) {
       Platform.runLater(() -> {
-        highlightActionTiles(board, boardGridPane);
-        highlightEndTile(board, boardGridPane);
-        LadderView.drawLadders(board, boardGridPane, overlay, gameController);
-        SnakeView.drawSnakes(board, boardGridPane, overlay, gameController);
+        Board boardForDrawing = gameController.getBoard();
+
+        highlightActionTiles(boardForDrawing, boardGridPane);
+        highlightEndTile(boardForDrawing, boardGridPane);
+
+        LadderView.drawLadders(boardForDrawing, boardGridPane, overlay, gameController);
+        SnakeView.drawSnakes(boardForDrawing, boardGridPane, overlay, gameController);
       });
     }
 

@@ -338,4 +338,8 @@ public abstract class GameController {
   protected void afterTurnLogic(Player current) {
     advanceToNextPlayer();
   }
+
+  public Board getBoard() {
+    return board;
+  }
 }
