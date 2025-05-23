@@ -3,7 +3,6 @@ package edu.ntnu.bidata.idatt.model.service;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.utils.io.CsvPlayerFileHandler;
 import edu.ntnu.bidata.idatt.utils.io.FileHandler;
-import edu.ntnu.bidata.idatt.view.scenes.PlayerSelectionScene;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javafx.scene.paint.Color;
 
 public class PlayerService {
 
@@ -19,14 +17,6 @@ public class PlayerService {
   private final FileHandler<Player> playerFileHandler = new CsvPlayerFileHandler();
   private List<Player> players = new ArrayList<>();
 
-  /**
-   * for loose coupling
-   *
-   * @return
-   */
-  public static Color getSelectedColor() {
-    return PlayerSelectionScene.getSelectedColor();
-  }
 
   public void writePlayersToFile(String filePath) throws IOException {
     playerFileHandler.writeToFile(players, filePath);

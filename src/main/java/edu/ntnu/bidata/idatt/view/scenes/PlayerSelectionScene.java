@@ -72,7 +72,6 @@ public class PlayerSelectionScene {
   private static final Label playersCountLabel = new Label("Players: 0/0");
   private static final String IMG_DIR = "data/games/tokenimages";
   private static Integer totalPlayerCount = null;
-  private static ColorPicker playerColorPicker;
   private final String selectedGame = GameSelectionScene.getSelectedGame();
   private final Board selectedBoard = BoardSelectionScene.getSelectedBoard();
   private final PlayerService playerService = new PlayerService();
@@ -80,6 +79,7 @@ public class PlayerSelectionScene {
   private final int PANEL_WIDTH = 300;
   TextField nameInput = new TextField();
   private File selectedImage;
+  private ColorPicker playerColorPicker;
 
   public PlayerSelectionScene() throws IOException {
     BorderPane rootPane = SceneManager.getRootPane();
@@ -148,10 +148,6 @@ public class PlayerSelectionScene {
     return totalPlayerCount == null ? 0 : totalPlayerCount;
   }
 
-  public static Color getSelectedColor() {
-    return playerColorPicker.getValue();
-  }
-
   public static ObservableList<Player> getSelectedPlayers() {
     return selectedPlayers;
   }
@@ -200,6 +196,7 @@ public class PlayerSelectionScene {
     imgResetBtn.setOnAction(e -> resetSelectedImage(shapeComboBox, imgPath));
 
     Button addPlayerBtn = Buttons.getEditBtn("Add Player");
+    playerColorPicker = new ColorPicker();
 
     Label dobLabel = new Label("Birthday");
     dobLabel.getStyleClass().add("label-sublabel");
@@ -213,7 +210,7 @@ public class PlayerSelectionScene {
     addPlayerBtn.setOnAction(e -> {
       try {
         handleAddPlayer(nameInput, shapeComboBox, dobPicker);
-      } catch (IOException ex) {
+      } catch (Exception ex) {
         throw new RuntimeException(ex);
       }
     });
@@ -343,8 +340,8 @@ public class PlayerSelectionScene {
   }
 
   /**
-   * Handles importing a CSV and replacing the available players list,
-   * but warns if the file doesn’t match the expected format.
+   * Handles importing a CSV and replacing the available players list, but warns if the file doesn’t
+   * match the expected format.
    */
   private void handleImportCsv(ObservableList<Player> availablePlayers) {
     FileChooser chooser = new FileChooser();
@@ -459,48 +456,60 @@ public class PlayerSelectionScene {
     return container;
   }
 
-  private void resetSelectedImage(ComboBox<String> shapeComboBox, Label imgPathLabel) {
-    selectedImage = null;
-    imgPathLabel.setText("");
-    if (!"LUDO".equalsIgnoreCase(selectedGame)) {
-      shapeComboBox.setDisable(false);
-      shapeComboBox.getSelectionModel().clearSelection();
-    }
+  private void resetSelectedImage(ComboBox<String> shapeComboBox, Label imgPathDisplayLabel) {
+    this.selectedImage = null;
+    imgPathDisplayLabel.setText("");
+
+    shapeComboBox.setDisable(false);
   }
 
   private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox,
-                               DatePicker dobPicker) throws IOException {
+      DatePicker dobPicker) {
     String name = nameField.getText();
-    String shape = shapeComboBox.getValue();
+    String shapeValue = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
-    File selectedImage = this.selectedImage;
 
     if (isAtMaxPlayers()) {
       showAlert(Alert.AlertType.WARNING, "Maximum players reached",
           "Limit: " + getTotalPlayerCount());
-      resetInputs(nameField, shapeComboBox, dobPicker);
       return;
-    }
-
-    if (shape == null || selectedImage != null) {
-      shape = "circle";
     }
 
     if (name == null || name.isBlank() || color == null) {
-      showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out all fields.");
+      showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill out Name and Color fields.");
       return;
     }
-    String uniqueName = "image-" + selectedImage.getName();
-    String storedImgPath = IMG_DIR + "/" + uniqueName;
-    Path targetDir = Paths.get(IMG_DIR);
-    Files.createDirectories(targetDir);
-    Path destination = targetDir.resolve(uniqueName);
-    Files.copy(selectedImage.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
 
-    String runtimeUri = destination.toUri().toString();
+    String runtimeUri = null;
+    String finalShape = shapeValue;
 
-    TokenView token = new TokenView(
-        Token.token(color, shape, runtimeUri));
+    if (this.selectedImage != null) {
+      try {
+        String uniqueName = "image-" + this.selectedImage.getName();
+        String storedImgPath = IMG_DIR + "/" + uniqueName;
+        Path targetDir = Paths.get(IMG_DIR);
+        Files.createDirectories(targetDir);
+        Path destination = targetDir.resolve(uniqueName);
+        Files.copy(this.selectedImage.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
+        runtimeUri = destination.toUri().toString();
+
+        finalShape = "circle";
+        logger.log(Level.INFO, "Player will use selected image: " + storedImgPath);
+
+      } catch (IOException ex) {
+        logger.log(Level.SEVERE, "Error copying image file", ex);
+        showAlert(Alert.AlertType.ERROR, "Image Error",
+            "Could not save the selected image. Please try again or proceed without an image.");
+        return;
+      }
+    } else {
+      if (finalShape == null) {
+        finalShape = "circle";
+      }
+      logger.log(Level.INFO, "No image selected. Player will use shape: " + finalShape);
+    }
+
+    TokenView token = new TokenView(Token.token(color, finalShape, runtimeUri));
 
     LocalDate dob = dobPicker.getValue();
     if (dob == null) {
@@ -515,12 +524,13 @@ public class PlayerSelectionScene {
     }
 
     Player newPlayer = new Player(name, token, dob);
-
     selectedPlayers.add(newPlayer);
     updatePlayersCountLabel();
+
     resetInputs(nameField, shapeComboBox, dobPicker);
-    this.selectedImage = null;
-    logger.log(Level.INFO, "Added player: {0} (img={1})", new Object[] {name, storedImgPath});
+
+    logger.log(Level.INFO, "Added player: {0} (Shape: {1}, Image: {2})",
+        new Object[]{name, finalShape, (runtimeUri != null ? "Custom" : "None")});
   }
 
   private LocalDate randomBirthDate() {
@@ -530,14 +540,19 @@ public class PlayerSelectionScene {
     return LocalDate.ofEpochDay(randomDay);
   }
 
+
   private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox,
-                           DatePicker dobPicker) {
+      DatePicker dobPicker) {
     nameField.clear();
     if (!"LUDO".equalsIgnoreCase(selectedGame)) {
       shapeComboBox.getSelectionModel().clearSelection();
     }
+    shapeComboBox.setDisable(false);
+
     playerColorPicker.setValue(Color.WHITE);
     dobPicker.setValue(null);
+
+    this.selectedImage = null;
   }
 
   private boolean isAtMaxPlayers() {
