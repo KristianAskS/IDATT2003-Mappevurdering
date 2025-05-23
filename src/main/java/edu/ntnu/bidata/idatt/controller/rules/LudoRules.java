@@ -165,6 +165,7 @@ public final class LudoRules implements GameRules {
     return dest;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void onLand(Player p, Tile t) {
   }

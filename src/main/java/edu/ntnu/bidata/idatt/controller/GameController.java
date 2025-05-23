@@ -44,6 +44,15 @@ public abstract class GameController {
   private final List<Player> finishedPlayers = new ArrayList<>();
   private int currentIndex = 0;
 
+  /**
+   * Constructs a new GameController.
+   *
+   * @param scene the scene to which the game UI will be added
+   * @param board the board model
+   * @param numberOfDice the number of dice to use
+   * @param gameRules the game rules to apply
+   * @throws IOException if an I/O error occurs
+   */
   protected GameController(BoardGameScene scene,
                            Board board,
                            int numberOfDice,
@@ -57,12 +66,30 @@ public abstract class GameController {
     boardService.setBoard(board);
   }
 
+  /**
+   * Converts a tile and board model to a grid position.
+   *
+   * @param tile the tile to convert
+   * @param board the board model
+   * @return the grid position of the tile
+   */
   public abstract int[] tileToGridPosition(Tile tile, Board board);
 
+  /**
+   * Determines if the player should finish the game.
+   *
+   * @param player the player to check
+   * @return true if the player should finish, false otherwise
+   */
   protected boolean shouldFinish(Player player) {
     return player.getCurrentTileId() >= board.getTiles().size();
   }
 
+  /**
+   * Initializes the players in the game.
+   *
+   * @param players the players to initialize
+   */
   public void initializePlayers(List<Player> players) {
     players.forEach(player -> player.setCurrentTileId(0));
     playerService.setPlayers(players);
@@ -71,10 +98,11 @@ public abstract class GameController {
     initializeTurnOrder();
   }
 
-  public Die getDie() {
-    return die;
-  }
-
+  /**
+   * Returns the die.
+   *
+   * @return the die
+   */
   public void handlePlayerTurn(int steps) {
     initializeTurnOrder();
     dice.setRollResult(steps);
@@ -118,6 +146,9 @@ public abstract class GameController {
   }
 
 
+  /**
+   * Initializes the turn order.
+   */
   private void initializeTurnOrder() {
     if (!turnOrder.isEmpty()) {
       return;
@@ -132,6 +163,13 @@ public abstract class GameController {
     boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
   }
 
+  /**
+   * Applies a land action to the player.
+   *
+   * @param player the player to apply the action to
+   * @param landed the tile that was landed on
+   * @param onDone a callback to execute after the action is performed
+   */
   protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
     var action = landed.getLandAction();
     if (action != null) {
@@ -176,6 +214,11 @@ public abstract class GameController {
     onDone.run();
   }
 
+  /**
+   * Finishes the player.
+   *
+   * @param player the player to finish
+   */
   private void finishPlayer(Player player) {
     logger.log(Level.INFO, player.getName() + " finished");
     finishedPlayers.add(player);
@@ -202,15 +245,28 @@ public abstract class GameController {
     }
   }
 
+  /**
+   * Advances to the next player in the turn order.
+   */
   protected void advanceToNextPlayer() {
     currentIndex = (currentIndex + 1) % turnOrder.size();
     boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
   }
 
+  /**
+   * Called after a player's turn is completed.
+   *
+   * @param current the player who just completed their turn
+   */
   protected void afterTurnLogic(Player current) {
     advanceToNextPlayer();
   }
 
+  /**
+   * Returns the board model.
+   *
+   * @return the board model
+   */
   public Board getBoard() {
     return board;
   }

@@ -1,7 +1,7 @@
 package edu.ntnu.bidata.idatt.controller.patterns.observer;
 
 /*
-  Enum for the different types of events that can be triggered by the game controller.
+ * Enum for the different types of events that can be triggered by the game controller.
  */
 public enum BoardGameEventType {
   PLAYER_MOVED,

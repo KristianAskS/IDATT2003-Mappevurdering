@@ -6,11 +6,14 @@ import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
 import java.io.IOException;
 
+
+  /** {@inheritDoc} */
 public final class LaddersController extends GameController {
   public LaddersController(BoardGameScene scene, Board board, int dice) throws IOException {
     super(scene, board, dice, new LaddersRules());
   }
 
+  /** {@inheritDoc} */
   @Override
   public int[] tileToGridPosition(Tile tile, Board board) {
     int cols = 10;
