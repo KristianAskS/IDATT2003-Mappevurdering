@@ -82,12 +82,9 @@ public class TokenView extends StackPane {
           triangle.setStrokeWidth(3);
           getChildren().add(triangle);
         }
-        default -> logger.warning("Unknown shape: " + token.getShape());
+        default -> logger.log(Level.WARNING, "Unknown shape: " + token.getShape());
       }
     }
-
-    logger.log(Level.INFO, "TokenView created with color {0} and shape {1}",
-        new Object[] {token.getColor(), token.getShape()});
   }
 
   /**

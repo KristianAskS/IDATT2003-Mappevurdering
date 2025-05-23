@@ -4,8 +4,6 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LADDER;
 
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 
 /**
@@ -16,7 +14,6 @@ import javafx.scene.layout.GridPane;
  */
 public class LaddersBoardView extends BaseBoardView {
   private static final int COLUMNS = 10;
-  private static final Logger logger = Logger.getLogger(LaddersBoardView.class.getName());
 
   /**
    * Default constructor
@@ -51,7 +48,6 @@ public class LaddersBoardView extends BaseBoardView {
 
       if (tile.getLandAction() != null) {
         int finalId = id;
-        logger.log(Level.INFO, () -> "Added action label to tile " + finalId);
       }
 
       int rowIndexFromBottom = (id - 1) / COLUMNS;

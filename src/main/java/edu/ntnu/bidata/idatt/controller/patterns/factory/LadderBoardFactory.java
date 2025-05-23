@@ -10,8 +10,6 @@ import edu.ntnu.bidata.idatt.view.components.LadderView;
 import edu.ntnu.bidata.idatt.view.components.SnakeView;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,8 +22,6 @@ import java.util.stream.Stream;
  * @since 1.0
  */
 public class LadderBoardFactory extends BoardFactory {
-
-  private static final Logger logger = Logger.getLogger(LadderBoardFactory.class.getName());
 
   /**
    * <p>Default constructor for the board factory.</p>
@@ -106,7 +102,6 @@ public class LadderBoardFactory extends BoardFactory {
       t.setLandAction(new SkipTurnAction(1, "Skip Turn"));
       reserved.add(id);
       placed++;
-      logger.log(Level.INFO, "Placed SkipTurn on tile " + id);
     }
   }
 
@@ -129,7 +124,6 @@ public class LadderBoardFactory extends BoardFactory {
       t.setLandAction(new BackToStartAction("Back To Start"));
       reserved.add(id);
       placed++;
-      logger.log(Level.INFO, "Placed BackToStart on tile " + id);
     }
   }
 
@@ -202,8 +196,6 @@ public class LadderBoardFactory extends BoardFactory {
       reserved.add(head);
       reserved.add(tail);
       placed++;
-
-      logger.log(Level.INFO, headTile.getLandAction().description());
     }
   }
 
