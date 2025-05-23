@@ -2,6 +2,7 @@ package edu.ntnu.bidata.idatt.controller;
 
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEventType;
+import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
 import edu.ntnu.bidata.idatt.controller.rules.GameRules;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Dice;
@@ -11,9 +12,6 @@ import edu.ntnu.bidata.idatt.model.entity.Tile;
 import edu.ntnu.bidata.idatt.model.service.BoardService;
 import edu.ntnu.bidata.idatt.model.service.PlayerService;
 import edu.ntnu.bidata.idatt.view.components.GameUiAnimator;
-import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
-import edu.ntnu.bidata.idatt.view.scenes.PodiumGameScene;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,53 +20,86 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-/**
- * Base controller that contains the core game‑flow logic that is shared across the different board
- * games in the application.
- */
 public abstract class GameController {
 
   protected final Logger logger = Logger.getLogger(getClass().getName());
   protected final PlayerService playerService = new PlayerService();
   protected final BoardService boardService = new BoardService();
-  protected final BoardGameScene boardGameScene;
   protected final Board board;
   protected final Dice dice;
   protected final Die die;
   final GameRules gameRules;
 
   private final Map<Player, Integer> skipTurnMap = new HashMap<>();
-  private final GameUiAnimator animator;
   private final List<Player> turnOrder = new ArrayList<>();
   private final List<Player> finishedPlayers = new ArrayList<>();
+  private final List<BoardGameObserver> observers = new ArrayList<>();
+  private GameUiAnimator animator;
   private int currentIndex = 0;
 
-  protected GameController(BoardGameScene scene,
-                           Board board,
+  protected GameController(Board board,
                            int numberOfDice,
-                           GameRules gameRules) throws IOException {
-    this.boardGameScene = scene;
+                           GameRules gameRules) {
     this.board = board;
     this.dice = new Dice(numberOfDice);
     this.die = new Die();
     this.gameRules = gameRules;
-    this.animator = new GameUiAnimator(scene);
     boardService.setBoard(board);
   }
 
   public abstract int[] tileToGridPosition(Tile tile, Board board);
+
+  public void setAnimator(GameUiAnimator animator) {
+    this.animator = animator;
+  }
+
+  public void addObserver(BoardGameObserver o) {
+    observers.add(o);
+  }
+
+  public void removeObserver(BoardGameObserver o) {
+    observers.remove(o);
+  }
+
+  private void notifyObservers(BoardGameEvent event) {
+    for (var o : observers) {
+      o.onEvent(event);
+    }
+  }
 
   protected boolean shouldFinish(Player player) {
     return player.getCurrentTileId() >= board.getTiles().size();
   }
 
   public void initializePlayers(List<Player> players) {
-    players.forEach(player -> player.setCurrentTileId(0));
+    players.forEach(p -> p.setCurrentTileId(0));
     playerService.setPlayers(players);
-    boardGameScene.setupPlayersUI(players);
+
+    notifyObservers(new BoardGameEvent(
+        BoardGameEventType.GAME_STARTED,
+        null, null, null, null));
 
     initializeTurnOrder();
+
+    // Første spiller
+    notifyObservers(new BoardGameEvent(
+        BoardGameEventType.CURRENT_PLAYER_CHANGED,
+        turnOrder.get(currentIndex),
+        null, null, null));
+  }
+
+  private void initializeTurnOrder() {
+    if (!turnOrder.isEmpty()) {
+      return;
+    }
+
+    List<Player> players = playerService.getPlayers();
+    if (players.isEmpty()) {
+      logger.log(Level.SEVERE, "No players in the game");
+      return;
+    }
+    players.sort(Comparator.comparing(Player::getAge));
+    turnOrder.addAll(players);
   }
 
   public Die getDie() {
@@ -104,9 +135,14 @@ public abstract class GameController {
 
     animator.movePlayerAlongTiles(player, hopCount, () -> {
       Tile landed = board.getTile(player.getCurrentTileId());
-      boardGameScene.onEvent(new BoardGameEvent(
-          BoardGameEventType.PLAYER_MOVED, player,
-          originId == 0 ? null : board.getTile(originId), landed));
+
+      notifyObservers(new BoardGameEvent(
+          BoardGameEventType.PLAYER_MOVED,
+          player,
+          originId == 0 ? null : board.getTile(originId),
+          landed,
+          null));
+
       applyLandAction(player, landed, () -> {
         if (shouldFinish(player)) {
           finishPlayer(player);
@@ -117,21 +153,6 @@ public abstract class GameController {
     });
   }
 
-
-  private void initializeTurnOrder() {
-    if (!turnOrder.isEmpty()) {
-      return;
-    }
-    List<Player> players = playerService.getPlayers();
-    if (players.isEmpty()) {
-      logger.log(Level.SEVERE, "No players in the game");
-      return;
-    }
-    players.sort(Comparator.comparing(Player::getAge));
-    turnOrder.addAll(players);
-    boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
-  }
-
   protected void applyLandAction(Player player, Tile landed, Runnable onDone) {
     var action = landed.getLandAction();
     if (action != null) {
@@ -139,18 +160,18 @@ public abstract class GameController {
         case edu.ntnu.bidata.idatt.model.logic.action.BackToStartAction back -> {
           back.perform(player);
           animator.animateLadderMovement(player, landed.getTileId(), 1, () -> {
-            boardGameScene.onEvent(new BoardGameEvent(
+            notifyObservers(new BoardGameEvent(
                 BoardGameEventType.PLAYER_BACK_START_ACTION,
-                player, landed, board.getTile(1)));
+                player, landed, board.getTile(1), null));
             onDone.run();
           });
           return;
         }
         case edu.ntnu.bidata.idatt.model.logic.action.SkipTurnAction skipAct -> {
           skipTurnMap.merge(player, skipAct.turnsToSkip(), Integer::sum);
-          boardGameScene.onEvent(new BoardGameEvent(
+          notifyObservers(new BoardGameEvent(
               BoardGameEventType.PLAYER_SKIP_TURN_ACTION,
-              player, landed, landed));
+              player, landed, landed, null));
           onDone.run();
           return;
         }
@@ -158,15 +179,15 @@ public abstract class GameController {
           int dest = la.getDestinationTileId();
           la.perform(player);
           animator.animateLadderMovement(player, landed.getTileId(), dest, () -> {
-            boardGameScene.onEvent(new BoardGameEvent(
+            notifyObservers(new BoardGameEvent(
                 BoardGameEventType.PLAYER_LADDER_ACTION,
-                player, landed, board.getTile(dest)));
+                player, landed, board.getTile(dest), null));
             onDone.run();
           });
           return;
         }
         default -> {
-
+          // ingen ekstra handling
         }
       }
     }
@@ -181,30 +202,39 @@ public abstract class GameController {
     finishedPlayers.add(player);
     turnOrder.remove(currentIndex);
 
-    boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.PLAYER_FINISHED, player, null,
-        new Tile(player.getCurrentTileId())));
+    notifyObservers(new BoardGameEvent(
+        BoardGameEventType.PLAYER_FINISHED,
+        player, null,
+        new Tile(player.getCurrentTileId()),
+        null));
 
     if (!turnOrder.isEmpty()) {
       if (currentIndex >= turnOrder.size()) {
         currentIndex = 0;
       }
-      boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
+      notifyObservers(new BoardGameEvent(
+          BoardGameEventType.CURRENT_PLAYER_CHANGED,
+          turnOrder.get(currentIndex),
+          null, null, null));
     } else {
-      boardGameScene.setCurrentPlayer(null);
-    }
+      // ingen flere spillere → sluttspill
+      notifyObservers(new BoardGameEvent(
+          BoardGameEventType.CURRENT_PLAYER_CHANGED,
+          null, null, null, null));
 
-    if (turnOrder.isEmpty()) {
-      PodiumGameScene.setFinalRanking(finishedPlayers);
-      boardGameScene.onEvent(new BoardGameEvent(BoardGameEventType.GAME_FINISHED, player, null,
-          new Tile(player.getCurrentTileId())));
-    } else if (currentIndex >= turnOrder.size()) {
-      currentIndex = 0;
+      notifyObservers(new BoardGameEvent(
+          BoardGameEventType.GAME_FINISHED,
+          null, null, null,
+          List.copyOf(finishedPlayers)));
     }
   }
 
   protected void advanceToNextPlayer() {
     currentIndex = (currentIndex + 1) % turnOrder.size();
-    boardGameScene.setCurrentPlayer(turnOrder.get(currentIndex));
+    notifyObservers(new BoardGameEvent(
+        BoardGameEventType.CURRENT_PLAYER_CHANGED,
+        turnOrder.get(currentIndex),
+        null, null, null));
   }
 
   protected void afterTurnLogic(Player current) {

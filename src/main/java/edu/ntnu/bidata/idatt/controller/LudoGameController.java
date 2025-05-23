@@ -4,16 +4,15 @@ import edu.ntnu.bidata.idatt.controller.rules.LudoRules;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
-import edu.ntnu.bidata.idatt.view.scenes.BoardGameScene;
-import java.io.IOException;
 
 public class LudoGameController extends GameController {
   private final LudoRules rules;
 
-  public LudoGameController(BoardGameScene scene, Board board, int dice) throws IOException {
-    super(scene, board, dice, new LudoRules());
+  public LudoGameController(Board board, int numberOfDice) {
+    super(board, numberOfDice, new LudoRules());
     this.rules = (LudoRules) gameRules;
   }
+
 
   @Override
   public int[] tileToGridPosition(Tile tile, Board board) {

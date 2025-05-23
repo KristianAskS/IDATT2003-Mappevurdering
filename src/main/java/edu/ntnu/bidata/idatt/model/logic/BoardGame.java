@@ -54,7 +54,7 @@ public class BoardGame {
     }
     started = true;
     //Collections.shuffle(players);
-    notifyEvent(new BoardGameEvent(BoardGameEventType.PLAYER_MOVED, null, null, null));
+    notifyEvent(new BoardGameEvent(BoardGameEventType.PLAYER_MOVED, null, null, null, null));
   }
 
   public boolean hasWinner() {

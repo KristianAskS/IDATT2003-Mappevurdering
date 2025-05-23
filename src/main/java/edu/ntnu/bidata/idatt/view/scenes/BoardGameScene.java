@@ -7,8 +7,6 @@ import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LADDER;
 import static edu.ntnu.bidata.idatt.view.components.TileView.TILE_SIZE_LUDO;
 
 import edu.ntnu.bidata.idatt.controller.GameController;
-import edu.ntnu.bidata.idatt.controller.LaddersController;
-import edu.ntnu.bidata.idatt.controller.LudoGameController;
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.BoardGameEvent;
 import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameObserver;
@@ -34,14 +32,11 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -66,29 +61,21 @@ public class BoardGameScene implements BoardGameObserver {
   private final DiceView diceView;
   private final GridPane boardGridPane;
   private final Pane tokenLayerPane = new Pane();
-  private final ObservableList<XYChart.Series<Number, Number>> dataSeries =
-      FXCollections.observableArrayList();
   private final GameController gameController;
   private final boolean isLudo =
       "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame()));
   Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
   private List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private HBox stagingArea;
-  private boolean isGameFinished = false;
   private Button rollBtn;
 
-  public BoardGameScene() throws IOException {
+  public BoardGameScene(GameController controller) {
     diceView = new DiceView();
     BorderPane rootPane = createRootPane();
     VBox ioContainer = createIOContainer();
     rootPane.setLeft(ioContainer);
 
-    int numbOfDice = 2;
-    if (isLudo) {
-      gameController = new LudoGameController(this, selectedBoardModel, numbOfDice);
-    } else {
-      gameController = new LaddersController(this, selectedBoardModel, numbOfDice);
-    }
+    this.gameController = controller;
 
     final Board boardForGuiSetup = gameController.getBoard();
 
@@ -128,8 +115,6 @@ public class BoardGameScene implements BoardGameObserver {
 
     StackPane container = new StackPane(rootPane);
     scene = new Scene(container, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
-
-    gameController.initializePlayers(players);
 
     logger.log(Level.INFO, "BoardGameScene initialized. Game = {0}",
         GameSelectionScene.getSelectedGame());
@@ -229,8 +214,6 @@ public class BoardGameScene implements BoardGameObserver {
   public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
       Player player = event.player();
-      //int rolled = boardGameController.getLastRolledValue();
-      //eventLog.appendText(String.format("%s rolled a %d%n", pl.getName(), rolled));
 
       int oldId = event.oldTile() != null ? event.oldTile().getTileId() : 0;
       int newId = event.newTile() != null ? event.newTile().getTileId() : 0;
@@ -269,10 +252,18 @@ public class BoardGameScene implements BoardGameObserver {
           repositionTokenOnTile();
         }
         case GAME_FINISHED -> {
-          if (!isGameFinished) {
-            isGameFinished = true;
+          eventLog.appendText("Game over!");
+          List<Player> podium = event.finalRanking();
+          Platform.runLater(() -> {
+            PodiumGameScene.setFinalRanking(podium);
             SceneManager.showPodiumGameScene();
-          }
+          });
+        }
+        case GAME_STARTED -> {
+          setupPlayersUI(players);
+        }
+        case CURRENT_PLAYER_CHANGED -> {
+          setCurrentPlayer(event.player());
         }
         default -> repositionTokenOnTile();
       }
