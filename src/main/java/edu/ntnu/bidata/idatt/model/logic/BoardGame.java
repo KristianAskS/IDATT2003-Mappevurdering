@@ -27,7 +27,7 @@ public class BoardGame {
   /**
    * Constructs a new BoardGame.
    *
-   * @param board the board model
+   * @param board     the board model
    * @param numOfDice the number of dice to use
    */
   public BoardGame(Board board, int numOfDice) {

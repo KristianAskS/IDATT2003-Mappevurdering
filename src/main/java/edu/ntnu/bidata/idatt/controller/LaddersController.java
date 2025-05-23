@@ -5,7 +5,9 @@ import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 
 
-  /** {@inheritDoc} */
+/**
+ * {@inheritDoc}
+ */
 public final class LaddersController extends GameController {
   private final LaddersRules rules;
 
@@ -14,7 +16,9 @@ public final class LaddersController extends GameController {
     this.rules = (LaddersRules) gameRules;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int[] tileToGridPosition(Tile tile, Board board) {
     int cols = 10;

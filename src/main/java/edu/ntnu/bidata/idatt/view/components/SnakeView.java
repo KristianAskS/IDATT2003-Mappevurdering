@@ -20,9 +20,9 @@ public final class SnakeView {
   /**
    * Draws the snakes defined in the board model.
    *
-   * @param board the board
-   * @param boardGrid the grid
-   * @param overlayPane the overlay
+   * @param board          the board
+   * @param boardGrid      the grid
+   * @param overlayPane    the overlay
    * @param gameController the game controller
    */
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlayPane,

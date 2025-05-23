@@ -185,7 +185,6 @@ public abstract class GameController {
           return;
         }
         default -> {
-
         }
       }
     }
@@ -215,7 +214,6 @@ public abstract class GameController {
           turnOrder.get(currentIndex),
           null, null, null));
     } else {
-
       notifyObservers(new BoardGameEvent(
           BoardGameEventType.CURRENT_PLAYER_CHANGED,
           null, null, null, null));
