@@ -5,6 +5,10 @@ package edu.ntnu.bidata.idatt.controller.rules;
 import edu.ntnu.bidata.idatt.model.entity.Player;
 import edu.ntnu.bidata.idatt.model.entity.Tile;
 
+/**
+ * Ladders rules for the game.
+ * Implements the GameRules interface.
+ */
 public final class LaddersRules implements GameRules {
 
   @Override

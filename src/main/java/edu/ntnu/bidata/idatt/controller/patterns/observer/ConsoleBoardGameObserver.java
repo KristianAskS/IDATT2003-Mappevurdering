@@ -4,10 +4,18 @@ import edu.ntnu.bidata.idatt.controller.patterns.observer.interfaces.BoardGameOb
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/*
+  A simple observer that logs all events to the console.
+ */
 public class ConsoleBoardGameObserver implements BoardGameObserver {
 
   private static final Logger logger = Logger.getLogger(ConsoleBoardGameObserver.class.getName());
 
+  /**
+   * Logs all events to the console.
+   *
+   * @param eventType the event to log
+   */
   @Override
   public void onEvent(BoardGameEvent eventType) {
     switch (eventType.eventType()) {
