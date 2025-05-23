@@ -1,8 +1,5 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
-import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
-
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.view.components.BackgroundImageView;
 import edu.ntnu.bidata.idatt.view.components.Buttons;
@@ -10,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
@@ -20,19 +16,23 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class GameSelectionScene {
+public class GameSelectionScene extends BaseScene {
 
   private static final Logger logger = Logger.getLogger(GameSelectionScene.class.getName());
 
   private static String selectedGame;
-  private final Scene scene;
 
-  public GameSelectionScene() {
-    BorderPane rootPane = SceneManager.getRootPane();
+  public static String getSelectedGame() {
+    return selectedGame;
+  }
+
+  @Override
+  protected void initialize() {
+    scene.setFill(Color.PINK);
+
+    BorderPane rootPane = this.root;
     rootPane.setPadding(Insets.EMPTY);
     rootPane.setStyle("-fx-font-family: 'monospace';");
-
-    scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.PINK);
     rootPane.setBackground(new Background(BackgroundImageView.getBackgroundImage()));
 
     VBox mainWrapper = new VBox(40);
@@ -55,18 +55,16 @@ public class GameSelectionScene {
 
     mainWrapper.getChildren().addAll(ludoBtn, snlBtn);
 
+    // Build the bottom back‐button bar
     HBox bottomContainer = createBottomContainer();
 
+    // Attach to root
     rootPane.setCenter(mainWrapper);
     rootPane.setBottom(bottomContainer);
     BorderPane.setAlignment(bottomContainer, Pos.BOTTOM_LEFT);
     BorderPane.setMargin(bottomContainer, new Insets(10));
 
     logger.log(Level.INFO, "GameSelectionScene initialized");
-  }
-
-  public static String getSelectedGame() {
-    return selectedGame;
   }
 
   private HBox createBottomContainer() {
@@ -82,9 +80,5 @@ public class GameSelectionScene {
 
     bottomBox.getChildren().addAll(backBtn, spacer);
     return bottomBox;
-  }
-
-  public Scene getScene() {
-    return scene;
   }
 }

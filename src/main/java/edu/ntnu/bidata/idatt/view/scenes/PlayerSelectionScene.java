@@ -1,8 +1,5 @@
 package edu.ntnu.bidata.idatt.view.scenes;
 
-import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_HEIGHT;
-import static edu.ntnu.bidata.idatt.controller.SceneManager.SCENE_WIDTH;
-
 import edu.ntnu.bidata.idatt.controller.SceneManager;
 import edu.ntnu.bidata.idatt.model.entity.Board;
 import edu.ntnu.bidata.idatt.model.entity.Player;
@@ -63,10 +60,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
-public class PlayerSelectionScene {
+public class PlayerSelectionScene extends BaseScene {
 
   private static final Logger logger = Logger.getLogger(PlayerSelectionScene.class.getName());
-
   private static final TableView<Player> playerTable = new TableView<>();
   private static final ObservableList<Player> selectedPlayers = FXCollections.observableArrayList();
   private static final Label playersCountLabel = new Label("Players: 0/0");
@@ -75,39 +71,10 @@ public class PlayerSelectionScene {
   private final String selectedGame = GameSelectionScene.getSelectedGame();
   private final Board selectedBoard = BoardSelectionScene.getSelectedBoard();
   private final PlayerService playerService = new PlayerService();
-  private final Scene scene;
   private final int PANEL_WIDTH = 300;
   TextField nameInput = new TextField();
   private File selectedImage;
   private ColorPicker playerColorPicker;
-
-  public PlayerSelectionScene() throws IOException {
-    BorderPane rootPane = SceneManager.getRootPane();
-    scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT, Color.LIGHTBLUE);
-    scene.getStylesheets().add(
-        Objects.requireNonNull(getClass().getResource(
-            "/edu/ntnu/bidata/idatt/styles/PlayerSelectionSceneStyles.css")).toExternalForm());
-
-    HBox centerLayout = new HBox(20);
-    centerLayout.setPadding(new Insets(10));
-    centerLayout.setAlignment(Pos.CENTER);
-
-    VBox inputPanel = createPlayerInputPanel();
-    VBox tablePanel = createPlayerTablePanel();
-    VBox availablePanel = createAvailablePlayersPanel();
-
-    centerLayout.getChildren().addAll(inputPanel, tablePanel, availablePanel);
-    rootPane.setCenter(centerLayout);
-
-    HBox bottomContainer = createBottomButtonContainer();
-    BorderPane.setMargin(bottomContainer, new Insets(10));
-    rootPane.setBottom(bottomContainer);
-
-    playersCountLabel.getStyleClass().add("label-count");
-    addScaleAnimation(playersCountLabel, 1.1, Duration.millis(300));
-
-    logger.log(Level.INFO, "PlayerSelectionScene initialised for game: {0}", selectedGame);
-  }
 
   public static void showTotalPlayerSelectionDialog() {
     boolean isLudo = "LUDO".equalsIgnoreCase(GameSelectionScene.getSelectedGame());
@@ -143,7 +110,6 @@ public class PlayerSelectionScene {
     updatePlayersCountLabel();
   }
 
-
   public static int getTotalPlayerCount() {
     return totalPlayerCount == null ? 0 : totalPlayerCount;
   }
@@ -154,6 +120,40 @@ public class PlayerSelectionScene {
 
   private static void updatePlayersCountLabel() {
     playersCountLabel.setText("Players: " + selectedPlayers.size() + "/" + getTotalPlayerCount());
+  }
+
+  @Override
+  protected void initialize() throws IOException {
+    scene.setFill(Color.LIGHTBLUE);
+    scene.getStylesheets().add(
+        Objects.requireNonNull(getClass()
+                .getResource("/edu/ntnu/bidata/idatt/styles/PlayerSelectionSceneStyles.css"))
+            .toExternalForm()
+    );
+
+    BorderPane rootPane = this.root;
+    rootPane.setPadding(Insets.EMPTY);
+
+    HBox centerLayout = new HBox(20);
+    centerLayout.setPadding(new Insets(10));
+    centerLayout.setAlignment(Pos.CENTER);
+
+    VBox inputPanel = createPlayerInputPanel();
+    VBox tablePanel = createPlayerTablePanel();
+    VBox availablePanel = createAvailablePlayersPanel();
+
+    centerLayout.getChildren().addAll(inputPanel, tablePanel, availablePanel);
+    rootPane.setCenter(centerLayout);
+
+    HBox bottom = createBottomButtonContainer();
+    BorderPane.setMargin(bottom, new Insets(10));
+    rootPane.setBottom(bottom);
+
+    playersCountLabel.getStyleClass().add("label-count");
+    addScaleAnimation(playersCountLabel, 1.1, Duration.millis(300));
+    logger.log(Level.INFO,
+        "PlayerSelectionScene initialised for game: {0}",
+        selectedGame);
   }
 
   private VBox createPlayerInputPanel() {
@@ -464,7 +464,7 @@ public class PlayerSelectionScene {
   }
 
   private void handleAddPlayer(TextField nameField, ComboBox<String> shapeComboBox,
-      DatePicker dobPicker) {
+                               DatePicker dobPicker) {
     String name = nameField.getText();
     String shapeValue = shapeComboBox.getValue();
     Color color = playerColorPicker.getValue();
@@ -530,7 +530,7 @@ public class PlayerSelectionScene {
     resetInputs(nameField, shapeComboBox, dobPicker);
 
     logger.log(Level.INFO, "Added player: {0} (Shape: {1}, Image: {2})",
-        new Object[]{name, finalShape, (runtimeUri != null ? "Custom" : "None")});
+        new Object[] {name, finalShape, (runtimeUri != null ? "Custom" : "None")});
   }
 
   private LocalDate randomBirthDate() {
@@ -542,7 +542,7 @@ public class PlayerSelectionScene {
 
 
   private void resetInputs(TextField nameField, ComboBox<String> shapeComboBox,
-      DatePicker dobPicker) {
+                           DatePicker dobPicker) {
     nameField.clear();
     if (!"LUDO".equalsIgnoreCase(selectedGame)) {
       shapeComboBox.getSelectionModel().clearSelection();
