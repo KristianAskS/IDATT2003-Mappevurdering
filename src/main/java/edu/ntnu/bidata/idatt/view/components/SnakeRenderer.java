@@ -20,6 +20,9 @@ import javafx.scene.shape.Polyline;
 import javafx.scene.shape.QuadCurveTo;
 import javafx.scene.shape.StrokeLineCap;
 
+/**
+ * Renders the snakes defined in the Board model.
+ */
 public class SnakeRenderer {
 
   private static final Logger logger = Logger.getLogger(SnakeRenderer.class.getName());
@@ -37,6 +40,13 @@ public class SnakeRenderer {
   private SnakeRenderer() {
   }
 
+  /** Draws the snakes defined in the board model.
+   *
+   * @param board the board model
+   * @param boardGrid the grid pane to draw on
+   * @param overlayPane the pane to draw overlays on
+   * @param gameController the game controller
+   */
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlayPane,
                                 GameController gameController) {
     board.getTiles().values().stream()
@@ -81,6 +91,12 @@ public class SnakeRenderer {
         });
   }
 
+  /** Creates a snake visual from the start and end centers.
+   *
+   * @param headCenter the start center
+   * @param tailCenter the end center
+   * @return a list of nodes representing the snake visual
+   */
   private static List<Node> createSnakeVisual(double[] headCenter, double[] tailCenter) {
     List<Node> snakeComponents = new ArrayList<>();
     Color bodyColor = getRandomSnakeColor();
@@ -148,6 +164,10 @@ public class SnakeRenderer {
     return snakeComponents;
   }
 
+  /**
+   * Creates a random snake color.
+   * @return a random color
+   */
   private static Color getRandomSnakeColor() {
     Color[] colors = {
         Color.DARKGREEN, Color.FORESTGREEN, Color.OLIVEDRAB, Color.SADDLEBROWN,
@@ -160,6 +180,12 @@ public class SnakeRenderer {
     return colors[random.nextInt(colors.length)];
   }
 
+  /**
+   *
+   * @param headId the head tile id
+   * @param tailId the tail tile id
+   * @return true if the snake is valid, false otherwise
+   */
   public static boolean isValidSnake(int headId, int tailId) {
     if (headId <= tailId) {
       return true;

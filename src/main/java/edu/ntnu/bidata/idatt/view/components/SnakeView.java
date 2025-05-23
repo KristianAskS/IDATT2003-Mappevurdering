@@ -6,6 +6,9 @@ import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
+/**
+ * Renders the snakes defined in the Board model.
+ */
 public final class SnakeView {
 
   private static final Logger logger = Logger.getLogger(SnakeView.class.getName());
@@ -14,6 +17,14 @@ public final class SnakeView {
   private SnakeView() {
   }
 
+  /**
+   * Draws the snakes defined in the board model.
+   *
+   * @param board the board
+   * @param boardGrid the grid
+   * @param overlayPane the overlay
+   * @param gameController the game controller
+   */
   public static void drawSnakes(Board board, GridPane boardGrid, Pane overlayPane,
                                 GameController gameController) {
     SnakeRenderer.drawSnakes(board, boardGrid, overlayPane, gameController);

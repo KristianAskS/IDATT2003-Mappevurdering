@@ -9,6 +9,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+/**
+ * Visual component for displaying and animating a tile in the game UI.
+ */
 public class TileView extends StackPane {
 
   public static final int TILE_SIZE_LADDER = 73;
@@ -16,6 +19,11 @@ public class TileView extends StackPane {
   private static final String ACTION_LABEL_CLASS = "action-label";
   private TileView tileView;
 
+  /**
+   * Constructs a new TileView
+   * @param tile the tile
+   * @param TILE_SIZE the tile size
+   */
   public TileView(Tile tile, int TILE_SIZE) {
     this.setId("tile" + tile.getTileId());
 

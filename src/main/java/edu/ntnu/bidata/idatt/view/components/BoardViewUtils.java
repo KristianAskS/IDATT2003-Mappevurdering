@@ -7,6 +7,9 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 
+/**
+ * Utility class for board view related calculations
+ */
 public class BoardViewUtils {
 
   public static final double VISUAL_CORRECTION = -10;
@@ -14,6 +17,14 @@ public class BoardViewUtils {
   private BoardViewUtils() {
   }
 
+  /** Calculates the center of the tile in the grid
+   *
+   * @param grid the grid to calculate the center of
+   * @param gameController the game controller
+   * @param board the board model
+   * @param tile the tile to calculate the center of
+   * @return the center of the tile in the grid
+   */
   public static double[] getTileCenter(GridPane grid, GameController gameController, Board board,
                                        Tile tile) {
     int[] rowCol = gameController.tileToGridPosition(tile, board);

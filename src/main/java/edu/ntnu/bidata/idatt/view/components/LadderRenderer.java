@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
+
 public class LadderRenderer {
 
   private static final Logger logger = Logger.getLogger(LadderRenderer.class.getName());
