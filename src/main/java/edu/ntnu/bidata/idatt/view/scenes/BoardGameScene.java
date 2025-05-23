@@ -53,6 +53,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+
+/**
+ * Represents the game scene for both Ludo and Snakes & Ladders.
+ * <p>
+ * Responsible for rendering the board, tokens, dice controls, event log,
+ * and reacting to {@link BoardGameEvent}s from the {@link GameController}.
+ * </p>
+ */
 public class BoardGameScene implements BoardGameObserver {
   private static final Logger logger = Logger.getLogger(BoardGameScene.class.getName());
   private final Scene scene;
@@ -64,11 +72,16 @@ public class BoardGameScene implements BoardGameObserver {
   private final GameController gameController;
   private final boolean isLudo =
       "LUDO".equalsIgnoreCase(String.valueOf(GameSelectionScene.getSelectedGame()));
-  Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
+  private final Board selectedBoardModel = BoardSelectionScene.getSelectedBoard();
   private List<Player> players = PlayerSelectionScene.getSelectedPlayers();
   private HBox stagingArea;
   private Button rollBtn;
 
+  /**
+   * Instantiates a new Board game scene.
+   *
+   * @param controller the controller
+   */
   public BoardGameScene(GameController controller) {
     diceView = new DiceView();
     BorderPane rootPane = createRootPane();
@@ -120,6 +133,13 @@ public class BoardGameScene implements BoardGameObserver {
         GameSelectionScene.getSelectedGame());
   }
 
+  /**
+   * Returns hardcoded offset positions for placing multiple {@code tokenCount} tokens
+   * within a single tile
+   *
+   * @param tokenCount number of tokens to position
+   * @return array of {@link TileView} coords for each token
+   */
   private static double[][] getTokenOffsets(int tokenCount) {
     return switch (tokenCount) {
       case 2 -> new double[][] {{0.2, 0.5}, {0.8, 0.5}};
@@ -130,6 +150,12 @@ public class BoardGameScene implements BoardGameObserver {
     };
   }
 
+  /**
+   * Calculates the center point of a tile and applying visual correction.
+   *
+   * @param bounds the bounding box of the tile
+   * @return an 2d array
+   */
   @SuppressWarnings("unused")
   public static double[] getTileCenter(Bounds bounds) {
     double x = bounds.getMinX() + bounds.getWidth() * 0.5 + VISUAL_CORRECTION;
@@ -138,6 +164,11 @@ public class BoardGameScene implements BoardGameObserver {
     return new double[] {x, y};
   }
 
+  /**
+   * Initializes the staging area and resets each player’s position to start.
+   *
+   * @param players list of players to display in the UI
+   */
   public void setupPlayersUI(List<Player> players) {
     this.players = players;
     players.forEach(player -> player.setCurrentTileId(0));
@@ -148,6 +179,12 @@ public class BoardGameScene implements BoardGameObserver {
     players.forEach(player -> stagingArea.getChildren().add(player.getToken()));
   }
 
+  /**
+   * Highlights the board’s final tile by coloring it gold and adding a finish flag.
+   *
+   * @param board         the game board model
+   * @param boardGridPane the GridPane containing tile views
+   */
   private void highlightEndTile(Board board, GridPane boardGridPane) {
     TileView tileView = (TileView) boardGridPane.lookup("#tile" + board.getTiles().size());
     tileView.setStyle("-fx-background-color: #FFD700");
@@ -157,6 +194,12 @@ public class BoardGameScene implements BoardGameObserver {
     tileView.getChildren().add(lbl);
   }
 
+  /**
+   * Marks action tiles with a background color and symbol.
+   *
+   * @param board         the game board model containing tiles and actions
+   * @param boardGridPane the GridPane of tile views to update
+   */
   private void highlightActionTiles(Board board, GridPane boardGridPane) {
     board.getTiles().values().forEach(tile -> {
       TileAction action = tile.getLandAction();
@@ -182,6 +225,11 @@ public class BoardGameScene implements BoardGameObserver {
     });
   }
 
+  /**
+   * Arranges all token nodes within the given tile view using offsets coords.
+   *
+   * @param tile the {@link TileView} containing token nodes
+   */
   public void setTokenPositionOnTile(TileView tile) {
     List<Node> tokens = tile.getChildren().stream()
         .filter(node -> node instanceof TokenView).toList();
@@ -197,7 +245,9 @@ public class BoardGameScene implements BoardGameObserver {
         });
   }
 
-
+  /**
+   * Reposition token on tile based on offset coords
+   */
   public void repositionTokenOnTile() {
     players.forEach(player -> {
       int tileId = player.getCurrentTileId();
@@ -210,6 +260,12 @@ public class BoardGameScene implements BoardGameObserver {
     });
   }
 
+  /**
+   * Processes a {@link BoardGameEvent} on the Application Thread:
+   * updates the event log, repositions tokens and handles game start and finish transitions.
+   *
+   * @param event the board game event containing the player, old/new tiles, and event type
+   */
   @Override
   public void onEvent(BoardGameEvent event) {
     Platform.runLater(() -> {
@@ -277,24 +333,42 @@ public class BoardGameScene implements BoardGameObserver {
         rollBtn.setDisable(false);
       }
     });
-
-
   }
 
+  /**
+   * Gets scene.
+   *
+   * @return the scene
+   */
   public Scene getScene() {
     return scene;
   }
 
+  /**
+   * Gets token layer.
+   *
+   * @return the token layer
+   */
   public Pane getTokenLayer() {
     return tokenLayerPane;
   }
 
+  /**
+   * Creates the root BorderPane with the scene background style applied.
+   *
+   * @return a styled BorderPane for the main layout
+   */
   private BorderPane createRootPane() {
     BorderPane rootBorderPane = new BorderPane();
     rootBorderPane.setStyle("-fx-background-color: #1A237E;");
     return rootBorderPane;
   }
 
+  /**
+   * Builds the staging area HBox for displaying tokens before game start.
+   *
+   * @return an HBox with padding, alignment, and translucent background
+   */
   private HBox createStagingArea() {
     HBox stagingArea = new HBox(10);
     stagingArea.setPadding(new Insets(10));
@@ -306,6 +380,11 @@ public class BoardGameScene implements BoardGameObserver {
     return stagingArea;
   }
 
+  /**
+   * Configures the event log TextArea: non-editable, monospace font, and dark theme.
+   *
+   * @return the initialized TextArea used for game output
+   */
   private TextArea createOutputArea() {
     eventLog.setEditable(false);
     eventLog.setWrapText(true);
@@ -316,6 +395,12 @@ public class BoardGameScene implements BoardGameObserver {
     return eventLog;
   }
 
+  /**
+   * Assembles the I/O container VBox, including dice controls, current player label,
+   * output area, staging area, and navigation buttons.
+   *
+   * @return a VBox containing all side-panel UI elements
+   */
   private VBox createIOContainer() {
     VBox ioContainer = new VBox();
     ioContainer.setPrefWidth(250);
@@ -387,6 +472,11 @@ public class BoardGameScene implements BoardGameObserver {
     return ioContainer;
   }
 
+  /**
+   * Sets current player.
+   *
+   * @param player the player
+   */
   public void setCurrentPlayer(Player player) {
     String displayedText =
         (player == null) ? "Current player: " : "Current player: " + player.getName();
@@ -396,6 +486,11 @@ public class BoardGameScene implements BoardGameObserver {
     }
   }
 
+  /**
+   * Gets board.
+   *
+   * @return the board
+   */
   public Board getBoard() {
     return selectedBoardModel;
   }

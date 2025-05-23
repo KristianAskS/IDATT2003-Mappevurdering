@@ -1,5 +1,3 @@
-// src/main/java/edu/ntnu/bidata/idatt/rules/LaddersRules.java
-
 package edu.ntnu.bidata.idatt.controller.rules;
 
 import edu.ntnu.bidata.idatt.model.entity.Player;
